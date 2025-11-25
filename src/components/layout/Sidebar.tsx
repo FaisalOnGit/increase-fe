@@ -99,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 to={child.path}
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg mb-1 transition-colors group ${
                   isItemActive(child.path)
-                    ? "bg-secondary text-primary"
+                    ? "bg-secondary text-white"
                     : "text-white hover:bg-secondary hover:text-white"
                 }`}
                 style={{ paddingLeft: `${level * 12 + 36}px` }}
@@ -110,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                   size={18}
                   className={
                     isItemActive(child.path)
-                      ? "text-primary"
+                      ? "text-white"
                       : "text-white group-hover:text-white"
                   }
                 />

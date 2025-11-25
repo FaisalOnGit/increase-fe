@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import Lottie from "react-lottie-player";
 import { Icon } from "../components/ui/Icon";
 import { Sidebar } from "../components/layout/Sidebar";
 import { navItems } from "../data/mockData";
-import splash from "./splash.json";
 
 const findPageTitle = (pathname: string): string => {
   // Check direct path matches
@@ -44,20 +42,9 @@ export const DashboardLayout: React.FC = () => {
     return window.innerWidth < 1024;
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const firstName = sessionStorage.getItem("firstName") || "User";
   const pageTitle = findPageTitle(location.pathname);
-
-  useEffect(() => {
-    setIsLoading(true);
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -136,25 +123,6 @@ export const DashboardLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
-
-      {/* Loading Screen */}
-      {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="relative z-10 text-center">
-            <div className="mb-8">
-              <div className="relative">
-                <Lottie
-                  loop
-                  animationData={splash}
-                  play
-                  style={{ width: 200, height: 200 }}
-                />
-                <div className="absolute inset-0 bg-blue-400/30 rounded-full blur-2xl animate-ping"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
