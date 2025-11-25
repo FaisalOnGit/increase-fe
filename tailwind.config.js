@@ -22,7 +22,13 @@ export default {
           "sans-serif",
         ],
       },
+      scrollbar: {
+        thin: 'scrollbar-thin',
+        none: 'scrollbar-none',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwindcss-scrollbar'),
+  ],
 };

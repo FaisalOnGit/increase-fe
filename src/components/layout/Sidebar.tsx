@@ -2,8 +2,8 @@ import React, { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { navItems } from "../../data/mockData";
-import miniLogo from "/logo.png";
-import logo from "/obsesiman.png";
+import miniLogo from "/simanislite.png";
+import logo from "/simanis.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { filterMenuByRole } from "../../utils/menuFilter";
 
@@ -32,9 +32,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   }, [navItems, userRole]);
 
   const toggleExpanded = (itemId: string) => {
-    setExpandedItems(prev =>
+    setExpandedItems((prev) =>
       prev.includes(itemId)
-        ? prev.filter(id => id !== itemId)
+        ? prev.filter((id) => id !== itemId)
         : [...prev, itemId]
     );
   };
@@ -46,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   const hasActiveChild = (children?: { path?: string }[]): boolean => {
     if (!children) return false;
-    return children.some(child => isItemActive(child.path));
+    return children.some((child) => isItemActive(child.path));
   };
 
   const renderMenuItem = (item: any, level: number = 0) => {
@@ -76,14 +76,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               name={item.icon as any}
               size={20}
               className={
-                isActive
-                  ? "text-primary"
-                  : "text-white group-hover:text-white"
+                isActive ? "text-primary" : "text-white group-hover:text-white"
               }
             />
-            {!isCollapsed && (
-              <span className="font-medium">{item.label}</span>
-            )}
+            {!isCollapsed && <span className="font-medium">{item.label}</span>}
           </div>
           {!isCollapsed && hasChildren && (
             <Icon
@@ -157,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           </button>
         </div>
 
-        <nav className="mt-6 px-2 flex-1">
+        <nav className="mt-6 px-2 flex-1 overflow-y-auto scrollbar-hide">
           {filteredNavItems.map((item) => renderMenuItem(item))}
         </nav>
 

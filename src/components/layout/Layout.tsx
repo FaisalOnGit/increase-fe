@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { navItems } from "../../data/mockData";
-import miniLogo from "/logo.png";
-import logo from "/obsesiman.png";
+import miniLogo from "/simanislite.png";
+import logo from "/simanis.png";
 
 interface LayoutProps {
   children: React.ReactNode;

@@ -43,6 +43,7 @@ function App() {
                   </div>
                 }
               />
+              <Route path="not-found" element={<NotFound />} />
             </Route>
           </Route>
 
