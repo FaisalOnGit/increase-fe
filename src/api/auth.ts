@@ -11,26 +11,27 @@ const dummyUsers = [
     email: "admin@unsil.ac.id",
     password: "admin123",
     firstName: "Administrator",
-    role: "Admin"
+    role: "Admin",
   },
   {
     email: "ahmad.rizki@unsil.ac.id",
     password: "dosen123",
     firstName: "Ahmad Rizki",
-    role: "Dosen"
+    role: "Dosen",
   },
   {
     email: "budi.santoso@students.unsil.ac.id",
     password: "mahasiswa123",
     firstName: "Budi Santoso",
-    role: "Mahasiswa"
-  }
+    role: "Mahasiswa",
+  },
 ];
 
 export const login = async (formData: LoginFormData) => {
   // Check for dummy users first (bypass for development)
   const dummyUser = dummyUsers.find(
-    user => user.email === formData.email && user.password === formData.password
+    (user) =>
+      user.email === formData.email && user.password === formData.password
   );
 
   if (dummyUser) {
@@ -39,7 +40,11 @@ export const login = async (formData: LoginFormData) => {
     sessionStorage.setItem("role", dummyUser.role);
     sessionStorage.setItem("email", dummyUser.email);
 
-    return { success: true, token: "dummy-token", firstName: dummyUser.firstName };
+    return {
+      success: true,
+      token: "dummy-token",
+      firstName: dummyUser.firstName,
+    };
   }
 
   // If using real API (uncomment when ready)

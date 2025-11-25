@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useMemo } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { navItems } from "../../data/mockData";
 import miniLogo from "/logo.png";
 import logo from "/obsesiman.png";
+import { useAuth } from "../../contexts/AuthContext";
+import { filterMenuByRole } from "../../utils/menuFilter";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -12,7 +14,22 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const { userRole, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  // Filter menu based on user role
+  const filteredNavItems = useMemo(() => {
+    console.log("Current userRole:", userRole);
+    const filtered = filterMenuByRole(navItems, userRole || undefined);
+    console.log("Filtered menu:", filtered);
+    return filtered;
+  }, [navItems, userRole]);
 
   const toggleExpanded = (itemId: string) => {
     setExpandedItems(prev =>
@@ -141,11 +158,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </div>
 
         <nav className="mt-6 px-2 flex-1">
-          {navItems.map((item) => renderMenuItem(item))}
+          {filteredNavItems.map((item) => renderMenuItem(item))}
         </nav>
 
         <div className="px-2 pb-4 flex-shrink-0">
-          <button className="flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors group text-white hover:bg-red-600 hover:text-white w-full">
+          <button
+            onClick={handleLogout}
+            className="flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors group text-white hover:bg-red-600 hover:text-white w-full"
+          >
             <Icon
               name="LogOut"
               size={20}

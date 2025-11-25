@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/auth";
-import { Mail, Lock, AlertTriangle, LogIn } from "lucide-react"; // Importing Lucide icons
-
-interface LoginResponse {
-  success: boolean;
-  error?: string;
-  data?: any;
-}
+import { Mail, Lock, AlertTriangle, LogIn } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +11,7 @@ const LoginForm = () => {
 
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,12 +24,12 @@ const LoginForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const result: LoginResponse = await login(formData);
+    const success = await login(formData.email, formData.password);
 
-    if (result.success) {
+    if (success) {
       navigate("/dashboard");
     } else {
-      setError(result.error || "Terjadi kesalahan");
+      setError("Email atau password salah. Coba: admin@unsil.ac.id / admin123");
     }
   };
 
@@ -105,10 +100,17 @@ const LoginForm = () => {
             type="submit"
             className="login-btn w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-all duration-200 hover:bg-blue-700 flex items-center justify-center"
           >
-            <LogIn className="mr-2" /> {/* Lucide icon */}
+            <LogIn className="mr-2" />
             Login Now
           </button>
         </form>
+
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>Demo Accounts:</p>
+          <p>Admin: admin@unsil.ac.id / admin123</p>
+          <p>Dosen: ahmad.rizki@unsil.ac.id / dosen123</p>
+          <p>Mahasiswa: budi.santoso@students.unsil.ac.id / mahasiswa123</p>
+        </div>
       </div>
 
       <div className="w-1/2 bg-primary gradient-bg flex flex-col justify-center rounded-l-[90px] items-center text-white px-12 py-8 relative overflow-hidden">
