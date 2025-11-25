@@ -1,20 +1,53 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Lottie from "react-lottie-player";
 import { Icon } from "../components/ui/Icon";
+import { Sidebar } from "../components/layout/Sidebar";
 import { navItems } from "../data/mockData";
-import miniLogo from "/logo.png";
-import logo from "/obsesiman.png";
 import splash from "./splash.json";
+
+const findPageTitle = (pathname: string): string => {
+  // Check direct path matches
+  for (const item of navItems) {
+    if (item.path === pathname) {
+      return item.label;
+    }
+
+    // Check in children/submenu
+    if (item.children) {
+      for (const child of item.children) {
+        if (child.path === pathname) {
+          return child.label;
+        }
+      }
+    }
+  }
+
+  // Default title based on path
+  if (pathname === "/dashboard") return "Dashboard";
+
+  // Extract title from path
+  const segments = pathname.split("/");
+  const lastSegment = segments[segments.length - 1];
+  if (lastSegment) {
+    return (
+      lastSegment.charAt(0).toUpperCase() +
+      lastSegment.slice(1).replace(/-/g, " ")
+    );
+  }
+
+  return "Dashboard";
+};
 
 export const DashboardLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     return window.innerWidth < 1024;
   });
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
-  const firstName = sessionStorage.getItem("firstName");
+  const firstName = sessionStorage.getItem("firstName") || "User";
+  const pageTitle = findPageTitle(location.pathname);
 
   useEffect(() => {
     setIsLoading(true);
@@ -32,108 +65,13 @@ export const DashboardLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      {/* Sidebar */}
-      <>
-        {!sidebarCollapsed && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-            onClick={toggleSidebar}
-          />
-        )}
-
-        <div
-          className={`fixed left-0 top-0 h-full bg-primary text-white z-50 transition-all duration-300 ease-in-out flex flex-col ${
-            sidebarCollapsed
-              ? "-translate-x-full lg:translate-x-0 lg:w-20"
-              : "w-60"
-          }`}
-        >
-          <div
-            className={`flex items-center p-4 flex-shrink-0 ${
-              sidebarCollapsed ? "justify-center" : "justify-between"
-            }`}
-          >
-            <div
-              className={`flex ${
-                sidebarCollapsed ? "justify-center w-full" : ""
-              }`}
-            >
-              <img
-                src={sidebarCollapsed ? miniLogo : logo}
-                alt="Logo"
-                className={sidebarCollapsed ? "w-8 h-auto" : "w-44 h-auto"}
-              />
-            </div>
-
-            {!sidebarCollapsed && (
-              <button
-                onClick={toggleSidebar}
-                className="p-1 rounded-lg hover:bg-indigo-800 transition-colors lg:hidden"
-              >
-                <Icon name="X" size={20} />
-              </button>
-            )}
-          </div>
-
-          <nav className="mt-6 px-3 flex-1">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-
-              return (
-                <Link
-                  key={item.id}
-                  to={item.path}
-                  className={`flex items-center rounded-lg mb-3 text-lg transition-colors group ${
-                    sidebarCollapsed
-                      ? "justify-center px-2 py-3"
-                      : "space-x-3 px-4 py-2"
-                  } ${
-                    isActive
-                      ? "bg-secondary text-primary"
-                      : "text-white hover:bg-indigo-800 hover:text-white"
-                  }`}
-                  onClick={() => window.innerWidth < 1024 && toggleSidebar()}
-                >
-                  <Icon
-                    name={item.icon as any}
-                    size={20}
-                    className={`font-bold ${
-                      isActive
-                        ? "text-primary"
-                        : "text-white group-hover:text-white"
-                    }`}
-                  />
-                  {!sidebarCollapsed && (
-                    <span className="font-medium">{item.label}</span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="px-2 pb-4 flex-shrink-0">
-            <button
-              className={`flex items-center rounded-lg transition-colors group text-white hover:bg-red-600 hover:text-white w-full ${
-                sidebarCollapsed
-                  ? "justify-center px-2 py-3"
-                  : "space-x-3 px-3 py-3"
-              }`}
-            >
-              <Icon
-                name="LogOut"
-                size={20}
-                className="text-white group-hover:text-white font-bold"
-              />
-              {!sidebarCollapsed && <span className="font-medium">Keluar</span>}
-            </button>
-          </div>
-        </div>
-      </>
+      {/* Sidebar Component */}
+      <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
 
       {/* Main Content Area */}
       <div
         className={`transition-all duration-300 ${
-          sidebarCollapsed ? "lg:ml-20" : "lg:ml-60"
+          sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
         }`}
       >
         {/* Header */}
@@ -149,7 +87,7 @@ export const DashboardLayout: React.FC = () => {
 
               <div>
                 <h1 className="text-xl font-semibold text-primary">
-                  Dashboard
+                  {pageTitle}
                 </h1>
               </div>
             </div>
@@ -179,16 +117,15 @@ export const DashboardLayout: React.FC = () => {
           {/* Toggle Button - Positioned between header and sidebar */}
           <button
             onClick={toggleSidebar}
-            className={`hidden lg:flex absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-white border border-gray-200 rounded-full items-center justify-center hover:bg-gray-50 transition-all duration-300 shadow-md z-50 ${
-              sidebarCollapsed ? "left-20" : "left-68"
-            }`}
+            className={`hidden lg:flex fixed top-8 -translate-y-1/2 w-8 h-8 bg-white border border-gray-200 rounded-full items-center justify-center hover:bg-gray-50 transition-all duration-300 shadow-lg`}
             style={{
-              left: sidebarCollapsed ? "-1rem" : "-1rem",
+              left: sidebarCollapsed ? "50px" : "240px",
+              zIndex: 100,
             }}
           >
             <Icon
               name={sidebarCollapsed ? "ChevronRight" : "ChevronLeft"}
-              size={16}
+              size={20}
               className="text-gray-600"
             />
           </button>

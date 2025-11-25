@@ -17,11 +17,19 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Eye,
   LayoutDashboard,
   BookOpen,
   Target,
   Calendar,
+  Database,
+  UserCog,
+  Shield,
+  Building,
+  Award,
+  Search,
+  Trash2,
 } from "lucide-react";
 
 const icons = {
@@ -43,11 +51,19 @@ const icons = {
   User,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Eye,
   LayoutDashboard,
   BookOpen,
   Target,
   Calendar,
+  Database,
+  UserCog,
+  Shield,
+  Building,
+  Award,
+  Search,
+  Trash2,
 };
 
 interface IconProps {

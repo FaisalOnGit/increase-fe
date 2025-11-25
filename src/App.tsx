@@ -10,6 +10,7 @@ import Students from "./pages/Students";
 import Assignments from "./pages/Assignments";
 import Grades from "./pages/Grades";
 import Laporan from "./pages/Laporan";
+import { UserManagement } from "./pages/master/UserManagement";
 import { Breadcrumb } from "./components/layout/BreadCrumb";
 
 function App() {
@@ -17,15 +18,17 @@ function App() {
     <Router basename="edu-lms">
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<LoginForm />} />
 
-        <Route>
-          <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route path="/" element={<PrivateRoute />}>
+          <Route path="dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<Courses />} />
             <Route path="students" element={<Students />} />
             <Route path="assignments" element={<Assignments />} />
             <Route path="grades" element={<Grades />} />
             <Route path="reports" element={<Laporan />} />
+            <Route path="master/pengguna" element={<UserManagement />} />
             <Route
               path="settings"
               element={
@@ -40,8 +43,6 @@ function App() {
             />
           </Route>
         </Route>
-
-        <Route path="/login" element={<LoginForm />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

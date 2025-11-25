@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Icon } from "../ui/Icon";
 import { navItems } from "../../data/mockData";
@@ -12,6 +12,103 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const toggleExpanded = (itemId: string) => {
+    setExpandedItems(prev =>
+      prev.includes(itemId)
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
+  const isItemActive = (path?: string): boolean => {
+    if (!path) return false;
+    return location.pathname === path;
+  };
+
+  const hasActiveChild = (children?: { path?: string }[]): boolean => {
+    if (!children) return false;
+    return children.some(child => isItemActive(child.path));
+  };
+
+  const renderMenuItem = (item: any, level: number = 0) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const isExpanded = expandedItems.includes(item.id);
+    const isActive = isItemActive(item.path) || hasActiveChild(item.children);
+
+    return (
+      <div key={item.id}>
+        <div
+          className={`flex items-center justify-between px-3 py-3 rounded-lg mb-1 transition-colors group cursor-pointer ${
+            isActive
+              ? "bg-secondary text-primary"
+              : "text-white hover:bg-indigo-800 hover:text-white"
+          }`}
+          style={{ paddingLeft: `${level * 12 + 12}px` }}
+          onClick={() => {
+            if (hasChildren) {
+              toggleExpanded(item.id);
+            } else if (item.path) {
+              window.innerWidth < 1024 && onToggle();
+            }
+          }}
+        >
+          <div className="flex items-center space-x-3">
+            <Icon
+              name={item.icon as any}
+              size={20}
+              className={
+                isActive
+                  ? "text-primary"
+                  : "text-white group-hover:text-white"
+              }
+            />
+            {!isCollapsed && (
+              <span className="font-medium">{item.label}</span>
+            )}
+          </div>
+          {!isCollapsed && hasChildren && (
+            <Icon
+              name="ChevronDown"
+              size={16}
+              className={`transition-transform ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            />
+          )}
+        </div>
+        {hasChildren && !isCollapsed && isExpanded && (
+          <div className="mt-1">
+            {item.children.map((child: any) => (
+              <Link
+                key={child.id}
+                to={child.path}
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg mb-1 transition-colors group ${
+                  isItemActive(child.path)
+                    ? "bg-secondary text-primary"
+                    : "text-white hover:bg-indigo-800 hover:text-white"
+                }`}
+                style={{ paddingLeft: `${level * 12 + 36}px` }}
+                onClick={() => window.innerWidth < 1024 && onToggle()}
+              >
+                <Icon
+                  name={child.icon as any}
+                  size={18}
+                  className={
+                    isItemActive(child.path)
+                      ? "text-primary"
+                      : "text-white group-hover:text-white"
+                  }
+                />
+                <span className="font-medium text-sm">{child.label}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -26,6 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         className={`fixed left-0 top-0 h-full bg-primary text-white z-50 transition-all duration-300 ease-in-out flex flex-col ${
           isCollapsed ? "-translate-x-full lg:translate-x-0 lg:w-16" : "w-64"
         }`}
+        style={{ zIndex: 60 }}
       >
         <div className="flex items-center justify-between p-4 flex-shrink-0">
           <img
@@ -43,35 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </div>
 
         <nav className="mt-6 px-2 flex-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-
-            return (
-              <Link
-                key={item.id}
-                to={item.path}
-                className={`flex items-center space-x-3 px-3 py-3 rounded-lg mb-1 transition-colors group ${
-                  isActive
-                    ? "bg-secondary text-primary"
-                    : "text-white hover:bg-indigo-800 hover:text-white"
-                }`}
-                onClick={() => window.innerWidth < 1024 && onToggle()}
-              >
-                <Icon
-                  name={item.icon as any}
-                  size={20}
-                  className={
-                    isActive
-                      ? "text-primary"
-                      : "text-white group-hover:text-white"
-                  }
-                />
-                {!isCollapsed && (
-                  <span className="font-medium">{item.label}</span>
-                )}
-              </Link>
-            );
-          })}
+          {navItems.map((item) => renderMenuItem(item))}
         </nav>
 
         <div className="px-2 pb-4 flex-shrink-0">

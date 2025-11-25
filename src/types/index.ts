@@ -63,6 +63,18 @@ export interface NavItem {
   id: string;
   label: string;
   icon: string;
-  path: string;
+  path?: string;
   isActive?: boolean;
+  children?: NavItem[];
+}
+
+export interface User {
+  id: string;
+  name: string;
+  username: string;
+  role: string;
+  isReviewer: boolean;
+  email?: string;
+  phone?: string;
+  status?: 'active' | 'inactive';
 }
