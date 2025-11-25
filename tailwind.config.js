@@ -4,8 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#426BA8", // Primary color
-        secondary: "#DEF6FE", // Secondary color
+        primary: "#3ABFAD",
+        secondary: "#F0B62D",
+        sidebg: "#e6e6e6",
       },
       fontFamily: {
         sans: [
@@ -23,12 +24,10 @@ export default {
         ],
       },
       scrollbar: {
-        thin: 'scrollbar-thin',
-        none: 'scrollbar-none',
+        thin: "scrollbar-thin",
+        none: "scrollbar-none",
       },
     },
   },
-  plugins: [
-    require('tailwindcss-scrollbar'),
-  ],
+  plugins: [require("tailwindcss-scrollbar")],
 };

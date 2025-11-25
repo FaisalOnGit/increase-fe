@@ -105,7 +105,7 @@ export const DashboardLayout: React.FC = () => {
                   <Icon name="User" size={16} className="text-white" />
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-primary">
                     {firstName}
                   </p>
                   <p className="text-xs text-gray-500">Administrator</p>

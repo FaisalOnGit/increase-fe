@@ -59,8 +59,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         <div
           className={`flex items-center justify-between px-3 py-3 rounded-lg mb-1 transition-colors group cursor-pointer ${
             isActive
-              ? "bg-secondary text-primary"
-              : "text-white hover:bg-indigo-800 hover:text-white"
+              ? "bg-secondary text-white"
+              : "text-white hover:bg-secondary hover:text-white"
           }`}
           style={{ paddingLeft: `${level * 12 + 12}px` }}
           onClick={() => {
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               name={item.icon as any}
               size={20}
               className={
-                isActive ? "text-primary" : "text-white group-hover:text-white"
+                isActive ? "text-white" : "text-white group-hover:text-white"
               }
             />
             {!isCollapsed && <span className="font-medium">{item.label}</span>}
@@ -100,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg mb-1 transition-colors group ${
                   isItemActive(child.path)
                     ? "bg-secondary text-primary"
-                    : "text-white hover:bg-indigo-800 hover:text-white"
+                    : "text-white hover:bg-secondary hover:text-white"
                 }`}
                 style={{ paddingLeft: `${level * 12 + 36}px` }}
                 onClick={() => window.innerWidth < 1024 && onToggle()}
