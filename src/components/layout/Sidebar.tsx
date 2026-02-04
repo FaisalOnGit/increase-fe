@@ -38,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     setExpandedItems((prev) =>
       prev.includes(itemId)
         ? prev.filter((id) => id !== itemId)
-        : [...prev, itemId]
+        : [...prev, itemId],
     );
   };
 
@@ -57,42 +57,59 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     const isExpanded = expandedItems.includes(item.id);
     const isActive = isItemActive(item.path) || hasActiveChild(item.children);
 
+    const menuItemContent = (
+      <>
+        <div className="flex items-center gap-3">
+          <Icon
+            name={item.icon as any}
+            size={20}
+            className={cn(isActive ? "text-white" : "text-muted-foreground")}
+          />
+          {!isCollapsed && <span className="font-medium">{item.label}</span>}
+        </div>
+        {!isCollapsed && hasChildren && (
+          <Icon
+            name="ChevronDown"
+            size={14}
+            className={cn(
+              "transition-transform text-muted-foreground",
+              isExpanded && "rotate-180",
+            )}
+          />
+        )}
+      </>
+    );
+
     return (
       <div key={item.id}>
-        <div
-          className={cn(
-            "flex items-center justify-between px-3 py-3 rounded-lg mb-1 transition-colors group cursor-pointer",
-            isActive
-              ? "bg-secondary text-white"
-              : "text-white hover:bg-secondary hover:text-white"
-          )}
-          style={{ paddingLeft: `${level * 12 + 12}px` }}
-          onClick={() => {
-            if (hasChildren) {
-              toggleExpanded(item.id);
-            } else if (item.path) {
-              window.innerWidth < 1024 && onToggle();
-            }
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <Icon
-              name={item.icon as any}
-              size={20}
-              className={
-                isActive ? "text-white" : "text-white group-hover:text-white"
-              }
-            />
-            {!isCollapsed && <span className="font-medium">{item.label}</span>}
+        {hasChildren ? (
+          <div
+            className={cn(
+              "flex items-center justify-between px-3 py-2 rounded-lg mb-1 transition-colors group cursor-pointer",
+              isActive
+                ? "bg-secondary text-white"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+            )}
+            style={{ paddingLeft: `${level * 12 + 12}px` }}
+            onClick={() => toggleExpanded(item.id)}
+          >
+            {menuItemContent}
           </div>
-          {!isCollapsed && hasChildren && (
-            <Icon
-              name="ChevronDown"
-              size={16}
-              className={cn("transition-transform", isExpanded && "rotate-180")}
-            />
-          )}
-        </div>
+        ) : (
+          <Link
+            to={item.path}
+            className={cn(
+              "flex items-center justify-between px-3 py-2 rounded-lg mb-1 transition-colors group cursor-pointer",
+              isActive
+                ? "bg-secondary text-white"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+            )}
+            style={{ paddingLeft: `${level * 12 + 12}px` }}
+            onClick={() => window.innerWidth < 1024 && onToggle()}
+          >
+            {menuItemContent}
+          </Link>
+        )}
         {hasChildren && !isCollapsed && isExpanded && (
           <div className="mt-1">
             {item.children.map((child: any) => (
@@ -103,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                   "flex items-center gap-3 px-3 py-2 rounded-lg mb-1 transition-colors group",
                   isItemActive(child.path)
                     ? "bg-secondary text-white"
-                    : "text-white hover:bg-secondary hover:text-white"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
                 style={{ paddingLeft: `${level * 12 + 36}px` }}
                 onClick={() => window.innerWidth < 1024 && onToggle()}
@@ -111,11 +128,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 <Icon
                   name={child.icon as any}
                   size={18}
-                  className={
+                  className={cn(
                     isItemActive(child.path)
                       ? "text-white"
-                      : "text-white group-hover:text-white"
-                  }
+                      : "text-muted-foreground",
+                  )}
                 />
                 <span className="font-medium text-sm">{child.label}</span>
               </Link>
@@ -137,25 +154,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
       <div
         className={cn(
-          "fixed left-0 top-0 h-full bg-primary text-white z-50 transition-all duration-300 ease-in-out flex flex-col",
-          isCollapsed
-            ? "-translate-x-full lg:translate-x-0 lg:w-16"
-            : "w-64"
+          "fixed left-0 top-0 h-full bg-background border-r border-border shadow-lg z-50 transition-all duration-300 ease-in-out flex flex-col",
+          isCollapsed ? "-translate-x-full lg:translate-x-0 lg:w-16" : "w-64",
         )}
         style={{ zIndex: 60 }}
       >
         <div className="flex items-center justify-between p-4 flex-shrink-0">
-          <img
-            src={isCollapsed ? miniLogo : logo}
-            alt="Logo"
-            className={isCollapsed ? "w-12 h-auto" : "w-48 h-auto"}
-          />
+          <div className="flex items-center gap-2">
+            <img src={miniLogo} alt="Logo" className="w-10 h-auto" />
+            {!isCollapsed && (
+              <span className="font-bold text-xl text-primary">INCREASE</span>
+            )}
+          </div>
 
           <Button
             variant="ghost"
             size="icon"
             onClick={onToggle}
-            className="lg:hidden hover:bg-indigo-800"
+            className="lg:hidden"
           >
             <Icon name="X" size={20} />
           </Button>
@@ -169,10 +185,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           <Button
             variant="ghost"
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-6 rounded-lg hover:bg-red-600 hover:text-white justify-start w-full text-white"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-destructive hover:text-destructive-foreground justify-start w-full text-muted-foreground"
           >
-            <Icon name="LogOut" size={20} />
-            {!isCollapsed && <span className="font-medium">Keluar</span>}
+            <Icon name="LogOut" size={18} />
+            {!isCollapsed && (
+              <span className="font-medium text-sm">Keluar</span>
+            )}
           </Button>
         </div>
       </div>

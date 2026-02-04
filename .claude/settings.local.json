@@ -8,7 +8,8 @@
       "Bash(pnpm install)",
       "Bash(npx shadcn@latest add:*)",
       "Bash(pnpm build)",
-      "Bash(move /Y \"@\\\\components\\\\ui\\\\*.tsx\" \"src\\\\components\\\\ui\"\" && rmdir /S /Q \"@components\" && rmdir /S /Q \"@ \")"
+      "Bash(move /Y \"@\\\\components\\\\ui\\\\*.tsx\" \"src\\\\components\\\\ui\"\" && rmdir /S /Q \"@components\" && rmdir /S /Q \"@ \")",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

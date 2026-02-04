@@ -8,27 +8,61 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 import { useAuth } from "@/contexts/AuthContext";
+import { loginSchema, getZodErrors, LoginFormValues } from "@/validations";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState<LoginFormValues>({
+    email: "",
+    password: "",
+  });
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<keyof LoginFormValues, string>>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setApiError(null);
 
-    const success = await login(email, password);
+    // Validate with Zod
+    const result = loginSchema.safeParse(formData);
+
+    if (!result.success) {
+      // Format and set errors
+      const formattedErrors = getZodErrors<LoginFormValues>(result.error);
+      setErrors(formattedErrors);
+      return;
+    }
+
+    // Clear errors if validation passes
+    setErrors({});
+
+    // Attempt login
+    const success = await login(formData.email, formData.password);
 
     if (success) {
       navigate("/dashboard");
     } else {
-      setError("Email atau password salah. Coba: admin@unsil.ac.id / admin123");
+      setApiError("Email atau password salah. Coba: admin@unsil.ac.id / admin123");
+    }
+  };
+
+  const updateField = (field: keyof LoginFormValues, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+    // Clear API error when user types
+    if (apiError) {
+      setApiError(null);
     }
   };
 
@@ -44,6 +78,14 @@ export default function LoginForm() {
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Side - Illustration */}
       <div className="hidden lg:flex relative bg-gradient-to-br from-amber-500 via-teal-500 to-emerald-500 p-12 items-center justify-center overflow-hidden">
+        {/* Back Button */}
+        <button
+          onClick={handleBackToHome}
+          className="absolute left-8 top-8 text-sm text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full transition-colors flex items-center gap-2"
+        >
+          ← Kembali ke Home
+        </button>
+
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div
@@ -62,7 +104,7 @@ export default function LoginForm() {
                 alt="Increase"
                 className="h-10 w-auto"
               />
-              <span className="text-xl font-semibold text-white ">
+              <span className="text-xl font-semibold text-white">
                 INCREASE
               </span>
             </div>
@@ -96,24 +138,24 @@ export default function LoginForm() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex items-center justify-center p-8 bg-gray-50">
-        <div className="w-full max-w-md">
-          {/* Back Button */}
-          <button
-            onClick={handleBackToHome}
-            className="mb-8 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-          >
-            ← Kembali ke Home
-          </button>
+      <div className="flex items-center justify-center p-8 bg-gray-50 relative">
+        {/* Back Button for Mobile */}
+        <button
+          onClick={handleBackToHome}
+          className="lg:hidden absolute left-4 top-4 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+        >
+          ← Kembali
+        </button>
 
+        <div className="w-full max-w-md">
           <Card className="p-8 shadow-xl border-2 rounded-3xl">
             <div>
               <h2 className="text-3xl font-bold mb-2 text-center">Login</h2>
             </div>
 
-            {error && (
+            {apiError && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
-                {error}
+                {apiError}
               </div>
             )}
 
@@ -125,11 +167,14 @@ export default function LoginForm() {
                   id="email"
                   type="email"
                   placeholder="nama@universitas.ac.id"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={(e) => updateField("email", e.target.value)}
                   className="h-12 rounded-xl"
                   required
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-600">{errors.email}</p>
+                )}
               </div>
 
               {/* Password Field */}
@@ -140,8 +185,8 @@ export default function LoginForm() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Masukkan password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={(e) => updateField("password", e.target.value)}
                     className="h-12 rounded-xl pr-12"
                     required
                   />
@@ -157,6 +202,9 @@ export default function LoginForm() {
                     )}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-600">{errors.password}</p>
+                )}
               </div>
 
               {/* Remember Me & Forgot Password */}

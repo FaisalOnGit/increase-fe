@@ -66,14 +66,14 @@ export const DashboardLayout: React.FC = () => {
         }`}
       >
         {/* Header */}
-        <header className="bg-background border-b px-4 py-3 relative">
+        <header className="sticky top-0 z-[70] bg-background border-b px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleSidebar}
-                className="lg:hidden"
+                className="lg:hidden hover:bg-primary hover:text-white"
               >
                 <Icon name="Menu" size={20} />
               </Button>
@@ -116,7 +116,7 @@ export const DashboardLayout: React.FC = () => {
             variant="outline"
             size="icon"
             onClick={toggleSidebar}
-            className={`hidden lg:flex fixed top-8 -translate-y-1/2 w-8 h-8 rounded-full transition-all duration-300 shadow-md`}
+            className={`hidden lg:flex fixed top-8 -translate-y-1/2 w-8 h-8 rounded-full transition-all duration-300 shadow-md hover:bg-primary hover:text-white hover:border-primary`}
             style={{
               left: sidebarCollapsed ? "50px" : "240px",
               zIndex: 100,

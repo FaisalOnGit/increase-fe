@@ -7,66 +7,60 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
+import {
+  registerSchema,
+  getZodErrors,
+  RegisterFormValues,
+} from "@/validations";
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [errors, setErrors] = useState<{
-    fullName?: string;
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-    agreeTerms?: string;
-  }>({});
+  const [formData, setFormData] = useState<RegisterFormValues>({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agreeTerms: false,
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof RegisterFormValues, string>>
+  >({});
 
   const navigate = useNavigate();
-
-  const validateForm = () => {
-    const newErrors: typeof errors = {};
-
-    if (!fullName.trim()) {
-      newErrors.fullName = "Nama lengkap harus diisi";
-    }
-
-    if (!email.trim()) {
-      newErrors.email = "Email harus diisi";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Format email tidak valid";
-    }
-
-    if (!password) {
-      newErrors.password = "Password harus diisi";
-    } else if (password.length < 8) {
-      newErrors.password = "Password minimal 8 karakter";
-    }
-
-    if (!confirmPassword) {
-      newErrors.confirmPassword = "Konfirmasi password harus diisi";
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Password tidak cocok";
-    }
-
-    if (!agreeTerms) {
-      newErrors.agreeTerms = "Anda harus menyetujui syarat & ketentuan";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      // TODO: Implement actual registration logic
-      console.log("Register attempt with:", { fullName, email, password });
-      // For now, redirect to login
-      navigate("/login");
+    // Validate with Zod
+    const result = registerSchema.safeParse(formData);
+
+    if (!result.success) {
+      // Format and set errors
+      const formattedErrors = getZodErrors<RegisterFormValues>(result.error);
+      setErrors(formattedErrors);
+      return;
+    }
+
+    setErrors({});
+
+    console.log("Register attempt with:", formData);
+    // For now, redirect to login
+    navigate("/login");
+  };
+
+  const updateField = (
+    field: keyof RegisterFormValues,
+    value: string | boolean,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
@@ -84,15 +78,22 @@ export default function RegisterForm() {
       <div className="hidden lg:flex relative bg-gradient-to-br from-teal-500 via-emerald-500 to-green-500 p-12 items-center justify-center overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          ></div>
         </div>
 
         <div className="relative z-10 max-w-lg">
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
-              <img src="/increaselite.png" alt="Increase" className="h-10 w-auto" />
+              <img
+                src="/increaselite.png"
+                alt="Increase"
+                className="h-10 w-auto"
+              />
               <span className="text-xl font-semibold text-white">Increase</span>
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">
@@ -116,29 +117,11 @@ export default function RegisterForm() {
                 <div className="text-3xl">🎉</div>
                 <div>
                   <div className="text-sm font-semibold">Bergabunglah</div>
-                  <div className="text-xs text-muted-foreground">1.200+ Mahasiswa</div>
+                  <div className="text-xs text-muted-foreground">
+                    1.200+ Mahasiswa
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Benefits */}
-          <div className="grid grid-cols-2 gap-6 mt-8">
-            <div className="text-center">
-              <div className="text-2xl mb-2">📝</div>
-              <div className="text-sm text-white/90">Upload Proposal Mudah</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">📊</div>
-              <div className="text-sm text-white/90">Monitoring Real-time</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">👥</div>
-              <div className="text-sm text-white/90">Kolaborasi Tim</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">🔔</div>
-              <div className="text-sm text-white/90">Deadline Reminder</div>
             </div>
           </div>
         </div>
@@ -174,8 +157,8 @@ export default function RegisterForm() {
                   id="fullName"
                   type="text"
                   placeholder="Masukkan nama lengkap"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  value={formData.fullName}
+                  onChange={(e) => updateField("fullName", e.target.value)}
                   className="h-12 rounded-xl"
                   required
                 />
@@ -191,8 +174,8 @@ export default function RegisterForm() {
                   id="email"
                   type="email"
                   placeholder="nama@universitas.ac.id"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={(e) => updateField("email", e.target.value)}
                   className="h-12 rounded-xl"
                   required
                 />
@@ -208,9 +191,9 @@ export default function RegisterForm() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Minimal 8 karakter"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Minimal 8 karakter, 1 huruf kapital, 1 angka"
+                    value={formData.password}
+                    onChange={(e) => updateField("password", e.target.value)}
                     className="h-12 rounded-xl pr-12"
                     required
                   />
@@ -219,7 +202,11 @@ export default function RegisterForm() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                    {showPassword ? (
+                      <EyeOff className="size-5" />
+                    ) : (
+                      <Eye className="size-5" />
+                    )}
                   </button>
                 </div>
                 {errors.password && (
@@ -235,8 +222,10 @@ export default function RegisterForm() {
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Ulangi password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={formData.confirmPassword}
+                    onChange={(e) =>
+                      updateField("confirmPassword", e.target.value)
+                    }
                     className="h-12 rounded-xl pr-12"
                     required
                   />
@@ -245,11 +234,17 @@ export default function RegisterForm() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showConfirmPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="size-5" />
+                    ) : (
+                      <Eye className="size-5" />
+                    )}
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-600">{errors.confirmPassword}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
 
@@ -258,19 +253,27 @@ export default function RegisterForm() {
                 <div className="flex items-start gap-2">
                   <Checkbox
                     id="terms"
-                    checked={agreeTerms}
-                    onCheckedChange={(checked) => setAgreeTerms(checked as boolean)}
+                    checked={formData.agreeTerms}
+                    onCheckedChange={(checked) =>
+                      updateField("agreeTerms", checked as boolean)
+                    }
                   />
                   <label
                     htmlFor="terms"
                     className="text-sm cursor-pointer leading-tight"
                   >
                     Saya menyetujui{" "}
-                    <a href="#" className="text-teal-600 hover:text-teal-700 font-semibold">
+                    <a
+                      href="#"
+                      className="text-teal-600 hover:text-teal-700 font-semibold"
+                    >
                       Syarat & Ketentuan
-                    </a>
-                    {" "}dan{" "}
-                    <a href="#" className="text-teal-600 hover:text-teal-700 font-semibold">
+                    </a>{" "}
+                    dan{" "}
+                    <a
+                      href="#"
+                      className="text-teal-600 hover:text-teal-700 font-semibold"
+                    >
                       Kebijakan Privasi
                     </a>
                   </label>
@@ -292,7 +295,10 @@ export default function RegisterForm() {
             {/* Login Link */}
             <p className="text-center text-sm text-muted-foreground mt-6">
               Sudah punya akun?{" "}
-              <button onClick={handleGoToLogin} className="text-teal-600 hover:text-teal-700 font-semibold transition-colors">
+              <button
+                onClick={handleGoToLogin}
+                className="text-teal-600 hover:text-teal-700 font-semibold transition-colors"
+              >
                 Login
               </button>
             </p>
