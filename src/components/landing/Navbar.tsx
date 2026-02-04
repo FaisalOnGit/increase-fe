@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -12,6 +12,7 @@ export function Navbar({ onLoginClick, onRegisterClick }: NavbarProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
+              <img src="/unsil.png" alt="unsil" className="h-8 w-auto" />
               <img
                 src="/increaselite.png"
                 alt="Increase"

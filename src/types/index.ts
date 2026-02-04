@@ -97,3 +97,76 @@ export interface Role {
   userCount: number;
   status: 'active' | 'inactive';
 }
+
+// Master Data Types
+export interface Dosen {
+  id: string;
+  nip: string;
+  nama: string;
+  email: string;
+  telepon: string;
+  prodi: string;
+  fakultas: string;
+  isReviewer: boolean;
+  isPembimbing: boolean;
+  jumlahBimbingan: number;
+  status: 'active' | 'inactive';
+}
+
+export interface Mahasiswa {
+  id: string;
+  nim: string;
+  nama: string;
+  email: string;
+  telepon: string;
+  prodi: string;
+  fakultas: string;
+  angkatan: number;
+  status: 'active' | 'inactive' | 'lulus';
+}
+
+export interface Prodi {
+  id: string;
+  kode: string;
+  nama: string;
+  fakultas: string;
+  jenjang: 'D3' | 'D4' | 'S1' | 'S2' | 'S3';
+  akreditasi: 'A' | 'B' | 'C' | 'Unggul';
+  kaprodi: string;
+  jumlahMahasiswa: number;
+  jumlahDosen: number;
+  status: 'active' | 'inactive';
+}
+
+export interface Fakultas {
+  id: string;
+  kode: string;
+  nama: string;
+  dekan: string;
+  jumlahProdi: number;
+  jumlahMahasiswa: number;
+  jumlahDosen: number;
+  status: 'active' | 'inactive';
+}
+
+export interface JenisPKM {
+  id: string;
+  kode: string;
+  nama: string;
+  deskripsi: string;
+  singkatan: string;
+  kuota: number;
+  jumlahPendaftar: number;
+  status: 'active' | 'inactive';
+}
+
+export interface Periode {
+  id: string;
+  nama: string;
+  tahun: number;
+  semester: 'Ganjil' | 'Genap';
+  tanggalMulai: string;
+  tanggalSelesai: string;
+  status: 'draft' | 'buka' | 'tutup' | 'selesai';
+  jumlahProposal: number;
+}

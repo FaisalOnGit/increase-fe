@@ -1,8 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { Breadcrumb } from "@/components/layout/BreadCrumb";
 
 export const NotFound: React.FC = () => {
   const navigate = useNavigate();

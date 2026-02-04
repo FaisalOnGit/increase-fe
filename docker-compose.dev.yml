@@ -1,0 +1,29 @@
+# ============================================
+# Development Docker Compose
+# ============================================
+version: '3.8'
+
+services:
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: simanis-frontend-dev
+    ports:
+      - "${DEV_PORT:-5173}:5173"
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
+    restart: unless-stopped
+    stdin_open: true # Keep stdin open for React Fast Refresh
+    tty: true # Allocate pseudo-TTY
+    networks:
+      - simanis-network
+
+networks:
+  simanis-network:
+    driver: bridge

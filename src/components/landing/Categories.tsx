@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { FlaskConical, Briefcase, HeartHandshake, Cpu, Lightbulb, FileText, PenTool } from "lucide-react";
 
 export function Categories() {

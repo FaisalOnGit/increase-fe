@@ -3,10 +3,30 @@ import { CheckCircle, FileText, MessageCircle, Bell } from "lucide-react";
 
 export function DashboardPreview() {
   const floatingElements = [
-    { icon: Bell, label: "3 Notifikasi", color: "bg-amber-100 text-amber-600", position: "top-8 -left-4" },
-    { icon: FileText, label: "5 Proposal", color: "bg-teal-100 text-teal-600", position: "top-1/4 -right-4" },
-    { icon: MessageCircle, label: "2 Feedback", color: "bg-orange-100 text-orange-600", position: "bottom-1/4 -left-4" },
-    { icon: CheckCircle, label: "1 Diterima", color: "bg-emerald-100 text-emerald-600", position: "bottom-8 -right-4" }
+    {
+      icon: Bell,
+      label: "3 Notifikasi",
+      color: "bg-amber-100 text-amber-600",
+      position: "top-8 -left-4",
+    },
+    {
+      icon: FileText,
+      label: "5 Proposal",
+      color: "bg-teal-100 text-teal-600",
+      position: "top-1/4 -right-4",
+    },
+    {
+      icon: MessageCircle,
+      label: "2 Feedback",
+      color: "bg-orange-100 text-orange-600",
+      position: "bottom-1/4 -left-4",
+    },
+    {
+      icon: CheckCircle,
+      label: "1 Diterima",
+      color: "bg-emerald-100 text-emerald-600",
+      position: "bottom-8 -right-4",
+    },
   ];
 
   return (
@@ -51,7 +71,9 @@ export function DashboardPreview() {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <element.icon className="size-5" />
-                <span className="text-sm font-semibold whitespace-nowrap">{element.label}</span>
+                <span className="text-sm font-semibold whitespace-nowrap">
+                  {element.label}
+                </span>
               </div>
             ))}
           </div>
@@ -67,21 +89,27 @@ export function DashboardPreview() {
               📊
             </div>
             <h4 className="font-semibold mb-2">Monitoring Real-time</h4>
-            <p className="text-sm text-muted-foreground">Lihat status proposal secara langsung</p>
+            <p className="text-sm text-muted-foreground">
+              Lihat status proposal secara langsung
+            </p>
           </div>
           <div className="text-center">
             <div className="size-12 rounded-xl bg-teal-100 flex items-center justify-center text-2xl mx-auto mb-4">
               💬
             </div>
             <h4 className="font-semibold mb-2">Feedback Mentor</h4>
-            <p className="text-sm text-muted-foreground">Dapat masukan langsung dari mentor</p>
+            <p className="text-sm text-muted-foreground">
+              Dapat masukan langsung dari mentor
+            </p>
           </div>
           <div className="text-center">
             <div className="size-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl mx-auto mb-4">
               📱
             </div>
             <h4 className="font-semibold mb-2">Akses Mobile</h4>
-            <p className="text-sm text-muted-foreground">Monitor dari perangkat apapun</p>
+            <p className="text-sm text-muted-foreground">
+              Monitor dari perangkat apapun
+            </p>
           </div>
         </div>
       </div>

@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Student } from "@/types";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { Search, Plus, Edit, Trash2, Mail, Phone, MapPin, Users, UserCheck, GraduationCap, Award } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -14,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Icon } from "@/components/ui/Icon";
 
 // Mock data untuk students
 const mockStudents: Student[] = [

@@ -3,12 +3,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@/components/ui/Icon";
 import { navItems } from "@/data/mockData";
 import miniLogo from "/simanislite.png";
-import logo from "/simanis.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { filterMenuByRole } from "@/utils/menuFilter";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -32,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     const filtered = filterMenuByRole(navItems, userRole || undefined);
     console.log("Filtered menu:", filtered);
     return filtered;
-  }, [navItems, userRole]);
+  }, [userRole]);
 
   const toggleExpanded = (itemId: string) => {
     setExpandedItems((prev) =>
@@ -52,7 +50,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     return children.some((child) => isItemActive(child.path));
   };
 
-  const renderMenuItem = (item: any, level: number = 0) => {
+  const renderMenuItem = (item: {
+    id: string;
+    label: string;
+    icon: string;
+    path?: string;
+    children?: { id: string; label: string; icon: string; path?: string }[];
+  }, level: number = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.id);
     const isActive = isItemActive(item.path) || hasActiveChild(item.children);
@@ -61,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       <>
         <div className="flex items-center gap-3">
           <Icon
-            name={item.icon as any}
+            name={item.icon as never}
             size={20}
             className={cn(isActive ? "text-white" : "text-muted-foreground")}
           />
@@ -112,10 +116,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         )}
         {hasChildren && !isCollapsed && isExpanded && (
           <div className="mt-1">
-            {item.children.map((child: any) => (
+            {item.children.map((child) => (
               <Link
                 key={child.id}
-                to={child.path}
+                to={child.path || "/"}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-lg mb-1 transition-colors group",
                   isItemActive(child.path)
@@ -126,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 onClick={() => window.innerWidth < 1024 && onToggle()}
               >
                 <Icon
-                  name={child.icon as any}
+                  name={child.icon as never}
                   size={18}
                   className={cn(
                     isItemActive(child.path)

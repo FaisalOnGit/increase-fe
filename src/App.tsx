@@ -7,6 +7,12 @@ import LoginForm from "./pages/Login";
 import RegisterForm from "./pages/Register";
 import { UserManagement } from "./pages/master/UserManagement";
 import { RoleManagement } from "./pages/master/RoleManagement";
+import { DosenManagement } from "./pages/master/DosenManagement";
+import { MahasiswaManagement } from "./pages/master/MahasiswaManagement";
+import { ProdiManagement } from "./pages/master/ProdiManagement";
+import { FakultasManagement } from "./pages/master/FakultasManagement";
+import { JenisPKMManagement } from "./pages/master/JenisPKMManagement";
+import { PeriodeManagement } from "./pages/master/PeriodeManagement";
 import PrivateRoute from "./utils/PrivateRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -24,6 +30,12 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="master/pengguna" element={<UserManagement />} />
               <Route path="master/role" element={<RoleManagement />} />
+              <Route path="master/dosen" element={<DosenManagement />} />
+              <Route path="master/mahasiswa" element={<MahasiswaManagement />} />
+              <Route path="master/prodi" element={<ProdiManagement />} />
+              <Route path="master/fakultas" element={<FakultasManagement />} />
+              <Route path="master/jenis-pkm" element={<JenisPKMManagement />} />
+              <Route path="master/periode" element={<PeriodeManagement />} />
               <Route path="not-found" element={<NotFound />} />
             </Route>
           </Route>

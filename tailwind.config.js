@@ -41,7 +41,7 @@ export default {
       },
       fontFamily: {
         sans: [
-          "Poppins",
+          "Inter",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",

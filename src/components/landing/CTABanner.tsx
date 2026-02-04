@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 
@@ -24,7 +24,8 @@ export function CTABanner() {
                 Siap Wujudkan Ide PKM Kamu?
               </h2>
               <p className="text-xl text-white/90 leading-relaxed">
-                Bergabunglah dengan mahasiswa lain dan mulai perjalanan inovasimu hari ini.
+                Bergabunglah dengan mahasiswa lain dan mulai perjalanan
+                inovasimu hari ini.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button
@@ -52,9 +53,7 @@ export function CTABanner() {
                     <div className="text-lg font-bold text-gray-900">
                       Sukses PKM!
                     </div>
-                    <div className="text-sm text-gray-600">
-                      Lolos Seleksi
-                    </div>
+                    <div className="text-sm text-gray-600">Lolos Seleksi</div>
                   </div>
                 </div>
               </div>

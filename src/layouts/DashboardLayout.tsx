@@ -5,7 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { navItems } from "@/data/mockData";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Separator } from "@/components/ui/separator";
 
 const findPageTitle = (pathname: string): string => {

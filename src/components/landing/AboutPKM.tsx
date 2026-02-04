@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { BookOpen } from "lucide-react";
 
 export function AboutPKM() {
@@ -6,7 +6,7 @@ export function AboutPKM() {
     "Diselenggarakan sejak 2001",
     "Kompetisi tingkat nasional",
     "Peluang menuju PIMNAS",
-    "Mendorong inovasi dan kreativitas mahasiswa"
+    "Mendorong inovasi dan kreativitas mahasiswa",
   ];
 
   return (
@@ -18,17 +18,21 @@ export function AboutPKM() {
               <BookOpen className="size-4" />
               <span>Tentang PKM</span>
             </div>
-            <h2 className="text-4xl font-bold mb-6">
-              Apa itu PKM?
-            </h2>
+            <h2 className="text-4xl font-bold mb-6">Apa itu PKM?</h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Program Kreativitas Mahasiswa (PKM) adalah program nasional dari Kemendikbud yang mendorong mahasiswa mengembangkan ide inovatif dalam penelitian, kewirausahaan, pengabdian masyarakat, hingga teknologi.
+              Program Kreativitas Mahasiswa (PKM) adalah program nasional dari
+              Kemendikbud yang mendorong mahasiswa mengembangkan ide inovatif
+              dalam penelitian, kewirausahaan, pengabdian masyarakat, hingga
+              teknologi.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
             {highlights.map((highlight, index) => (
-              <Card key={index} className="p-6 rounded-2xl border-2 border-amber-100 bg-white">
+              <Card
+                key={index}
+                className="p-6 rounded-2xl border-2 border-amber-100 bg-white"
+              >
                 <div className="flex items-center gap-4">
                   <div className="size-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 font-bold">
                     {index + 1}

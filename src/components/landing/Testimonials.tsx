@@ -1,40 +1,42 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Star } from "lucide-react";
 
 export function Testimonials() {
   const testimonials = [
     {
-      quote: "Platform ini sangat memudahkan tim kami dalam mengelola proposal PKM-R. Kolaborasi jadi lebih terarah!",
+      quote:
+        "Platform ini sangat memudahkan tim kami dalam mengelola proposal PKM-R. Kolaborasi jadi lebih terarah!",
       name: "Andi Pratama",
-      university: "Universitas Indonesia",
+      university: "Universitas Siliwangi",
       avatar: "👨‍🎓",
-      color: "from-amber-400 to-amber-500"
+      color: "from-amber-400 to-amber-500",
     },
     {
-      quote: "Deadline reminder-nya sangat membantu. Tim kami hampir lupa deadline kalau bukan karena notifikasi dari platform.",
+      quote:
+        "Deadline reminder-nya sangat membantu. Tim kami hampir lupa deadline kalau bukan karena notifikasi dari platform.",
       name: "Siti Rahayu",
-      university: "Institut Teknologi Bandung",
+      university: "Universitas Siliwangi",
       avatar: "👩‍🎓",
-      color: "from-teal-500 to-emerald-500"
+      color: "from-teal-500 to-emerald-500",
     },
     {
-      quote: "Upload proposal jadi lebih mudah dan tracking statusnya real-time. Sangat recommended untuk PKM!",
+      quote:
+        "Upload proposal jadi lebih mudah dan tracking statusnya real-time. Sangat recommended untuk PKM!",
       name: "Budi Santoso",
-      university: "Universitas Gadjah Mada",
+      university: "Universitas Siliwangi",
       avatar: "👨‍💻",
-      color: "from-orange-500 to-amber-500"
-    }
+      color: "from-orange-500 to-amber-500",
+    },
   ];
 
   return (
     <section className="py-20 bg-gradient-to-b from-amber-50/30 to-background">
       <div className="container mx-auto px-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">
-            Dipercaya Mahasiswa
-          </h2>
+          <h2 className="text-4xl font-bold mb-4">Dipercaya Mahasiswa</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Ribuan mahasiswa telah mempercayakan platform kami untuk mengelola proposal PKM
+            Ribuan mahasiswa telah mempercayakan platform kami untuk mengelola
+            proposal PKM
           </p>
         </div>
 
@@ -48,7 +50,10 @@ export function Testimonials() {
                 {/* Stars */}
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="size-5 fill-yellow-400 text-yellow-400" />
+                    <Star
+                      key={i}
+                      className="size-5 fill-yellow-400 text-yellow-400"
+                    />
                   ))}
                 </div>
 
@@ -59,12 +64,16 @@ export function Testimonials() {
 
                 {/* Profile */}
                 <div className="flex items-center gap-4 pt-4 border-t">
-                  <div className={`size-14 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center text-2xl`}>
+                  <div
+                    className={`size-14 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center text-2xl`}
+                  >
                     {testimonial.avatar}
                   </div>
                   <div>
                     <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.university}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {testimonial.university}
+                    </div>
                   </div>
                 </div>
               </div>

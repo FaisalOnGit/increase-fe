@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { StatCard as StatCardType } from "../../types";
 import { cn } from "@/lib/utils";
@@ -41,7 +41,7 @@ export const StatCard: React.FC<StatCardProps> = ({ stat, className }) => {
               colorClasses[stat.color as keyof typeof colorClasses]
             )}
           >
-            <Icon name={stat.icon as any} size={24} />
+            <Icon name={stat.icon as never} size={24} />
           </div>
         </div>
       </div>

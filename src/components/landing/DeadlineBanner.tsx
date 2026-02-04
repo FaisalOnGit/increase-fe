@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Clock, ArrowRight } from "lucide-react";
 
 export function DeadlineBanner() {
@@ -15,7 +15,8 @@ export function DeadlineBanner() {
                 Jangan Lewatkan Deadline PKM!
               </h2>
               <p className="text-white/90 text-lg">
-                Pantau hitung mundur menuju batas akhir pengumpulan proposal dan segera kirim karyamu.
+                Pantau hitung mundur menuju batas akhir pengumpulan proposal dan
+                segera kirim karyamu.
               </p>
             </div>
           </div>

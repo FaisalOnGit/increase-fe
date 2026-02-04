@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { users } from "@/data/mockData";

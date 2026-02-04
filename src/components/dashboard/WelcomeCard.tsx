@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon } from "@/components/ui/Icon";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 
 interface WelcomeCardProps {
   userName?: string;

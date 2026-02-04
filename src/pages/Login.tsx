@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useNavigate, Link } from "react-router-dom";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
@@ -17,7 +17,9 @@ export default function LoginForm() {
     password: "",
   });
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof LoginFormValues, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof LoginFormValues, string>>
+  >({});
   const [apiError, setApiError] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -46,7 +48,9 @@ export default function LoginForm() {
     if (success) {
       navigate("/dashboard");
     } else {
-      setApiError("Email atau password salah. Coba: admin@unsil.ac.id / admin123");
+      setApiError(
+        "Email atau password salah. Coba: admin@unsil.ac.id / admin123",
+      );
     }
   };
 
@@ -66,10 +70,6 @@ export default function LoginForm() {
     }
   };
 
-  const handleBackToHome = () => {
-    navigate("/");
-  };
-
   const handleGoToRegister = () => {
     navigate("/register");
   };
@@ -79,12 +79,12 @@ export default function LoginForm() {
       {/* Left Side - Illustration */}
       <div className="hidden lg:flex relative bg-gradient-to-br from-amber-500 via-teal-500 to-emerald-500 p-12 items-center justify-center overflow-hidden">
         {/* Back Button */}
-        <button
-          onClick={handleBackToHome}
-          className="absolute left-8 top-8 text-sm text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full transition-colors flex items-center gap-2"
+        <Link
+          to="/"
+          className="absolute left-8 top-8 z-50 text-sm text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full transition-colors flex items-center gap-2 cursor-pointer"
         >
           ← Kembali ke Home
-        </button>
+        </Link>
 
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -99,14 +99,13 @@ export default function LoginForm() {
         <div className="relative z-10 max-w-lg">
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
+              <img src="/unsil.png" alt="Increase" className="h-10 w-auto" />
               <img
                 src="/increaselite.png"
                 alt="Increase"
                 className="h-10 w-auto"
               />
-              <span className="text-xl font-semibold text-white">
-                INCREASE
-              </span>
+              <span className="text-xl font-semibold text-white">INCREASE</span>
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">Welcome Back</h1>
             <p className="text-white/80 text-lg">
@@ -140,12 +139,12 @@ export default function LoginForm() {
       {/* Right Side - Login Form */}
       <div className="flex items-center justify-center p-8 bg-gray-50 relative">
         {/* Back Button for Mobile */}
-        <button
-          onClick={handleBackToHome}
-          className="lg:hidden absolute left-4 top-4 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+        <Link
+          to="/"
+          className="lg:hidden absolute left-4 top-4 z-50 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 cursor-pointer"
         >
           ← Kembali
-        </button>
+        </Link>
 
         <div className="w-full max-w-md">
           <Card className="p-8 shadow-xl border-2 rounded-3xl">

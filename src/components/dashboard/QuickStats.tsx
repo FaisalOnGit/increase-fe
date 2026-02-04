@@ -3,7 +3,7 @@ import {
   Card,
   CardHeader,
   CardContent,
-} from "@/components/ui/card";
+} from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { quickStats } from "../../data/mockData";
 
@@ -29,7 +29,7 @@ export const QuickStats: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Icon
-                  name={stat.icon as any}
+                  name={stat.icon as never}
                   size={18}
                   className={
                     colorClasses[stat.color as keyof typeof colorClasses]

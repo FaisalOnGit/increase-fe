@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { roles } from "@/data/mockData";
@@ -29,21 +29,6 @@ export const RoleManagement: React.FC = () => {
   const totalPages = Math.ceil(filteredRoles.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedRoles = filteredRoles.slice(startIndex, startIndex + itemsPerPage);
-
-  const getRoleBadge = (role: string) => {
-    switch (role) {
-      case 'Admin':
-        return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Admin</Badge>;
-      case 'Dosen':
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Dosen</Badge>;
-      case 'Mahasiswa':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Mahasiswa</Badge>;
-      case 'Reviewer':
-        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">Reviewer</Badge>;
-      default:
-        return <Badge variant="secondary">{role}</Badge>;
-    }
-  };
 
   const getAccessLevelBadge = (level: string) => {
     switch (level) {

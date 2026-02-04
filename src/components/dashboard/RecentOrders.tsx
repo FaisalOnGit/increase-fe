@@ -3,8 +3,8 @@ import {
   Card,
   CardHeader,
   CardContent,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/Icon";
 import { Separator } from "@/components/ui/separator";

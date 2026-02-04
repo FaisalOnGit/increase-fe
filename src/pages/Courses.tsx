@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Course } from "@/types";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
-import { Search, Plus, Edit, Trash2, Users, Clock, BookOpen, CheckCircle, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, Plus, Edit, Trash2, Users, BookOpen, CheckCircle, FileText } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,

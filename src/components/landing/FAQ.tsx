@@ -9,24 +9,25 @@ export function FAQ() {
   const faqs = [
     {
       question: "Format proposal apa yang didukung?",
-      answer: "Platform mendukung format PDF sesuai dengan pedoman resmi PKM."
+      answer: "Platform mendukung format PDF sesuai dengan pedoman resmi PKM.",
     },
     {
       question: "Berapa ukuran maksimal file?",
-      answer: "Ukuran maksimal file proposal adalah 10MB."
+      answer: "Ukuran maksimal file proposal adalah 10MB.",
     },
     {
       question: "Apakah proposal bisa direvisi setelah upload?",
-      answer: "Ya, revisi dapat dilakukan sebelum batas deadline."
+      answer: "Ya, revisi dapat dilakukan sebelum batas deadline.",
     },
     {
       question: "Bisakah saya mengirim lebih dari satu proposal?",
-      answer: "Bisa, selama sesuai dengan ketentuan program PKM."
+      answer: "Bisa, selama sesuai dengan ketentuan program PKM.",
     },
     {
       question: "Apakah data proposal aman?",
-      answer: "Semua dokumen terenkripsi dan hanya dapat diakses oleh pihak terkait."
-    }
+      answer:
+        "Semua dokumen terenkripsi dan hanya dapat diakses oleh pihak terkait.",
+    },
   ];
 
   return (
@@ -34,9 +35,7 @@ export function FAQ() {
       <div className="container mx-auto px-10">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">
-              Pertanyaan Umum
-            </h2>
+            <h2 className="text-4xl font-bold mb-4">Pertanyaan Umum</h2>
             <p className="text-xl text-muted-foreground">
               Temukan jawaban untuk pertanyaan yang sering diajukan
             </p>
