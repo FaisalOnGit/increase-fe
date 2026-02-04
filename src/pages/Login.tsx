@@ -46,20 +46,27 @@ export default function LoginForm() {
       <div className="hidden lg:flex relative bg-gradient-to-br from-amber-500 via-teal-500 to-emerald-500 p-12 items-center justify-center overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          ></div>
         </div>
 
         <div className="relative z-10 max-w-lg">
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
-              <img src="/increase.png" alt="Increase" className="h-10 w-auto" />
-              <span className="text-xl font-semibold text-white">Increase</span>
+              <img
+                src="/increaselite.png"
+                alt="Increase"
+                className="h-10 w-auto"
+              />
+              <span className="text-xl font-semibold text-white ">
+                INCREASE
+              </span>
             </div>
-            <h1 className="text-4xl font-bold text-white mb-4">
-              Welcome Back
-            </h1>
+            <h1 className="text-4xl font-bold text-white mb-4">Welcome Back</h1>
             <p className="text-white/80 text-lg">
               Login untuk melanjutkan upload proposal PKM
             </p>
@@ -78,25 +85,11 @@ export default function LoginForm() {
                 <div className="text-3xl">☁️</div>
                 <div>
                   <div className="text-sm font-semibold">Cloud Upload</div>
-                  <div className="text-xs text-muted-foreground">Aman & Cepat</div>
+                  <div className="text-xs text-muted-foreground">
+                    Aman & Cepat
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 mt-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">1.200+</div>
-              <div className="text-sm text-white/70">Proposal</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">300+</div>
-              <div className="text-sm text-white/70">Mahasiswa</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">98%</div>
-              <div className="text-sm text-white/70">Kepuasan</div>
             </div>
           </div>
         </div>
@@ -114,11 +107,8 @@ export default function LoginForm() {
           </button>
 
           <Card className="p-8 shadow-xl border-2 rounded-3xl">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
-              <p className="text-muted-foreground">
-                Login untuk melanjutkan upload proposal PKM
-              </p>
+            <div>
+              <h2 className="text-3xl font-bold mb-2 text-center">Login</h2>
             </div>
 
             {error && (
@@ -160,7 +150,11 @@ export default function LoginForm() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                    {showPassword ? (
+                      <EyeOff className="size-5" />
+                    ) : (
+                      <Eye className="size-5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -171,16 +165,18 @@ export default function LoginForm() {
                   <Checkbox
                     id="remember"
                     checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setRememberMe(checked as boolean)
+                    }
                   />
-                  <label
-                    htmlFor="remember"
-                    className="text-sm cursor-pointer"
-                  >
+                  <label htmlFor="remember" className="text-sm cursor-pointer">
                     Remember me
                   </label>
                 </div>
-                <a href="#" className="text-sm text-amber-600 hover:text-amber-700 transition-colors">
+                <a
+                  href="#"
+                  className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
+                >
                   Forgot password?
                 </a>
               </div>
@@ -199,7 +195,9 @@ export default function LoginForm() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-muted-foreground">OR</span>
+                  <span className="px-4 bg-white text-muted-foreground">
+                    OR
+                  </span>
                 </div>
               </div>
 
@@ -234,7 +232,10 @@ export default function LoginForm() {
             {/* Register Link */}
             <p className="text-center text-sm text-muted-foreground mt-6">
               Belum punya akun?{" "}
-              <button onClick={handleGoToRegister} className="text-amber-600 hover:text-amber-700 font-semibold transition-colors">
+              <button
+                onClick={handleGoToRegister}
+                className="text-amber-600 hover:text-amber-700 font-semibold transition-colors"
+              >
                 Daftar
               </button>
             </p>
@@ -243,9 +244,13 @@ export default function LoginForm() {
           {/* Help Text */}
           <p className="text-center text-xs text-muted-foreground mt-6">
             Dengan login, kamu menyetujui{" "}
-            <a href="#" className="text-amber-600 hover:underline">Syarat & Ketentuan</a>
-            {" "}dan{" "}
-            <a href="#" className="text-amber-600 hover:underline">Kebijakan Privasi</a>
+            <a href="#" className="text-amber-600 hover:underline">
+              Syarat & Ketentuan
+            </a>{" "}
+            dan{" "}
+            <a href="#" className="text-amber-600 hover:underline">
+              Kebijakan Privasi
+            </a>
           </p>
         </div>
       </div>

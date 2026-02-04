@@ -6,6 +6,7 @@ import { DashboardLayout } from "./layouts/DashboardLayout";
 import LoginForm from "./pages/Login";
 import RegisterForm from "./pages/Register";
 import { UserManagement } from "./pages/master/UserManagement";
+import { RoleManagement } from "./pages/master/RoleManagement";
 import PrivateRoute from "./utils/PrivateRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="master/pengguna" element={<UserManagement />} />
+              <Route path="master/role" element={<RoleManagement />} />
               <Route path="not-found" element={<NotFound />} />
             </Route>
           </Route>

@@ -9,11 +9,6 @@ export function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 text-amber-700 text-sm">
-              <Sparkles className="size-4" />
-              <span>PKM Proposal Platform</span>
-            </div>
-
             <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
               Satu Tempat untuk Submit, Monitor, dan{" "}
               <span className="bg-gradient-to-r from-amber-500 to-teal-500 bg-clip-text text-transparent">
@@ -22,7 +17,9 @@ export function Hero() {
             </h1>
 
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Dirancang untuk membantu mahasiswa mengirim proposal PKM dengan mudah, memantau status seleksi, dan berkolaborasi dengan tim secara efisien.
+              Dirancang untuk membantu mahasiswa mengirim proposal PKM dengan
+              mudah, memantau status seleksi, dan berkolaborasi dengan tim
+              secara efisien.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -33,29 +30,9 @@ export function Hero() {
                 Upload Proposal
                 <ArrowRight className="ml-2 size-5" />
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-2xl px-8"
-              >
+              <Button size="lg" variant="outline" className="rounded-2xl px-8">
                 Lihat Panduan
               </Button>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 pt-8">
-              <div>
-                <div className="text-3xl font-bold text-amber-500">1.200+</div>
-                <div className="text-sm text-muted-foreground">Proposal Dikelola</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-amber-500">300+</div>
-                <div className="text-sm text-muted-foreground">Tim Mahasiswa</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-amber-500">45+</div>
-                <div className="text-sm text-muted-foreground">Lolos Pendanaan</div>
-              </div>
             </div>
           </div>
 
@@ -76,7 +53,9 @@ export function Hero() {
                   </div>
                   <div>
                     <div className="text-sm font-semibold">Upload Success</div>
-                    <div className="text-xs text-muted-foreground">3 Dokumen</div>
+                    <div className="text-xs text-muted-foreground">
+                      3 Dokumen
+                    </div>
                   </div>
                 </div>
               </div>
@@ -88,7 +67,9 @@ export function Hero() {
                   </div>
                   <div>
                     <div className="text-sm font-semibold">Review Selesai</div>
-                    <div className="text-xs text-muted-foreground">Siap Submit</div>
+                    <div className="text-xs text-muted-foreground">
+                      Siap Submit
+                    </div>
                   </div>
                 </div>
               </div>

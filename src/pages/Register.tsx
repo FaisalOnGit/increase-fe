@@ -92,7 +92,7 @@ export default function RegisterForm() {
         <div className="relative z-10 max-w-lg">
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
-              <img src="/increase.png" alt="Increase" className="h-10 w-auto" />
+              <img src="/increaselite.png" alt="Increase" className="h-10 w-auto" />
               <span className="text-xl font-semibold text-white">Increase</span>
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">

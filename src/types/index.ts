@@ -78,3 +78,22 @@ export interface User {
   phone?: string;
   status?: 'active' | 'inactive';
 }
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  accessLevel: 'full' | 'limited' | 'readonly';
+  userCount: number;
+  status: 'active' | 'inactive';
+  permissions: string[];
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  permissions: string[];
+  userCount: number;
+  status: 'active' | 'inactive';
+}

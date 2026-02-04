@@ -12,14 +12,35 @@ export function Navbar({ onLoginClick, onRegisterClick }: NavbarProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
-              <img src="/increase.png" alt="Increase" className="h-8 w-auto" />
-              <span className="text-lg font-semibold">Increase</span>
+              <img
+                src="/increaselite.png"
+                alt="Increase"
+                className="h-8 w-auto"
+              />
+              <span className="text-lg text-primary font-semibold">
+                INCREASE
+              </span>
             </div>
 
             <div className="hidden md:flex items-center gap-6">
-              <a href="#home" className="text-sm hover:text-teal-600 transition-colors">Home</a>
-              <a href="#panduan" className="text-sm hover:text-teal-600 transition-colors">Panduan</a>
-              <a href="#faq" className="text-sm hover:text-teal-600 transition-colors">FAQ</a>
+              <a
+                href="#home"
+                className="text-sm hover:text-teal-600 transition-colors"
+              >
+                Home
+              </a>
+              <a
+                href="#panduan"
+                className="text-sm hover:text-teal-600 transition-colors"
+              >
+                Panduan
+              </a>
+              <a
+                href="#faq"
+                className="text-sm hover:text-teal-600 transition-colors"
+              >
+                FAQ
+              </a>
             </div>
           </div>
 

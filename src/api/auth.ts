@@ -30,7 +30,7 @@ export const login = async (formData: LoginFormData) => {
   // Check for dummy users first (bypass for development)
   const dummyUser = dummyUsers.find(
     (user) =>
-      user.email === formData.email && user.password === formData.password
+      user.email === formData.email && user.password === formData.password,
   );
 
   if (dummyUser) {

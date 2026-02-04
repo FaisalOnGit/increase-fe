@@ -3,9 +3,14 @@ import { Facebook, Twitter, Instagram, Mail } from "lucide-react";
 export function Footer() {
   const footerLinks = {
     Program: ["PKM-R", "PKM-K", "PKM-PM", "PKM-T"],
-    Layanan: ["Upload Proposal", "Tracking Status", "Tim Kolaborasi", "Deadline Reminder"],
+    Layanan: [
+      "Upload Proposal",
+      "Tracking Status",
+      "Tim Kolaborasi",
+      "Deadline Reminder",
+    ],
     Dukungan: ["Dokumentasi", "Hubungi Kami", "Status Proposal", "FAQ"],
-    Legal: ["Kebijakan Privasi", "Syarat & Ketentuan", "Cookies"]
+    Legal: ["Kebijakan Privasi", "Syarat & Ketentuan", "Cookies"],
   };
 
   return (
@@ -15,23 +20,43 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <img src="/increase.png" alt="Increase" className="h-10 w-auto" />
-              <span className="text-xl font-semibold text-white">Increase</span>
+              <img
+                src="/increaselite.png"
+                alt="Increase"
+                className="h-10 w-auto"
+              />
+              <span className="text-xl font-semibold text-primary">
+                INCREASE
+              </span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              Platform Digital untuk Upload dan Kelola Proposal PKM. Membantu mahasiswa mengirim proposal dengan mudah, memantau status seleksi, dan berkolaborasi dengan tim.
+              Platform Digital untuk Upload dan Kelola Proposal PKM. Membantu
+              mahasiswa mengirim proposal dengan mudah, memantau status seleksi,
+              dan berkolaborasi dengan tim.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors">
+              <a
+                href="#"
+                className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors"
+              >
                 <Facebook className="size-5" />
               </a>
-              <a href="#" className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors">
+              <a
+                href="#"
+                className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors"
+              >
                 <Twitter className="size-5" />
               </a>
-              <a href="#" className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors">
+              <a
+                href="#"
+                className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors"
+              >
                 <Instagram className="size-5" />
               </a>
-              <a href="#" className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors">
+              <a
+                href="#"
+                className="size-10 rounded-xl bg-gray-800 hover:bg-amber-500 flex items-center justify-center transition-colors"
+              >
                 <Mail className="size-5" />
               </a>
             </div>
@@ -44,7 +69,10 @@ export function Footer() {
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-gray-400 hover:text-amber-400 transition-colors text-sm">
+                    <a
+                      href="#"
+                      className="text-gray-400 hover:text-amber-400 transition-colors text-sm"
+                    >
                       {link}
                     </a>
                   </li>

@@ -1,4 +1,4 @@
-import { StatCard, RecentOrder, QuickStat, NavItem, User } from "../types";
+import { StatCard, RecentOrder, QuickStat, NavItem, User, Role } from "../types";
 
 export const statCards: StatCard[] = [
   {
@@ -302,4 +302,61 @@ export const enrollmentData: EnrollmentData[] = [
   { month: "Mei", students: 238 },
   { month: "Juni", students: 247 },
   { month: "Juli", students: 260 },
+];
+
+export const roles: Role[] = [
+  {
+    id: "1",
+    name: "Admin",
+    description: "Akses penuh ke semua fitur dan pengaturan sistem",
+    accessLevel: "full",
+    userCount: 5,
+    status: "active",
+    permissions: ["manage_users", "manage_roles", "manage_proposals", "review_proposals", "system_settings", "master_data"],
+  },
+  {
+    id: "2",
+    name: "Dosen",
+    description: "Dosen pembimbing dengan akses review proposal",
+    accessLevel: "limited",
+    userCount: 42,
+    status: "active",
+    permissions: ["view_proposals", "review_proposals", "manage_students", "view_reports"],
+  },
+  {
+    id: "3",
+    name: "Mahasiswa",
+    description: "Mahasiswa pengusul proposal PKM",
+    accessLevel: "limited",
+    userCount: 85,
+    status: "active",
+    permissions: ["submit_proposal", "view_own_proposals", "edit_own_proposals", "view_review_results"],
+  },
+  {
+    id: "4",
+    name: "Reviewer",
+    description: "Reviewer khusus untuk menilai proposal PKM",
+    accessLevel: "limited",
+    userCount: 12,
+    status: "active",
+    permissions: ["view_proposals", "review_proposals", "submit_review", "view_review_history"],
+  },
+  {
+    id: "5",
+    name: "Kaprodi",
+    description: "Ketua Program Studi dengan akses approval",
+    accessLevel: "limited",
+    userCount: 8,
+    status: "active",
+    permissions: ["view_proposals", "approve_proposals", "view_reports", "manage_department_data"],
+  },
+  {
+    id: "6",
+    name: "Operator",
+    description: "Operator fakultas untuk administrasi",
+    accessLevel: "readonly",
+    userCount: 3,
+    status: "active",
+    permissions: ["view_proposals", "view_reports", "export_data", "manage_announcements"],
+  },
 ];
