@@ -4,6 +4,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { NotFound } from "./pages/NotFound";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import LoginForm from "./pages/Login";
+import RegisterForm from "./pages/Register";
 import { UserManagement } from "./pages/master/UserManagement";
 import PrivateRoute from "./utils/PrivateRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
 
           <Route path="/" element={<PrivateRoute />}>
             <Route path="dashboard" element={<DashboardLayout />}>
