@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { StatCard } from "../components/dashboard/StatCard";
-import { RecentOrders } from "../components/dashboard/RecentOrders";
-import { QuickStats } from "../components/dashboard/QuickStats";
-import { WelcomeCard } from "../components/dashboard/WelcomeCard";
-import { statCards } from "../data/mockData";
-import { Breadcrumb } from "../components/layout/BreadCrumb";
+import { StatCard } from "@/components/dashboard/StatCard";
+import { RecentOrders } from "@/components/dashboard/RecentOrders";
+import { QuickStats } from "@/components/dashboard/QuickStats";
+import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
+import { statCards } from "@/data/mockData";
+import { Breadcrumb } from "@/components/layout/BreadCrumb";
 
 export const Dashboard: React.FC = () => {
   const [userName, setUserName] = useState<string>("");
@@ -27,12 +27,16 @@ export const Dashboard: React.FC = () => {
 
       {/* Breadcrumb Component */}
       <div>
-        <Breadcrumb currentPage="Dashboard" currentHref="#" />
+        <Breadcrumb
+          pages={[
+            { name: "Dashboard", href: "/dashboard" },
+          ]}
+        />
       </div>
 
       {/* Stats Grid - Statistik Ajuan */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <h2 className="text-xl font-semibold mb-4">
           Statistik Ajuan
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">

@@ -1,7 +1,20 @@
 import React, { useState } from "react";
-import { Course } from "../types";
-import { Breadcrumb } from "../components/layout/BreadCrumb";
+import { Course } from "@/types";
+import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { Search, Plus, Edit, Trash2, Users, Clock, BookOpen, CheckCircle, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Icon } from "@/components/ui/Icon";
 
 // Mock data untuk courses
 const mockCourses: Course[] = [
@@ -59,8 +72,8 @@ export const Courses: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     return status === 'active'
-      ? <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Aktif</span>
-      : <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Tidak Aktif</span>;
+      ? <Badge variant="default">Aktif</Badge>
+      : <Badge variant="secondary">Tidak Aktif</Badge>;
   };
 
   return (
@@ -68,145 +81,144 @@ export const Courses: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <Breadcrumb currentPage="MATA PELAJARAN" currentHref="#" />
-          <h1 className="text-2xl font-bold text-gray-900 mt-2">Mata Pelajaran</h1>
-          <p className="text-gray-600 mt-1">Kelola mata pelajaran dan jadwal pembelajaran</p>
+          <Breadcrumb
+            pages={[
+              { name: "Dashboard", href: "/dashboard" },
+              { name: "MATA PELAJARAN", href: "#" },
+            ]}
+          />
+          <h1 className="text-2xl font-bold mt-2">Mata Pelajaran</h1>
+          <p className="text-muted-foreground mt-1">Kelola mata pelajaran dan jadwal pembelajaran</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus size={20} />
+        <Button>
+          <Plus size={20} className="mr-2" />
           Tambah Mata Pelajaran
-        </button>
+        </Button>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Cari mata pelajaran, kode, atau guru..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+            <Input
+              type="text"
+              placeholder="Cari mata pelajaran, kode, atau guru..."
+              className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Total Mata Pelajaran</p>
-              <p className="text-2xl font-bold text-gray-900">{courses.length}</p>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Mata Pelajaran</p>
+                <p className="text-2xl font-bold">{courses.length}</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <BookOpen className="text-blue-600" size={24} />
+              </div>
             </div>
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <BookOpen className="text-blue-600" size={24} />
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Aktif</p>
-              <p className="text-2xl font-bold text-green-600">{courses.filter(c => c.status === 'active').length}</p>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Aktif</p>
+                <p className="text-2xl font-bold text-emerald-600">{courses.filter(c => c.status === 'active').length}</p>
+              </div>
+              <div className="p-3 bg-emerald-100 rounded-lg">
+                <CheckCircle className="text-emerald-600" size={24} />
+              </div>
             </div>
-            <div className="p-3 bg-green-100 rounded-lg">
-              <CheckCircle className="text-green-600" size={24} />
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Total Siswa</p>
-              <p className="text-2xl font-bold text-gray-900">{courses.reduce((acc, c) => acc + c.students, 0)}</p>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Siswa</p>
+                <p className="text-2xl font-bold">{courses.reduce((acc, c) => acc + c.students, 0)}</p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Users className="text-purple-600" size={24} />
+              </div>
             </div>
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Users className="text-purple-600" size={24} />
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Total SKS</p>
-              <p className="text-2xl font-bold text-gray-900">{courses.reduce((acc, c) => acc + c.credits, 0)}</p>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total SKS</p>
+                <p className="text-2xl font-bold">{courses.reduce((acc, c) => acc + c.credits, 0)}</p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <FileText className="text-orange-600" size={24} />
+              </div>
             </div>
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <FileText className="text-orange-600" size={24} />
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Courses Table */}
-      <div className="bg-white rounded-lg shadow-sm border">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Kode & Mata Pelajaran
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Guru Pengajar
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  SKS
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Siswa
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Jadwal
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredCourses.map((course) => (
-                <tr key={course.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{course.name}</div>
-                      <div className="text-sm text-gray-500">{course.code}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{course.teacher}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{course.credits}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{course.students} siswa</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    <div className="flex items-center gap-1">
-                      <Clock size={14} className="text-gray-400" />
-                      {course.schedule}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">{getStatusBadge(course.status)}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button className="text-blue-600 hover:text-blue-800 transition-colors">
-                        <Edit size={16} />
-                      </button>
-                      <button className="text-red-600 hover:text-red-800 transition-colors">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Kode & Mata Pelajaran</TableHead>
+              <TableHead>Guru Pengajar</TableHead>
+              <TableHead>SKS</TableHead>
+              <TableHead>Siswa</TableHead>
+              <TableHead>Jadwal</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Aksi</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCourses.map((course) => (
+              <TableRow key={course.id}>
+                <TableCell>
+                  <div>
+                    <div className="text-sm font-medium">{course.name}</div>
+                    <div className="text-sm text-muted-foreground">{course.code}</div>
+                  </div>
+                </TableCell>
+                <TableCell>{course.teacher}</TableCell>
+                <TableCell>{course.credits}</TableCell>
+                <TableCell>{course.students} siswa</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Icon name="Clock" size={14} className="text-muted-foreground" />
+                    {course.schedule}
+                  </div>
+                </TableCell>
+                <TableCell>{getStatusBadge(course.status)}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon">
+                      <Edit size={16} />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-destructive">
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   );
 };

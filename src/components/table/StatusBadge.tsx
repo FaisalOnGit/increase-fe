@@ -1,25 +1,26 @@
-import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
   status: "active" | "inactive";
+  className?: string;
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-  const baseClasses =
-    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium";
-  const statusClasses =
-    status === "active"
-      ? "bg-green-100 text-green-800 border border-green-200"
-      : "bg-red-100 text-red-800 border border-red-200";
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
+  const isActive = status === "active";
 
   return (
-    <span className={`${baseClasses} ${statusClasses}`}>
+    <Badge
+      variant={isActive ? "default" : "destructive"}
+      className={cn("gap-1.5", className)}
+    >
       <div
-        className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-          status === "active" ? "bg-green-500" : "bg-red-500"
-        }`}
+        className={cn(
+          "w-1.5 h-1.5 rounded-full",
+          isActive ? "bg-white" : "bg-white"
+        )}
       />
       {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
+    </Badge>
   );
 };

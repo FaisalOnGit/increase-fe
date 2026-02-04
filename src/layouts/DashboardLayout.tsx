@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Icon } from "../components/ui/Icon";
-import { Sidebar } from "../components/layout/Sidebar";
-import { navItems } from "../data/mockData";
+import { Icon } from "@/components/ui/Icon";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { navItems } from "@/data/mockData";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const findPageTitle = (pathname: string): string => {
   // Check direct path matches
@@ -51,7 +55,7 @@ export const DashboardLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
+    <div className="min-h-screen bg-background relative">
       {/* Sidebar Component */}
       <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
 
@@ -62,15 +66,17 @@ export const DashboardLayout: React.FC = () => {
         }`}
       >
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-4 py-3 relative">
+        <header className="bg-background border-b px-4 py-3 relative">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={toggleSidebar}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden"
+                className="lg:hidden"
               >
                 <Icon name="Menu" size={20} />
-              </button>
+              </Button>
 
               <div>
                 <h1 className="text-xl font-semibold text-primary">
@@ -79,32 +85,38 @@ export const DashboardLayout: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                <Icon name="Bell" size={20} className="text-gray-600" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" className="relative">
+                <Icon name="Bell" size={20} />
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 rounded-full">
                   3
-                </span>
-              </button>
+                </Badge>
+              </Button>
 
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
-                  <Icon name="User" size={16} className="text-white" />
-                </div>
+              <Separator orientation="vertical" className="h-8" />
+
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8 bg-primary">
+                  <AvatarFallback className="bg-primary text-white">
+                    <Icon name="User" size={16} />
+                  </AvatarFallback>
+                </Avatar>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium text-primary">
                     {firstName}
                   </p>
-                  <p className="text-xs text-gray-500">Administrator</p>
+                  <p className="text-xs text-muted-foreground">Administrator</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Toggle Button - Positioned between header and sidebar */}
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={toggleSidebar}
-            className={`hidden lg:flex fixed top-8 -translate-y-1/2 w-8 h-8 bg-white border border-gray-200 rounded-full items-center justify-center hover:bg-gray-50 transition-all duration-300 shadow-lg`}
+            className={`hidden lg:flex fixed top-8 -translate-y-1/2 w-8 h-8 rounded-full transition-all duration-300 shadow-md`}
             style={{
               left: sidebarCollapsed ? "50px" : "240px",
               zIndex: 100,
@@ -112,10 +124,9 @@ export const DashboardLayout: React.FC = () => {
           >
             <Icon
               name={sidebarCollapsed ? "ChevronRight" : "ChevronLeft"}
-              size={20}
-              className="text-gray-600"
+              size={16}
             />
-          </button>
+          </Button>
         </header>
 
         {/* Main Content */}

@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, AlertTriangle, LogIn } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Label } from "@/components/ui/label";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -36,36 +40,33 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen bg-white flex">
       <div className="w-1/2 flex flex-col justify-center px-12 py-8 bg-white">
-        <div className="flex items-center space-x-4 mb-12">
+        <div className="flex items-center gap-4 mb-12">
           <img src="obslogin.png" alt="Logo" className="w-40 h-auto" />
         </div>
 
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold  text-gray-800 mb-2">Login</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Login</h1>
           <p className="text-gray-500 text-sm">
             How to i get started lorem ipsum dolor at?
           </p>
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6">
-            <div className="flex items-center">
-              <AlertTriangle className="mr-2 text-red-600" />{" "}
-              <div>
-                <strong className="font-bold">Gagal!</strong>
-                <span className="block sm:inline ml-1">{error}</span>
-              </div>
-            </div>
-          </div>
+          <Alert variant="destructive" className="mb-6">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong className="font-bold">Gagal!</strong>
+              <span className="block sm:inline ml-1">{error}</span>
+            </AlertDescription>
+          </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                <Mail className="text-gray-400" />
-              </div>
-              <input
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Input
                 id="email"
                 name="email"
                 type="email"
@@ -73,17 +74,16 @@ const LoginForm = () => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="pl-14 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-600"
+                className="pl-10"
               />
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                <Lock className="text-gray-400" />
-              </div>
-              <input
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Input
                 id="password"
                 name="password"
                 type="password"
@@ -91,21 +91,18 @@ const LoginForm = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="pl-14 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="pl-10"
               />
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="login-btn w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-all duration-200 hover:bg-blue-700 flex items-center justify-center"
-          >
-            <LogIn className="mr-2" />
+          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+            <LogIn className="mr-2 h-4 w-4" />
             Login Now
-          </button>
+          </Button>
         </form>
 
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-gray-500 space-y-1">
           <p>Demo Accounts:</p>
           <p>Admin: admin@unsil.ac.id / admin123</p>
           <p>Dosen: ahmad.rizki@unsil.ac.id / dosen123</p>

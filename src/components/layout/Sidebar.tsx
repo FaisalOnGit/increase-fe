@@ -1,11 +1,14 @@
 import React, { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Icon } from "../ui/Icon";
-import { navItems } from "../../data/mockData";
+import { Icon } from "@/components/ui/Icon";
+import { navItems } from "@/data/mockData";
 import miniLogo from "/simanislite.png";
 import logo from "/simanis.png";
-import { useAuth } from "../../contexts/AuthContext";
-import { filterMenuByRole } from "../../utils/menuFilter";
+import { useAuth } from "@/contexts/AuthContext";
+import { filterMenuByRole } from "@/utils/menuFilter";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -57,11 +60,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     return (
       <div key={item.id}>
         <div
-          className={`flex items-center justify-between px-3 py-3 rounded-lg mb-1 transition-colors group cursor-pointer ${
+          className={cn(
+            "flex items-center justify-between px-3 py-3 rounded-lg mb-1 transition-colors group cursor-pointer",
             isActive
               ? "bg-secondary text-white"
               : "text-white hover:bg-secondary hover:text-white"
-          }`}
+          )}
           style={{ paddingLeft: `${level * 12 + 12}px` }}
           onClick={() => {
             if (hasChildren) {
@@ -71,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             }
           }}
         >
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-3">
             <Icon
               name={item.icon as any}
               size={20}
@@ -85,9 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             <Icon
               name="ChevronDown"
               size={16}
-              className={`transition-transform ${
-                isExpanded ? "rotate-180" : ""
-              }`}
+              className={cn("transition-transform", isExpanded && "rotate-180")}
             />
           )}
         </div>
@@ -97,11 +99,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               <Link
                 key={child.id}
                 to={child.path}
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg mb-1 transition-colors group ${
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg mb-1 transition-colors group",
                   isItemActive(child.path)
                     ? "bg-secondary text-white"
                     : "text-white hover:bg-secondary hover:text-white"
-                }`}
+                )}
                 style={{ paddingLeft: `${level * 12 + 36}px` }}
                 onClick={() => window.innerWidth < 1024 && onToggle()}
               >
@@ -127,15 +130,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     <>
       {!isCollapsed && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onToggle}
         />
       )}
 
       <div
-        className={`fixed left-0 top-0 h-full bg-primary text-white z-50 transition-all duration-300 ease-in-out flex flex-col ${
-          isCollapsed ? "-translate-x-full lg:translate-x-0 lg:w-16" : "w-64"
-        }`}
+        className={cn(
+          "fixed left-0 top-0 h-full bg-primary text-white z-50 transition-all duration-300 ease-in-out flex flex-col",
+          isCollapsed
+            ? "-translate-x-full lg:translate-x-0 lg:w-16"
+            : "w-64"
+        )}
         style={{ zIndex: 60 }}
       >
         <div className="flex items-center justify-between p-4 flex-shrink-0">
@@ -145,12 +151,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             className={isCollapsed ? "w-12 h-auto" : "w-48 h-auto"}
           />
 
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onToggle}
-            className="p-1 rounded-lg hover:bg-indigo-800 transition-colors lg:hidden"
+            className="lg:hidden hover:bg-indigo-800"
           >
             <Icon name="X" size={20} />
-          </button>
+          </Button>
         </div>
 
         <nav className="mt-6 px-2 flex-1 overflow-y-auto scrollbar-hide">
@@ -158,17 +166,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </nav>
 
         <div className="px-2 pb-4 flex-shrink-0">
-          <button
+          <Button
+            variant="ghost"
             onClick={handleLogout}
-            className="flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors group text-white hover:bg-red-600 hover:text-white w-full"
+            className="flex items-center gap-3 px-3 py-6 rounded-lg hover:bg-red-600 hover:text-white justify-start w-full text-white"
           >
-            <Icon
-              name="LogOut"
-              size={20}
-              className="text-white group-hover:text-white"
-            />
+            <Icon name="LogOut" size={20} />
             {!isCollapsed && <span className="font-medium">Keluar</span>}
-          </button>
+          </Button>
         </div>
       </div>
     </>

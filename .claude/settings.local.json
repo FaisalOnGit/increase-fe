@@ -3,7 +3,12 @@
     "allow": [
       "Bash(npm run dev)",
       "Bash(npm install:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm install)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(pnpm build)",
+      "Bash(move /Y \"@\\\\components\\\\ui\\\\*.tsx\" \"src\\\\components\\\\ui\"\" && rmdir /S /Q \"@components\" && rmdir /S /Q \"@ \")"
     ],
     "deny": [],
     "ask": []

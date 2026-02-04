@@ -11,7 +11,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 function App() {
   return (
     <AuthProvider>
-      <Router basename="edu-lms">
+      <Router>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<LoginForm />} />
