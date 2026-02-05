@@ -88,9 +88,6 @@ export function Footer() {
           <p className="text-gray-400 text-sm">
             © 2026 Increase. All rights reserved.
           </p>
-          <p className="text-gray-400 text-sm">
-            Made with ❤️ for Indonesian Students
-          </p>
         </div>
       </div>
     </footer>

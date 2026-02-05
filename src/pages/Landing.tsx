@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Categories } from "@/components/landing/Categories";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { DeadlineBanner } from "@/components/landing/DeadlineBanner";
+import { Pengumuman } from "@/components/landing/Pengumuman";
 import { FAQ } from "@/components/landing/FAQ";
 import { CTABanner } from "@/components/landing/CTABanner";
 import { Footer } from "@/components/landing/Footer";
@@ -30,7 +31,7 @@ export const Landing: React.FC = () => {
       </div>
       <Categories />
       {/* <DashboardPreview /> */}
-      <Testimonials />
+      <Pengumuman />
       <DeadlineBanner />
       <div id="faq">
         <FAQ />
