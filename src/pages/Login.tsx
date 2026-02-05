@@ -70,10 +70,6 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoToRegister = () => {
-    navigate("/register");
-  };
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Side - Illustration */}
@@ -276,16 +272,6 @@ export default function LoginForm() {
               </Button>
             </form>
 
-            {/* Register Link */}
-            <p className="text-center text-sm text-muted-foreground mt-6">
-              Belum punya akun?{" "}
-              <button
-                onClick={handleGoToRegister}
-                className="text-amber-600 hover:text-amber-700 font-semibold transition-colors"
-              >
-                Daftar
-              </button>
-            </p>
           </Card>
 
           {/* Help Text */}

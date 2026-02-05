@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { AboutPKM } from "@/components/landing/AboutPKM";
-import { Features } from "@/components/landing/Features";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Categories } from "@/components/landing/Categories";
 import { Testimonials } from "@/components/landing/Testimonials";
@@ -18,21 +17,14 @@ export const Landing: React.FC = () => {
     navigate("/login");
   };
 
-  const handleRegisterClick = () => {
-    navigate("/register");
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      <Navbar
-        onLoginClick={handleLoginClick}
-        onRegisterClick={handleRegisterClick}
-      />
+      <Navbar onLoginClick={handleLoginClick} />
       <div id="home">
         <Hero />
       </div>
       <AboutPKM />
-      <Features />
+      {/* <Features /> */}
       <div id="panduan">
         <HowItWorks />
       </div>
