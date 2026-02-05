@@ -116,7 +116,7 @@ export default function LoginForm() {
           {/* Illustration Area */}
           <div className="relative rounded-3xl overflow-hidden shadow-2xl">
             <ImageWithFallback
-              src="https://images.unsplash.com/photo-1531482615713-2afd69097998?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwd29ya2luZyUyMG9uJTIwbGFwdG9wJTIwd2l0aCUyMGRvY3VtZW50c3x8ZW58MXx8fHwxNzcwMjA2NDg1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+              src="/iot.jpg"
               alt="Student working on laptop"
               className="w-full h-[400px] object-cover"
             />

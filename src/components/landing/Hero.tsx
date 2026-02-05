@@ -41,7 +41,7 @@ export function Hero() {
             <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-teal-400/20 rounded-3xl blur-3xl"></div>
             <div className="relative rounded-3xl overflow-hidden shadow-2xl">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMGNvbGxhYm9yYXRpbmclMjB3aXRoJTIwbGFwdG9wcyUyMHdvcmtpbmclMmp9Z2VzfGVufDF8fHx8MTc3MDIwNjQzNHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                src="/hero.jpeg"
                 alt="Students collaborating"
                 className="w-full h-[500px] object-cover"
               />
