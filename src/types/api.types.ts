@@ -270,3 +270,54 @@ export interface SingleJenisPKMResponse extends ApiResponse<JenisPKM> {}
 export interface ActiveJenisPKMResponse extends ApiResponse<JenisPKM[]> {
   total?: number;
 }
+
+// Kriteria PKM Types
+export interface KriteriaPKM {
+  id: number;
+  pkm_id: number;
+  urutan: number;
+  judul: string;
+  kriteria: string;
+  bobot: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface KriteriaSummary {
+  total_kriteria: number;
+  total_bobot: number;
+  is_complete: boolean;
+}
+
+export interface CreateKriteriaPKM {
+  pkm_id: number;
+  urutan: number;
+  judul: string;
+  kriteria: string;
+  bobot: number;
+}
+
+export interface UpdateKriteriaPKM {
+  urutan?: number;
+  judul?: string;
+  kriteria?: string;
+  bobot?: number;
+}
+
+export interface DuplicateKriteriaPKM {
+  target_pkm_id: number;
+  overwrite?: boolean;
+}
+
+export interface ReorderKriteriaPKM {
+  orders: Array<{
+    id: number;
+    urutan: number;
+  }>;
+}
+
+export interface KriteriaPKMListResponse extends ApiResponse<KriteriaPKM[]> {
+  summary?: KriteriaSummary;
+}
+
+export interface SingleKriteriaPKMResponse extends ApiResponse<KriteriaPKM> {}

@@ -10,10 +10,17 @@ export const getZodErrors = <T extends Record<string, unknown>>(
 ): Partial<Record<keyof T, string>> => {
   const errors: Partial<Record<keyof T, string>> = {};
 
-  error.errors.forEach((err) => {
-    const field = err.path[0] as keyof T;
-    errors[field] = err.message;
-  });
+  // Handle both Zod v3 and v4 error structures
+  const errorList = error?.issues || error?.errors || [];
+
+  if (Array.isArray(errorList)) {
+    errorList.forEach((err: any) => {
+      const field = (err.path?.[0] || err.path?.[0]) as keyof T;
+      if (field) {
+        errors[field] = err.message;
+      }
+    });
+  }
 
   return errors;
 };

@@ -152,6 +152,12 @@ export const navItems: NavItem[] = [
         path: "/dashboard/master/jenis-pkm",
       },
       {
+        id: "kriteria-pkm",
+        label: "Kriteria PKM",
+        icon: "List",
+        path: "/dashboard/master/kriteria-pkm",
+      },
+      {
         id: "master-periode",
         label: "Master Periode",
         icon: "Calendar",

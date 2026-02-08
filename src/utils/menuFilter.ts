@@ -10,7 +10,7 @@ const menuAccess = {
 // Define submenu access by role
 const submenuAccess = {
   Admin: [
-    "manajemen-pengguna", "manajemen-role", "fakultas-prodi", "jenis-pkm", "kalender", // Master submenu
+    "manajemen-pengguna", "manajemen-role", "master-dosen", "master-mahasiswa", "master-prodi", "master-fakultas", "jenis-pkm", "kriteria-pkm", "master-periode", // Master submenu
     "manajemen-pembimbing", "manajemen-proposal", "review-proposal", // Manajemen submenu
     "pengajuan-proposal", "rekap-mhs", // Mahasiswa submenu
     "rekap-proposal", "rekap-kip" // Rekap submenu

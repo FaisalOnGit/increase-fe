@@ -13,6 +13,7 @@ import { MahasiswaManagement } from "./pages/master/MahasiswaManagement";
 import { ProdiManagement } from "./pages/master/ProdiManagement";
 import { FakultasManagement } from "./pages/master/FakultasManagement";
 import { JenisPKMManagement } from "./pages/master/JenisPKMManagement";
+import { KriteriaPKMManagement } from "./pages/master/KriteriaPKMManagement";
 import { PeriodeManagement } from "./pages/master/PeriodeManagement";
 import PrivateRoute from "./utils/PrivateRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -37,6 +38,7 @@ function App() {
               <Route path="master/prodi" element={<ProdiManagement />} />
               <Route path="master/fakultas" element={<FakultasManagement />} />
               <Route path="master/jenis-pkm" element={<JenisPKMManagement />} />
+              <Route path="master/kriteria-pkm" element={<KriteriaPKMManagement />} />
               <Route path="master/periode" element={<PeriodeManagement />} />
               <Route path="not-found" element={<NotFound />} />
             </Route>

@@ -7,11 +7,17 @@ export default defineConfig({
   plugins: [react()],
   base: "/",
   optimizeDeps: {
+    include: ["react", "react-dom"],
     exclude: ["lucide-react"],
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules\/react/, /node_modules\/react-dom/],
     },
   },
 });

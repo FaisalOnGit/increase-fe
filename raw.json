@@ -1,0 +1,372 @@
+PKM Kriteria
+API endpoints for managing PKM rubrik kriteria penilaian
+
+
+
+GET
+/pkm/{pkmId}/kriteria
+Get list of kriteria for specific PKM
+
+
+Returns all kriteria for a PKM with total bobot summary (Admin only)
+
+Parameters
+Try it out
+Name	Description
+pkmId *
+integer
+(path)
+pkmId
+Responses
+Code	Description	Links
+200	
+Success
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "pkm_id": 1,
+      "urutan": 1,
+      "judul": "Kreativitas dan Inovasi",
+      "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
+      "bobot": 30,
+      "created_at": "2026-02-07T10:30:00+00:00",
+      "updated_at": "2026-02-07T10:30:00+00:00"
+    }
+  ],
+  "summary": {
+    "total_kriteria": 4,
+    "total_bobot": 100,
+    "is_complete": true
+  }
+}
+No links
+401	
+Unauthenticated
+
+No links
+404	
+PKM not found
+
+No links
+
+POST
+/pkm/{pkmId}/kriteria
+Create new kriteria for PKM
+
+
+Create a new kriteria (validates total bobot <= 100%) (Admin only)
+
+Parameters
+Try it out
+No parameters
+
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "pkm_id": 1,
+  "urutan": 1,
+  "judul": "Kreativitas dan Inovasi",
+  "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
+  "bobot": 30
+}
+Responses
+Code	Description	Links
+201	
+Kriteria created successfully
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "message": "Kriteria created successfully",
+  "data": {
+    "id": 1,
+    "pkm_id": 1,
+    "urutan": 1,
+    "judul": "Kreativitas dan Inovasi",
+    "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
+    "bobot": 30,
+    "created_at": "2026-02-07T10:30:00+00:00",
+    "updated_at": "2026-02-07T10:30:00+00:00"
+  }
+}
+No links
+401	
+Unauthenticated
+
+No links
+404	
+PKM not found
+
+No links
+422	
+Validation error (total bobot > 100%)
+
+No links
+
+GET
+/pkm-kriteria/{id}
+Get kriteria detail
+
+
+Get detailed information of a specific kriteria (Admin only)
+
+Parameters
+Try it out
+Name	Description
+id *
+integer
+(path)
+id
+Responses
+Code	Description	Links
+200	
+Success
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "pkm_id": 1,
+    "urutan": 1,
+    "judul": "Kreativitas dan Inovasi",
+    "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
+    "bobot": 30,
+    "created_at": "2026-02-07T10:30:00+00:00",
+    "updated_at": "2026-02-07T10:30:00+00:00"
+  }
+}
+No links
+401	
+Unauthenticated
+
+No links
+404	
+Kriteria not found
+
+No links
+
+PUT
+/pkm-kriteria/{id}
+Update kriteria
+
+
+Update an existing kriteria (validates total bobot <= 100%) (Admin only)
+
+Parameters
+Try it out
+Name	Description
+id *
+integer
+(path)
+id
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "urutan": 1,
+  "judul": "Kreativitas dan Inovasi",
+  "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
+  "bobot": 30
+}
+Responses
+Code	Description	Links
+200	
+Kriteria updated successfully
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "message": "Kriteria updated successfully",
+  "data": {
+    "id": 1,
+    "pkm_id": 1,
+    "urutan": 1,
+    "judul": "Kreativitas dan Inovasi",
+    "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
+    "bobot": 30,
+    "created_at": "2026-02-07T10:30:00+00:00",
+    "updated_at": "2026-02-07T10:30:00+00:00"
+  }
+}
+No links
+401	
+Unauthenticated
+
+No links
+404	
+Kriteria not found
+
+No links
+422	
+Validation error (total bobot > 100%)
+
+No links
+
+DELETE
+/pkm-kriteria/{id}
+Delete kriteria
+
+
+Soft delete a kriteria (Admin only)
+
+Parameters
+Try it out
+Name	Description
+id *
+integer
+(path)
+id
+Responses
+Code	Description	Links
+200	
+Kriteria deleted successfully
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "message": "Kriteria deleted successfully"
+}
+No links
+401	
+Unauthenticated
+
+No links
+404	
+Kriteria not found
+
+No links
+
+POST
+/pkm/{sourcePkmId}/kriteria/duplicate
+Duplicate kriteria to another PKM
+
+
+Copy all kriteria from source PKM to target PKM (Admin only)
+
+Parameters
+Try it out
+Name	Description
+sourcePkmId *
+integer
+(path)
+sourcePkmId
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "target_pkm_id": 2,
+  "overwrite": false
+}
+Responses
+Code	Description	Links
+200	
+Kriteria duplicated successfully
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "message": "4 kriteria duplicated successfully",
+  "data": [
+    {
+      "id": 1,
+      "pkm_id": 1,
+      "urutan": 1,
+      "judul": "Kreativitas dan Inovasi",
+      "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
+      "bobot": 30,
+      "created_at": "2026-02-07T10:30:00+00:00",
+      "updated_at": "2026-02-07T10:30:00+00:00"
+    }
+  ]
+}
+No links
+400	
+Cannot duplicate to same PKM
+
+No links
+401	
+Unauthenticated
+
+No links
+404	
+PKM not found
+
+No links
+
+POST
+/pkm/{pkmId}/kriteria/reorder
+Reorder kriteria
+
+
+Update urutan of multiple kriteria at once (for drag & drop) (Admin only)
+
+Parameters
+Try it out
+Name	Description
+pkmId *
+integer
+(path)
+pkmId
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "orders": [
+    {
+      "id": 1,
+      "urutan": 1
+    },
+    {
+      "id": 2,
+      "urutan": 2
+    },
+    {
+      "id": 3,
+      "urutan": 3
+    }
+  ]
+}
