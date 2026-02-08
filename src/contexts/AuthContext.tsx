@@ -1,15 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { login as apiLogin, logout as apiLogout, getUser, getStoredUser } from "../api/auth";
+import { User } from "../types/api.types";
 
 interface AuthContextType {
-  userRole: string | null;
-  user: {
-    email?: string;
-    firstName?: string;
-    role?: string;
-  } | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,86 +19,95 @@ interface AuthProviderProps {
 }
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [user, setUser] = useState<{
-    email?: string;
-    firstName?: string;
-    role?: string;
-  } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Get user data from sessionStorage on mount
-    const storedRole = sessionStorage.getItem("role");
-    const storedEmail = sessionStorage.getItem("email");
-    const storedFirstName = sessionStorage.getItem("firstName");
-    const token = sessionStorage.getItem("token");
+    // Check if user is already authenticated on mount
+    const checkAuth = async () => {
+      const token = sessionStorage.getItem("token");
+      const storedUser = getStoredUser();
 
-    if (token && storedRole) {
-      setUserRole(storedRole);
-      setUser({
-        email: storedEmail,
-        firstName: storedFirstName,
-        role: storedRole,
-      });
-    }
+      if (token && storedUser) {
+        setUser(storedUser);
+        try {
+          // Verify token by fetching user data from API
+          const response = await getUser();
+          if (response.success && response.data) {
+            setUser(response.data);
+            sessionStorage.setItem("user", JSON.stringify(response.data));
+          } else {
+            // Token is invalid, clear storage
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+            setUser(null);
+          }
+        } catch (error) {
+          // API call failed, clear storage
+          sessionStorage.removeItem("token");
+          sessionStorage.removeItem("user");
+          setUser(null);
+        }
+      }
+
+      setIsLoading(false);
+    };
+
+    checkAuth();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // This would normally call your API
-    // For demo, we'll check hardcoded credentials
-    const dummyUsers = [
-      {
-        email: "admin@unsil.ac.id",
-        password: "admin123",
-        firstName: "Administrator",
-        role: "Admin"
-      },
-      {
-        email: "ahmad.rizki@unsil.ac.id",
-        password: "dosen123",
-        firstName: "Ahmad Rizki",
-        role: "Dosen"
-      },
-      {
-        email: "budi.santoso@students.unsil.ac.id",
-        password: "mahasiswa123",
-        firstName: "Budi Santoso",
-        role: "Mahasiswa"
+  const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await apiLogin({ email, password });
+
+      if (response.success && response.data) {
+        const { token, ...userWithoutToken } = response.data;
+        setUser(userWithoutToken);
+        return { success: true, message: response.message };
+      } else {
+        return { success: false, message: response.message };
       }
-    ];
-
-    const foundUser = dummyUsers.find(u => u.email === email && u.password === password);
-
-    if (foundUser) {
-      sessionStorage.setItem("token", "dummy-token-" + Date.now());
-      sessionStorage.setItem("firstName", foundUser.firstName);
-      sessionStorage.setItem("role", foundUser.role);
-      sessionStorage.setItem("email", foundUser.email);
-
-      setUserRole(foundUser.role);
-      setUser({
-        email: foundUser.email,
-        firstName: foundUser.firstName,
-        role: foundUser.role,
-      });
-
-      return true;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.message || "Login failed. Please try again.",
+      };
     }
-
-    return false;
   };
 
-  const logout = () => {
-    sessionStorage.clear();
-    setUserRole(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await apiLogout();
+    } catch (error) {
+      // Continue with logout even if API call fails
+      console.error("Logout API call failed:", error);
+    } finally {
+      setUser(null);
+    }
   };
 
-  return (
-    <AuthContext.Provider value={{ userRole, user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const refreshUser = async () => {
+    try {
+      const response = await getUser();
+      if (response.success && response.data) {
+        setUser(response.data);
+        sessionStorage.setItem("user", JSON.stringify(response.data));
+      }
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+    }
+  };
+
+  const value = {
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    login,
+    logout,
+    refreshUser,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 const useAuth = () => {

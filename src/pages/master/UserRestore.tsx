@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -15,13 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getUsers, deleteUser } from "@/api/users";
+import { getDeletedUsers, restoreUser, forceDeleteUser } from "@/api/users";
 import { User } from "@/types/api.types";
-import { UserFormModal } from "@/components/user/UserFormModal";
 
-export const UserManagement: React.FC = () => {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
+export const UserRestore: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,23 +24,16 @@ export const UserManagement: React.FC = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const itemsPerPage = 10;
 
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
-  // Fetch users on component mount and when search term changes
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, searchTerm]);
+    fetchDeletedUsers();
+  }, [currentPage]);
 
-  const fetchUsers = async () => {
+  const fetchDeletedUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await getUsers({
+      const response = await getDeletedUsers({
         page: currentPage,
         per_page: itemsPerPage,
-        search: searchTerm || undefined,
       });
 
       if (response.success && response.data) {
@@ -55,54 +43,55 @@ export const UserManagement: React.FC = () => {
           setTotalUsers(response.pagination.total);
         }
       } else {
-        console.error("Failed to fetch users:", response.message);
+        console.error("Failed to fetch deleted users:", response.message);
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching deleted users:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus pengguna "${name}"?`)) {
+  const handleRestore = async (id: number, name: string) => {
+    if (!confirm(`Apakah Anda yakin ingin memulihkan pengguna "${name}"?`)) {
       return;
     }
 
     try {
-      const response = await deleteUser(id);
+      const response = await restoreUser(id);
       if (response.success) {
-        // Refresh the user list
-        fetchUsers();
-        alert("Pengguna berhasil dihapus");
+        fetchDeletedUsers();
+        alert("Pengguna berhasil dipulihkan");
       } else {
-        alert(`Gagal menghapus pengguna: ${response.message}`);
+        alert(`Gagal memulihkan pengguna: ${response.message}`);
       }
     } catch (error) {
-      console.error("Error deleting user:", error);
-      alert("Terjadi kesalahan saat menghapus pengguna");
+      console.error("Error restoring user:", error);
+      alert("Terjadi kesalahan saat memulihkan pengguna");
     }
   };
 
-  const handleOpenCreateModal = () => {
-    setModalMode("create");
-    setSelectedUser(null);
-    setIsModalOpen(true);
-  };
+  const handleForceDelete = async (id: number, name: string) => {
+    if (
+      !confirm(
+        `PERINGATAN: Ini akan menghapus pengguna "${name}" secara PERMANEN dan tidak dapat dibatalkan. Lanjutkan?`
+      )
+    ) {
+      return;
+    }
 
-  const handleOpenEditModal = (user: User) => {
-    setModalMode("edit");
-    setSelectedUser(user);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleModalSuccess = () => {
-    fetchUsers();
+    try {
+      const response = await forceDeleteUser(id);
+      if (response.success) {
+        fetchDeletedUsers();
+        alert("Pengguna berhasil dihapus permanen");
+      } else {
+        alert(`Gagal menghapus permanen: ${response.message}`);
+      }
+    } catch (error) {
+      console.error("Error force deleting user:", error);
+      alert("Terjadi kesalahan saat menghapus permanen");
+    }
   };
 
   const getRoleBadge = (role: string) => {
@@ -127,52 +116,50 @@ export const UserManagement: React.FC = () => {
           pages={[
             { name: "Dashboard", href: "/dashboard" },
             { name: "Master", href: "/dashboard/master" },
-            { name: "Manajemen Pengguna", href: "/dashboard/master/pengguna" },
+            { name: "Pengguna", href: "/dashboard/master/pengguna" },
+            { name: "Sampah", href: "/dashboard/master/pengguna/sampah" },
           ]}
         />
       </div>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold">Manajemen Pengguna</h1>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/dashboard/master/pengguna/sampah")}
-          >
-            <Icon name="Trash2" size={16} className="mr-2" />
-            Sampah
-          </Button>
-          <Button onClick={handleOpenCreateModal}>
-            <Icon name="User" size={16} className="mr-2" />
-            Tambah Pengguna
-          </Button>
+        <div>
+          <h1 className="text-2xl font-bold">Pengguna Terhapus</h1>
+          <p className="text-muted-foreground">
+            Kelola pengguna yang telah dihapus. Anda dapat memulihkan atau menghapusnya secara permanen.
+          </p>
         </div>
       </div>
 
-      {/* Search and Filter */}
-      <Card>
+      {/* Info Card */}
+      <Card className="bg-orange-50 border-orange-200">
         <CardContent className="p-4">
-          <div className="relative">
-            <Icon name="Search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Cari nama atau email..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
-              }}
-              className="pl-10"
-            />
+          <div className="flex items-start gap-3">
+            <Icon name="AlertTriangle" size={20} className="text-orange-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-orange-800">
+                Pengguna di sampah akan dihapus otomatis setelah 30 hari
+              </p>
+              <p className="text-xs text-orange-700 mt-1">
+                Anda dapat memulihkan pengguna yang terhapus atau menghapusnya secara permanen.
+                Pengguna yang dihapus permanen tidak dapat dikembalikan.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Users Table */}
+      {/* Deleted Users Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Daftar Pengguna</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Daftar Pengguna Terhapus ({totalUsers})</CardTitle>
+            <Button variant="outline" onClick={fetchDeletedUsers}>
+              <Icon name="RefreshCw" size={16} className="mr-2" />
+              Refresh
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
@@ -181,7 +168,8 @@ export const UserManagement: React.FC = () => {
             </div>
           ) : users.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
-              Tidak ada data pengguna
+              <Icon name="Trash2" size={48} className="mx-auto mb-4 opacity-20" />
+              <p>Tidak ada pengguna di sampah</p>
             </div>
           ) : (
             <>
@@ -191,7 +179,7 @@ export const UserManagement: React.FC = () => {
                     <TableHead>Nama</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
-                    <TableHead>Terdaftar</TableHead>
+                    <TableHead>Dihapus Pada</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -200,48 +188,50 @@ export const UserManagement: React.FC = () => {
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10 bg-primary/10">
-                            <AvatarFallback className="bg-primary/10 text-primary">
+                          <Avatar className="h-10 w-10 bg-muted">
+                            <AvatarFallback className="bg-muted text-muted-foreground">
                               {user.name.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium">{user.name}</p>
+                            <p className="text-sm font-medium text-muted-foreground">{user.name}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm">{user.email}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
                       </TableCell>
                       <TableCell>{getRoleBadge(user.role)}</TableCell>
                       <TableCell>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(user.created_at).toLocaleDateString('id-ID', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
+                          {user.deleted_at
+                            ? new Date(user.deleted_at).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "-"}
                         </p>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" title="Lihat Detail">
-                            <Icon name="Eye" size={16} />
-                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            title="Edit"
-                            onClick={() => handleOpenEditModal(user)}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                            title="Pulihkan"
+                            onClick={() => handleRestore(user.id, user.name)}
                           >
-                            <Icon name="Settings" size={16} />
+                            <Icon name="RotateCcw" size={16} />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive"
-                            title="Hapus"
-                            onClick={() => handleDelete(user.id, user.name)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            title="Hapus Permanen"
+                            onClick={() => handleForceDelete(user.id, user.name)}
                           >
                             <Icon name="Trash2" size={16} />
                           </Button>
@@ -256,13 +246,13 @@ export const UserManagement: React.FC = () => {
               <div className="px-6 py-4 border-t">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
-                    Menampilkan {users.length} dari {totalUsers} pengguna
+                    Menampilkan {users.length} dari {totalUsers} pengguna terhapus
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
                     >
                       <Icon name="ChevronLeft" size={16} />
@@ -273,7 +263,7 @@ export const UserManagement: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages || totalPages === 0}
                     >
                       <Icon name="ChevronRight" size={16} />
@@ -285,15 +275,6 @@ export const UserManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
-
-      {/* User Form Modal */}
-      <UserFormModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSuccess={handleModalSuccess}
-        user={selectedUser}
-        mode={modalMode}
-      />
     </div>
   );
 };

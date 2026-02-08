@@ -1,0 +1,526 @@
+{
+  "api_info": {
+    "title": "Laravel API with Sanctum - PKM Management",
+    "base_url": "http://103.150.91.248:9001/api",
+    "authentication": "Sanctum Bearer Token",
+    "content_type": "application/json"
+  },
+  "endpoints": [
+    {
+      "name": "List PKM",
+      "method": "GET",
+      "url": "/pkm",
+      "description": "Returns paginated list of PKM with optional filters (Admin only)",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "query_params": {
+        "search": {
+          "type": "string",
+          "required": false,
+          "description": "Search by singkatan or nama"
+        },
+        "is_active": {
+          "type": "boolean",
+          "required": false,
+          "description": "Filter by active status"
+        },
+        "per_page": {
+          "type": "integer",
+          "required": false,
+          "description": "Items per page",
+          "default": 15
+        }
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - Success",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "singkatan": "PKM-K",
+                "nama": "Program Kreativitas Mahasiswa - Kewirausahaan",
+                "batas_min_anggota": 3,
+                "batas_max_anggota": 5,
+                "batas_max_reviewer": 3,
+                "is_active": true,
+                "created_at": "2026-02-07T10:30:00+00:00",
+                "updated_at": "2026-02-07T10:30:00+00:00"
+              }
+            ],
+            "meta": {
+              "current_page": 1,
+              "per_page": 15,
+              "total": 7,
+              "last_page": 1
+            }
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create PKM",
+      "method": "POST",
+      "url": "/pkm",
+      "description": "Create a new PKM (Admin only)",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "request_body": {
+        "singkatan": {
+          "type": "string",
+          "required": true,
+          "description": "PKM abbreviation/code"
+        },
+        "nama": {
+          "type": "string",
+          "required": true,
+          "description": "Full PKM name"
+        },
+        "batas_min_anggota": {
+          "type": "integer",
+          "required": true,
+          "description": "Minimum number of team members"
+        },
+        "batas_max_anggota": {
+          "type": "integer",
+          "required": true,
+          "description": "Maximum number of team members"
+        },
+        "batas_max_reviewer": {
+          "type": "integer",
+          "required": true,
+          "description": "Maximum number of reviewers"
+        },
+        "is_active": {
+          "type": "boolean",
+          "required": false,
+          "description": "Active status",
+          "default": true
+        }
+      },
+      "request_example": {
+        "singkatan": "PKM-K",
+        "nama": "Program Kreativitas Mahasiswa - Kewirausahaan",
+        "batas_min_anggota": 3,
+        "batas_max_anggota": 5,
+        "batas_max_reviewer": 3,
+        "is_active": true
+      },
+      "responses": [
+        {
+          "status": 201,
+          "description": "Created - PKM created successfully",
+          "body": {
+            "success": true,
+            "message": "PKM created successfully",
+            "data": {
+              "id": 1,
+              "singkatan": "PKM-K",
+              "nama": "Program Kreativitas Mahasiswa - Kewirausahaan",
+              "batas_min_anggota": 3,
+              "batas_max_anggota": 5,
+              "batas_max_reviewer": 3,
+              "is_active": true,
+              "created_at": "2026-02-07T10:30:00+00:00",
+              "updated_at": "2026-02-07T10:30:00+00:00"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        },
+        {
+          "status": 422,
+          "description": "Unprocessable Entity - Validation error",
+          "body": {
+            "success": false,
+            "message": "Validation failed",
+            "errors": {
+              "singkatan": ["The singkatan field is required."],
+              "nama": ["The nama field is required."]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get PKM Detail",
+      "method": "GET",
+      "url": "/pkm/{id}",
+      "description": "Get detailed information of a specific PKM (Admin only)",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "path_params": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "PKM ID"
+        }
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - Success",
+          "body": {
+            "success": true,
+            "data": {
+              "id": 1,
+              "singkatan": "PKM-K",
+              "nama": "Program Kreativitas Mahasiswa - Kewirausahaan",
+              "batas_min_anggota": 3,
+              "batas_max_anggota": 5,
+              "batas_max_reviewer": 3,
+              "is_active": true,
+              "created_at": "2026-02-07T10:30:00+00:00",
+              "updated_at": "2026-02-07T10:30:00+00:00"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        },
+        {
+          "status": 404,
+          "description": "Not Found - PKM not found",
+          "body": {
+            "success": false,
+            "message": "PKM not found"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update PKM",
+      "method": "PUT",
+      "url": "/pkm/{id}",
+      "description": "Update an existing PKM (Admin only)",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "path_params": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "PKM ID"
+        }
+      },
+      "request_body": {
+        "singkatan": {
+          "type": "string",
+          "required": false,
+          "description": "PKM abbreviation/code"
+        },
+        "nama": {
+          "type": "string",
+          "required": false,
+          "description": "Full PKM name"
+        },
+        "batas_min_anggota": {
+          "type": "integer",
+          "required": false,
+          "description": "Minimum number of team members"
+        },
+        "batas_max_anggota": {
+          "type": "integer",
+          "required": false,
+          "description": "Maximum number of team members"
+        },
+        "batas_max_reviewer": {
+          "type": "integer",
+          "required": false,
+          "description": "Maximum number of reviewers"
+        },
+        "is_active": {
+          "type": "boolean",
+          "required": false,
+          "description": "Active status"
+        }
+      },
+      "request_example": {
+        "singkatan": "PKM-K",
+        "nama": "Program Kreativitas Mahasiswa - Kewirausahaan",
+        "batas_min_anggota": 3,
+        "batas_max_anggota": 5,
+        "batas_max_reviewer": 3,
+        "is_active": true
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - PKM updated successfully",
+          "body": {
+            "success": true,
+            "message": "PKM updated successfully",
+            "data": {
+              "id": 1,
+              "singkatan": "PKM-K",
+              "nama": "Program Kreativitas Mahasiswa - Kewirausahaan",
+              "batas_min_anggota": 3,
+              "batas_max_anggota": 5,
+              "batas_max_reviewer": 3,
+              "is_active": true,
+              "created_at": "2026-02-07T10:30:00+00:00",
+              "updated_at": "2026-02-07T10:30:00+00:00"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        },
+        {
+          "status": 404,
+          "description": "Not Found - PKM not found",
+          "body": {
+            "success": false,
+            "message": "PKM not found"
+          }
+        },
+        {
+          "status": 422,
+          "description": "Unprocessable Entity - Validation error",
+          "body": {
+            "success": false,
+            "message": "Validation failed",
+            "errors": {
+              "nama": ["The nama field is required."]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete PKM",
+      "method": "DELETE",
+      "url": "/pkm/{id}",
+      "description": "Soft delete a PKM (Admin only)",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "path_params": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "PKM ID"
+        }
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - PKM deleted successfully",
+          "body": {
+            "success": true,
+            "message": "PKM deleted successfully"
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        },
+        {
+          "status": 404,
+          "description": "Not Found - PKM not found",
+          "body": {
+            "success": false,
+            "message": "PKM not found"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get All Active PKM",
+      "method": "GET",
+      "url": "/pkm/active/all",
+      "description": "Returns list of all active PKM without pagination (for dropdown/select)",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - Success",
+          "body": {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "singkatan": "PKM-K",
+                "nama": "Program Kreativitas Mahasiswa - Kewirausahaan"
+              },
+              {
+                "id": 2,
+                "singkatan": "PKM-PE",
+                "nama": "Program Kreativitas Mahasiswa - Pengabdian kepada Masyarakat"
+              },
+              {
+                "id": 3,
+                "singkatan": "PKM-PM",
+                "nama": "Program Kreativitas Mahasiswa - Penelitian"
+              }
+            ],
+            "total": 7
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Toggle PKM Active Status",
+      "method": "PATCH",
+      "url": "/pkm/{id}/toggle-active",
+      "description": "Toggle the is_active status of a PKM (Admin only)",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "path_params": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "PKM ID"
+        }
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - Status toggled successfully",
+          "body": {
+            "success": true,
+            "message": "PKM status updated successfully",
+            "data": {
+              "id": 1,
+              "singkatan": "PKM-K",
+              "nama": "Program Kreativitas Mahasiswa - Kewirausahaan",
+              "batas_min_anggota": 3,
+              "batas_max_anggota": 5,
+              "batas_max_reviewer": 3,
+              "is_active": true,
+              "created_at": "2026-02-07T10:30:00+00:00",
+              "updated_at": "2026-02-07T10:30:00+00:00"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        },
+        {
+          "status": 404,
+          "description": "Not Found - PKM not found",
+          "body": {
+            "success": false,
+            "message": "PKM not found"
+          }
+        }
+      ]
+    }
+  ],
+  "models": {
+    "PKM": {
+      "id": "integer - Unique identifier",
+      "singkatan": "string - PKM abbreviation/code (e.g., PKM-K, PKM-PE, PKM-PM)",
+      "nama": "string - Full PKM name",
+      "batas_min_anggota": "integer - Minimum number of team members required",
+      "batas_max_anggota": "integer - Maximum number of team members allowed",
+      "batas_max_reviewer": "integer - Maximum number of reviewers allowed",
+      "is_active": "boolean - Active status for PKM",
+      "created_at": "datetime - Creation timestamp",
+      "updated_at": "datetime - Last update timestamp"
+    }
+  },
+  "authentication_method": {
+    "type": "Sanctum Tokens",
+    "description": "Tokens are generated via /auth/login and must be included in Authorization header",
+    "header_format": "Authorization: Bearer <token>",
+    "token_endpoint": "/auth/login",
+    "protected_endpoints": ["/pkm/*"],
+    "token_type": "Stateless",
+    "revocation": "Tokens are revoked on logout",
+    "access_level": "Admin only"
+  },
+  "general_notes": {
+    "base_url": "http://103.150.91.248:9001/api",
+    "content_type": "application/json",
+    "access_level": "All PKM endpoints are Admin only",
+    "special_endpoints": {
+      "/pkm/active/all": "For dropdowns - returns only active PKM without pagination",
+      "/pkm/{id}/toggle-active": "Quick toggle for is_active status without full update"
+    },
+    "pkm_types": {
+      "PKM-K": "PKM Kewirausahaan - Entrepreneurship focused",
+      "PKM-PE": "PKM Pengabdian kepada Masyarakat - Community service",
+      "PKM-PM": "PKM Penelitian - Research focused",
+      "PKM-PI": "PKM Penelitian - Investigative research",
+      "PKM-AI": "PKM Artikel Ilmiah - Scientific article",
+      "PKM-GT": "PKM Gagasan Tertulis - Written ideas",
+      "PKM-KC": "PKM Karsa Cipta - Creative works"
+    },
+    "team_constraints": {
+      "batas_min_anggota": "Minimum team members (typically 2-3)",
+      "batas_max_anggota": "Maximum team members (typically 4-6)",
+      "batas_max_reviewer": "Maximum reviewers for evaluation (typically 2-3)"
+    },
+    "soft_delete": "PKMs are soft deleted and can be restored if needed",
+    "toggle_active": "Use PATCH /pkm/{id}/toggle-active for quick status changes",
+    "error_handling": {
+      "response_format": {
+        "success": "boolean",
+        "message": "human-readable message",
+        "data": "response data (if applicable)",
+        "meta": "pagination metadata",
+        "errors": "validation details (if applicable)"
+      }
+    }
+  }
+}

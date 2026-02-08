@@ -1,0 +1,237 @@
+{
+  "api_info": {
+    "title": "Laravel API with Sanctum - Authentication",
+    "base_url": "http://103.150.91.248:9001/api",
+    "authentication": "Sanctum Bearer Token",
+    "content_type": "application/json"
+  },
+  "endpoints": [
+    {
+      "name": "Register User",
+      "method": "POST",
+      "url": "/auth/register",
+      "description": "Register a new user with email and password",
+      "authentication": false,
+      "request_body": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "User's full name"
+        },
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "User's email address"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "min_length": 8,
+          "description": "User's password (min 8 characters)"
+        },
+        "password_confirmation": {
+          "type": "string",
+          "required": true,
+          "description": "Password confirmation (must match password)"
+        }
+      },
+      "request_example": {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "password": "password123",
+        "password_confirmation": "password123"
+      },
+      "responses": [
+        {
+          "status": 201,
+          "description": "Created - User registered successfully",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": true,
+            "message": "User registered successfully",
+            "data": {
+              "id": 1,
+              "name": "John Doe",
+              "email": "john.doe@example.com",
+              "email_verified_at": "2023-10-01T12:00:00.000000Z",
+              "created_at": "2023-10-01T12:00:00.000000Z",
+              "updated_at": "2023-10-01T12:00:00.000000Z",
+              "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+            }
+          }
+        },
+        {
+          "status": 422,
+          "description": "Unprocessable Entity - Validation failed",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": false,
+            "message": "Validation failed",
+            "errors": {
+              "email": ["The email field is required."],
+              "password": ["The password field is required."]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login User",
+      "method": "POST",
+      "url": "/auth/login",
+      "description": "Authenticate a user and return an access token",
+      "authentication": false,
+      "request_body": {
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "User's email address"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "description": "User's password"
+        }
+      },
+      "request_example": {
+        "email": "john.doe@example.com",
+        "password": "password123"
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - Login successful",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": true,
+            "message": "Login successful",
+            "data": {
+              "id": 1,
+              "name": "John Doe",
+              "email": "john.doe@example.com",
+              "email_verified_at": "2023-10-01T12:00:00.000000Z",
+              "created_at": "2023-10-01T12:00:00.000000Z",
+              "updated_at": "2023-10-01T12:00:00.000000Z",
+              "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+            }
+          }
+        },
+        {
+          "status": 422,
+          "description": "Unprocessable Entity - Invalid credentials",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": false,
+            "message": "Invalid credentials",
+            "errors": {
+              "email": ["The provided credentials are incorrect."]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logout User",
+      "method": "POST",
+      "url": "/auth/logout",
+      "description": "Revoke the user's current access token",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - Logout successful",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": true,
+            "message": "Logout successful"
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Authenticated User",
+      "method": "GET",
+      "url": "/auth/user",
+      "description": "Fetch the currently authenticated user",
+      "authentication": true,
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "responses": [
+        {
+          "status": 200,
+          "description": "OK - User data retrieved successfully",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": true,
+            "data": {
+              "id": 1,
+              "name": "John Doe",
+              "email": "john.doe@example.com",
+              "email_verified_at": "2023-10-01T12:00:00.000000Z",
+              "created_at": "2023-10-01T12:00:00.000000Z",
+              "updated_at": "2023-10-01T12:00:00.000000Z"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "description": "Unauthorized - Unauthenticated",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "success": false,
+            "message": "Unauthenticated"
+          }
+        }
+      ]
+    }
+  ],
+  "authentication_method": {
+    "type": "Sanctum Tokens",
+    "description": "Tokens are generated via /auth/login and must be included in Authorization header",
+    "header_format": "Authorization: Bearer <token>",
+    "token_endpoint": "/auth/login",
+    "protected_endpoints": ["/auth/logout", "/auth/user"],
+    "token_type": "Stateless",
+    "revocation": "Tokens are revoked on logout"
+  },
+  "general_notes": {
+    "base_url": "http://103.150.91.248:9001/api",
+    "content_type": "application/json",
+    "error_handling": {
+      "response_format": {
+        "success": "boolean",
+        "message": "human-readable message",
+        "errors": "validation details (if applicable)"
+      }
+    }
+  }
+}

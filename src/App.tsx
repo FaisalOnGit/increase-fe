@@ -6,6 +6,7 @@ import { DashboardLayout } from "./layouts/DashboardLayout";
 import LoginForm from "./pages/Login";
 import RegisterForm from "./pages/Register";
 import { UserManagement } from "./pages/master/UserManagement";
+import { UserRestore } from "./pages/master/UserRestore";
 import { RoleManagement } from "./pages/master/RoleManagement";
 import { DosenManagement } from "./pages/master/DosenManagement";
 import { MahasiswaManagement } from "./pages/master/MahasiswaManagement";
@@ -29,6 +30,7 @@ function App() {
             <Route path="dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="master/pengguna" element={<UserManagement />} />
+              <Route path="master/pengguna/sampah" element={<UserRestore />} />
               <Route path="master/role" element={<RoleManagement />} />
               <Route path="master/dosen" element={<DosenManagement />} />
               <Route path="master/mahasiswa" element={<MahasiswaManagement />} />

@@ -1,74 +1,123 @@
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+import apiClient from './client';
+import {
+  LoginCredentials,
+  RegisterData,
+  LoginResponse,
+  RegisterResponse,
+  UserResponse,
+  LogoutResponse,
+} from '../types/api.types';
 
-const dummyUsers = [
-  {
-    email: "admin@unsil.ac.id",
-    password: "admin123",
-    firstName: "Administrator",
-    role: "Admin",
-  },
-  {
-    email: "ahmad.rizki@unsil.ac.id",
-    password: "dosen123",
-    firstName: "Ahmad Rizki",
-    role: "Dosen",
-  },
-  {
-    email: "budi.santoso@students.unsil.ac.id",
-    password: "mahasiswa123",
-    firstName: "Budi Santoso",
-    role: "Mahasiswa",
-  },
-];
-
-export const login = async (formData: LoginFormData) => {
-  // Check for dummy users first (bypass for development)
-  const dummyUser = dummyUsers.find(
-    (user) =>
-      user.email === formData.email && user.password === formData.password,
-  );
-
-  if (dummyUser) {
-    sessionStorage.setItem("token", "dummy-token-" + Date.now());
-    sessionStorage.setItem("firstName", dummyUser.firstName);
-    sessionStorage.setItem("role", dummyUser.role);
-    sessionStorage.setItem("email", dummyUser.email);
-
-    return {
-      success: true,
-      token: "dummy-token",
-      firstName: dummyUser.firstName,
-    };
-  }
-
-  // If using real API (uncomment when ready)
-  /*
+/**
+ * Login user with email and password
+ * POST /auth/login
+ */
+export const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/Auth/login`,
-      formData
-    );
+    const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
 
-    const { token, firstName } = response.data.data;
+    // Store token and user data in sessionStorage
+    if (response.data.success && response.data.data) {
+      const { token, ...user } = response.data.data;
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('user', JSON.stringify(user));
+    }
 
-    sessionStorage.setItem("token", token);
-    sessionStorage.setItem("firstName", firstName);
-
-    return { success: true, token, firstName };
-  } catch (error) {
+    return response.data;
+  } catch (error: any) {
     return {
       success: false,
-      error: "Gagal login, silahkan periksa kembali akun Anda",
+      message: error.response?.data?.message || 'Login failed',
+      errors: error.response?.data?.errors,
     };
   }
-  */
+};
 
-  // If no dummy user found
-  return {
-    success: false,
-    error: "Email atau password salah. Coba: admin@unsil.ac.id / admin123",
-  };
+/**
+ * Register a new user
+ * POST /auth/register
+ */
+export const register = async (data: RegisterData): Promise<RegisterResponse> => {
+  try {
+    const response = await apiClient.post<RegisterResponse>('/auth/register', data);
+
+    // Store token and user data in sessionStorage
+    if (response.data.success && response.data.data) {
+      const { token, ...user } = response.data.data;
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('user', JSON.stringify(user));
+    }
+
+    return response.data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Registration failed',
+      errors: error.response?.data?.errors,
+    };
+  }
+};
+
+/**
+ * Logout current user
+ * POST /auth/logout
+ */
+export const logout = async (): Promise<LogoutResponse> => {
+  try {
+    const response = await apiClient.post<LogoutResponse>('/auth/logout');
+
+    // Clear sessionStorage
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+
+    return response.data;
+  } catch (error: any) {
+    // Even if API call fails, clear local storage
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Logout failed',
+    };
+  }
+};
+
+/**
+ * Get authenticated user data
+ * GET /auth/user
+ */
+export const getUser = async (): Promise<UserResponse> => {
+  try {
+    const response = await apiClient.get<UserResponse>('/auth/user');
+    return response.data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to fetch user data',
+    };
+  }
+};
+
+/**
+ * Check if user is authenticated
+ */
+export const isAuthenticated = (): boolean => {
+  const token = sessionStorage.getItem('token');
+  return !!token;
+};
+
+/**
+ * Get stored user data
+ */
+export const getStoredUser = () => {
+  const userStr = sessionStorage.getItem('user');
+  if (userStr) {
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
+  }
+  return null;
 };
