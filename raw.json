@@ -1,22 +1,39 @@
-PKM Kriteria
-API endpoints for managing PKM rubrik kriteria penilaian
+PKM Kalender
+API endpoints for managing PKM calendar/schedule
 
 
 
 GET
-/pkm/{pkmId}/kriteria
-Get list of kriteria for specific PKM
+/pkm-kalender
+Get list of PKM kalender
 
 
-Returns all kriteria for a PKM with total bobot summary (Admin only)
+Returns paginated list of PKM kalender (Admin only)
 
 Parameters
 Try it out
 Name	Description
-pkmId *
+tahun
 integer
-(path)
-pkmId
+(query)
+Filter by year
+
+tahun
+is_active
+boolean
+(query)
+Filter by active status
+
+
+--
+per_page
+integer
+(query)
+Items per page
+
+Default value : 15
+
+15
 Responses
 Code	Description	Links
 200	
@@ -33,37 +50,31 @@ Schema
   "data": [
     {
       "id": 1,
-      "pkm_id": 1,
-      "urutan": 1,
-      "judul": "Kreativitas dan Inovasi",
-      "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
-      "bobot": 30,
+      "tahun": 2026,
+      "tanggal_mulai_pengajuan": "2026-03-01",
+      "tanggal_selesai_pengajuan": "2026-04-30",
+      "tanggal_mulai_penilaian": "2026-05-01",
+      "tanggal_selesai_penilaian": "2026-06-15",
+      "tanggal_pengumuman": "2026-06-30",
+      "is_active": true,
       "created_at": "2026-02-07T10:30:00+00:00",
       "updated_at": "2026-02-07T10:30:00+00:00"
     }
   ],
-  "summary": {
-    "total_kriteria": 4,
-    "total_bobot": 100,
-    "is_complete": true
-  }
+  "meta": {}
 }
 No links
 401	
 Unauthenticated
 
 No links
-404	
-PKM not found
-
-No links
 
 POST
-/pkm/{pkmId}/kriteria
-Create new kriteria for PKM
+/pkm-kalender
+Create new PKM kalender
 
 
-Create a new kriteria (validates total bobot <= 100%) (Admin only)
+Create a new PKM kalender (validates only 1 active calendar) (Admin only)
 
 Parameters
 Try it out
@@ -75,16 +86,23 @@ application/json
 Example Value
 Schema
 {
-  "pkm_id": 1,
-  "urutan": 1,
-  "judul": "Kreativitas dan Inovasi",
-  "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
-  "bobot": 30
+  "tahun": 2026,
+  "pkm_ids": [
+    1,
+    2,
+    3
+  ],
+  "tanggal_mulai_pengajuan": "2026-03-01",
+  "tanggal_selesai_pengajuan": "2026-04-30",
+  "tanggal_mulai_penilaian": "2026-05-01",
+  "tanggal_selesai_penilaian": "2026-06-15",
+  "tanggal_pengumuman": "2026-06-30",
+  "is_active": false
 }
 Responses
 Code	Description	Links
 201	
-Kriteria created successfully
+Kalender created successfully
 
 Media type
 
@@ -94,14 +112,16 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "Kriteria created successfully",
+  "message": "Kalender created successfully",
   "data": {
     "id": 1,
-    "pkm_id": 1,
-    "urutan": 1,
-    "judul": "Kreativitas dan Inovasi",
-    "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
-    "bobot": 30,
+    "tahun": 2026,
+    "tanggal_mulai_pengajuan": "2026-03-01",
+    "tanggal_selesai_pengajuan": "2026-04-30",
+    "tanggal_mulai_penilaian": "2026-05-01",
+    "tanggal_selesai_penilaian": "2026-06-15",
+    "tanggal_pengumuman": "2026-06-30",
+    "is_active": true,
     "created_at": "2026-02-07T10:30:00+00:00",
     "updated_at": "2026-02-07T10:30:00+00:00"
   }
@@ -111,21 +131,17 @@ No links
 Unauthenticated
 
 No links
-404	
-PKM not found
-
-No links
 422	
-Validation error (total bobot > 100%)
+Validation error
 
 No links
 
 GET
-/pkm-kriteria/{id}
-Get kriteria detail
+/pkm-kalender/{id}
+Get kalender detail
 
 
-Get detailed information of a specific kriteria (Admin only)
+Get detailed information of a specific kalender (Admin only)
 
 Parameters
 Try it out
@@ -149,11 +165,13 @@ Schema
   "success": true,
   "data": {
     "id": 1,
-    "pkm_id": 1,
-    "urutan": 1,
-    "judul": "Kreativitas dan Inovasi",
-    "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
-    "bobot": 30,
+    "tahun": 2026,
+    "tanggal_mulai_pengajuan": "2026-03-01",
+    "tanggal_selesai_pengajuan": "2026-04-30",
+    "tanggal_mulai_penilaian": "2026-05-01",
+    "tanggal_selesai_penilaian": "2026-06-15",
+    "tanggal_pengumuman": "2026-06-30",
+    "is_active": true,
     "created_at": "2026-02-07T10:30:00+00:00",
     "updated_at": "2026-02-07T10:30:00+00:00"
   }
@@ -164,16 +182,16 @@ Unauthenticated
 
 No links
 404	
-Kriteria not found
+Kalender not found
 
 No links
 
 PUT
-/pkm-kriteria/{id}
-Update kriteria
+/pkm-kalender/{id}
+Update kalender
 
 
-Update an existing kriteria (validates total bobot <= 100%) (Admin only)
+Update an existing kalender (Admin only)
 
 Parameters
 Try it out
@@ -188,15 +206,23 @@ application/json
 Example Value
 Schema
 {
-  "urutan": 1,
-  "judul": "Kreativitas dan Inovasi",
-  "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
-  "bobot": 30
+  "tahun": 2026,
+  "pkm_ids": [
+    1,
+    2,
+    3
+  ],
+  "tanggal_mulai_pengajuan": "2026-03-01",
+  "tanggal_selesai_pengajuan": "2026-04-30",
+  "tanggal_mulai_penilaian": "2026-05-01",
+  "tanggal_selesai_penilaian": "2026-06-15",
+  "tanggal_pengumuman": "2026-06-30",
+  "is_active": false
 }
 Responses
 Code	Description	Links
 200	
-Kriteria updated successfully
+Kalender updated successfully
 
 Media type
 
@@ -206,14 +232,16 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "Kriteria updated successfully",
+  "message": "Kalender updated successfully",
   "data": {
     "id": 1,
-    "pkm_id": 1,
-    "urutan": 1,
-    "judul": "Kreativitas dan Inovasi",
-    "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
-    "bobot": 30,
+    "tahun": 2026,
+    "tanggal_mulai_pengajuan": "2026-03-01",
+    "tanggal_selesai_pengajuan": "2026-04-30",
+    "tanggal_mulai_penilaian": "2026-05-01",
+    "tanggal_selesai_penilaian": "2026-06-15",
+    "tanggal_pengumuman": "2026-06-30",
+    "is_active": true,
     "created_at": "2026-02-07T10:30:00+00:00",
     "updated_at": "2026-02-07T10:30:00+00:00"
   }
@@ -224,20 +252,20 @@ Unauthenticated
 
 No links
 404	
-Kriteria not found
+Kalender not found
 
 No links
 422	
-Validation error (total bobot > 100%)
+Validation error
 
 No links
 
 DELETE
-/pkm-kriteria/{id}
-Delete kriteria
+/pkm-kalender/{id}
+Delete kalender
 
 
-Soft delete a kriteria (Admin only)
+Soft delete a kalender (Admin only)
 
 Parameters
 Try it out
@@ -249,7 +277,7 @@ id
 Responses
 Code	Description	Links
 200	
-Kriteria deleted successfully
+Kalender deleted successfully
 
 Media type
 
@@ -259,7 +287,7 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "Kriteria deleted successfully"
+  "message": "Kalender deleted successfully"
 }
 No links
 401	
@@ -267,37 +295,25 @@ Unauthenticated
 
 No links
 404	
-Kriteria not found
+Kalender not found
 
 No links
 
-POST
-/pkm/{sourcePkmId}/kriteria/duplicate
-Duplicate kriteria to another PKM
+GET
+/pkm-kalender/active/current
+Get active kalender
 
 
-Copy all kriteria from source PKM to target PKM (Admin only)
+Returns the currently active kalender
 
 Parameters
 Try it out
-Name	Description
-sourcePkmId *
-integer
-(path)
-sourcePkmId
-Request body
+No parameters
 
-application/json
-Example Value
-Schema
-{
-  "target_pkm_id": 2,
-  "overwrite": false
-}
 Responses
 Code	Description	Links
 200	
-Kriteria duplicated successfully
+Success
 
 Media type
 
@@ -307,66 +323,125 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "4 kriteria duplicated successfully",
-  "data": [
-    {
-      "id": 1,
-      "pkm_id": 1,
-      "urutan": 1,
-      "judul": "Kreativitas dan Inovasi",
-      "kriteria": "Mengukur tingkat kebaruan dan orisinalitas ide usaha yang diajukan...",
-      "bobot": 30,
-      "created_at": "2026-02-07T10:30:00+00:00",
-      "updated_at": "2026-02-07T10:30:00+00:00"
-    }
-  ]
+  "data": {
+    "id": 1,
+    "tahun": 2026,
+    "tanggal_mulai_pengajuan": "2026-03-01",
+    "tanggal_selesai_pengajuan": "2026-04-30",
+    "tanggal_mulai_penilaian": "2026-05-01",
+    "tanggal_selesai_penilaian": "2026-06-15",
+    "tanggal_pengumuman": "2026-06-30",
+    "is_active": true,
+    "created_at": "2026-02-07T10:30:00+00:00",
+    "updated_at": "2026-02-07T10:30:00+00:00"
+  }
 }
-No links
-400	
-Cannot duplicate to same PKM
-
 No links
 401	
 Unauthenticated
 
 No links
 404	
-PKM not found
+No active kalender found
 
 No links
 
-POST
-/pkm/{pkmId}/kriteria/reorder
-Reorder kriteria
+PATCH
+/pkm-kalender/{id}/activate
+Activate kalender
 
 
-Update urutan of multiple kriteria at once (for drag & drop) (Admin only)
+Activate this kalender and deactivate all others (Admin only)
 
 Parameters
 Try it out
 Name	Description
-pkmId *
+id *
 integer
 (path)
-pkmId
-Request body
+id
+Responses
+Code	Description	Links
+200	
+Kalender activated successfully
+
+Media type
 
 application/json
+Controls Accept header.
 Example Value
 Schema
 {
-  "orders": [
-    {
-      "id": 1,
-      "urutan": 1
-    },
-    {
-      "id": 2,
-      "urutan": 2
-    },
-    {
-      "id": 3,
-      "urutan": 3
-    }
-  ]
+  "success": true,
+  "message": "Kalender activated successfully",
+  "data": {
+    "id": 1,
+    "tahun": 2026,
+    "tanggal_mulai_pengajuan": "2026-03-01",
+    "tanggal_selesai_pengajuan": "2026-04-30",
+    "tanggal_mulai_penilaian": "2026-05-01",
+    "tanggal_selesai_penilaian": "2026-06-15",
+    "tanggal_pengumuman": "2026-06-30",
+    "is_active": true,
+    "created_at": "2026-02-07T10:30:00+00:00",
+    "updated_at": "2026-02-07T10:30:00+00:00"
+  }
 }
+No links
+401	
+Unauthenticated
+
+No links
+404	
+Kalender not found
+
+No links
+
+PATCH
+/pkm-kalender/{id}/deactivate
+Deactivate kalender
+
+
+Deactivate this kalender (Admin only)
+
+Parameters
+Try it out
+Name	Description
+id *
+integer
+(path)
+id
+Responses
+Code	Description	Links
+200	
+Kalender deactivated successfully
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "message": "Kalender deactivated successfully",
+  "data": {
+    "id": 1,
+    "tahun": 2026,
+    "tanggal_mulai_pengajuan": "2026-03-01",
+    "tanggal_selesai_pengajuan": "2026-04-30",
+    "tanggal_mulai_penilaian": "2026-05-01",
+    "tanggal_selesai_penilaian": "2026-06-15",
+    "tanggal_pengumuman": "2026-06-30",
+    "is_active": true,
+    "created_at": "2026-02-07T10:30:00+00:00",
+    "updated_at": "2026-02-07T10:30:00+00:00"
+  }
+}
+No links
+401	
+Unauthenticated
+
+No links
+404	
+Kalender not found

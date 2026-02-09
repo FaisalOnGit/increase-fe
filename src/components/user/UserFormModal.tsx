@@ -35,7 +35,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     email: "",
     password: "",
     password_confirmation: "",
-    role: "mahasiswa",
+    roles: ["mahasiswa"] as string[],
   });
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +49,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
           email: user.email,
           password: "",
           password_confirmation: "",
-          role: user.role,
+          roles: user.roles?.map((r: any) => r.name) || ["mahasiswa"],
         });
       } else {
         setFormData({
@@ -57,14 +57,16 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
           email: "",
           password: "",
           password_confirmation: "",
-          role: "mahasiswa",
+          roles: ["mahasiswa"],
         });
       }
       setErrors({});
     }
   }, [isOpen, mode, user]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -94,15 +96,15 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
           email: formData.email,
           password: formData.password,
           password_confirmation: formData.password_confirmation,
-          role: formData.role,
-        };
+          roles: formData.roles,
+        } as any;
         response = await createUser(data);
       } else {
         const data: UpdateUser = {
           name: formData.name,
           email: formData.email,
-          role: formData.role,
-        };
+          roles: formData.roles,
+        } as any;
 
         // Only include password if it's provided
         if (formData.password) {
@@ -119,7 +121,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         alert(
           mode === "create"
             ? "Pengguna berhasil ditambahkan"
-            : "Pengguna berhasil diperbarui"
+            : "Pengguna berhasil diperbarui",
         );
       } else {
         setErrors(response.errors || {});
@@ -138,7 +140,11 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
   const roles = [
     { value: "admin", label: "Admin", color: "bg-purple-100 text-purple-800" },
     { value: "dosen", label: "Dosen", color: "bg-blue-100 text-blue-800" },
-    { value: "mahasiswa", label: "Mahasiswa", color: "bg-green-100 text-green-800" },
+    {
+      value: "mahasiswa",
+      label: "Mahasiswa",
+      color: "bg-green-100 text-green-800",
+    },
   ];
 
   return (
@@ -199,27 +205,45 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
             {/* Role */}
             <div className="grid gap-2">
-              <Label htmlFor="role">
+              <Label>
                 Role <span className="text-destructive">*</span>
               </Label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                  errors.role ? "border-destructive" : ""
-                }`}
-              >
+              <div className="flex flex-wrap gap-3">
                 {roles.map((role) => (
-                  <option key={role.value} value={role.value}>
-                    {role.label}
-                  </option>
+                  <label
+                    key={role.value}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition-colors ${
+                      formData.roles.includes(role.value)
+                        ? role.color + " border-current"
+                        : "border-border hover:bg-accent"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.roles.includes(role.value)}
+                      onChange={(e) => {
+                        const newRoles = e.target.checked
+                          ? [...formData.roles, role.value]
+                          : formData.roles.filter((r) => r !== role.value);
+                        setFormData((prev) => ({ ...prev, roles: newRoles }));
+                        // Clear error when user interacts
+                        if (errors.roles) {
+                          setErrors((prev) => {
+                            const newErrors = { ...prev };
+                            delete newErrors.roles;
+                            return newErrors;
+                          });
+                        }
+                      }}
+                      disabled={isSubmitting}
+                      className="rounded"
+                    />
+                    <span className="text-sm font-medium">{role.label}</span>
+                  </label>
                 ))}
-              </select>
-              {errors.role && (
-                <p className="text-sm text-destructive">{errors.role[0]}</p>
+              </div>
+              {errors.roles && (
+                <p className="text-sm text-destructive">{errors.roles[0]}</p>
               )}
             </div>
 
@@ -227,7 +251,9 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             <div className="grid gap-2">
               <Label htmlFor="password">
                 Password{" "}
-                {mode === "create" && <span className="text-destructive">*</span>}
+                {mode === "create" && (
+                  <span className="text-destructive">*</span>
+                )}
               </Label>
               <Input
                 id="password"
@@ -236,7 +262,9 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder={
-                  mode === "create" ? "Minimal 8 karakter" : "Biarkan kosong jika tidak ingin mengubah"
+                  mode === "create"
+                    ? "Minimal 8 karakter"
+                    : "Biarkan kosong jika tidak ingin mengubah"
                 }
                 disabled={isSubmitting}
                 className={errors.password ? "border-destructive" : ""}
@@ -251,7 +279,9 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
               <div className="grid gap-2">
                 <Label htmlFor="password_confirmation">
                   Konfirmasi Password{" "}
-                  {mode === "create" && <span className="text-destructive">*</span>}
+                  {mode === "create" && (
+                    <span className="text-destructive">*</span>
+                  )}
                 </Label>
                 <Input
                   id="password_confirmation"
@@ -261,10 +291,14 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                   onChange={handleInputChange}
                   placeholder="Ulangi password"
                   disabled={isSubmitting}
-                  className={errors.password_confirmation ? "border-destructive" : ""}
+                  className={
+                    errors.password_confirmation ? "border-destructive" : ""
+                  }
                 />
                 {errors.password_confirmation && (
-                  <p className="text-sm text-destructive">{errors.password_confirmation[0]}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.password_confirmation[0]}
+                  </p>
                 )}
               </div>
             )}
@@ -282,7 +316,11 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                  <Icon
+                    name="Loader2"
+                    size={16}
+                    className="mr-2 animate-spin"
+                  />
                   Menyimpan...
                 </>
               ) : mode === "create" ? (

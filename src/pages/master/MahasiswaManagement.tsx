@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { getStatusBadge } from "@/utils/badge-utils";
 
 export const MahasiswaManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,17 +33,6 @@ export const MahasiswaManagement: React.FC = () => {
   const totalPages = Math.ceil(filteredMahasiswa.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedMahasiswa = filteredMahasiswa.slice(startIndex, startIndex + itemsPerPage);
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">Aktif</Badge>;
-      case 'lulus':
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Lulus</Badge>;
-      default:
-        return <Badge variant="secondary">Nonaktif</Badge>;
-    }
-  };
 
   return (
     <div className="p-6 space-y-6">

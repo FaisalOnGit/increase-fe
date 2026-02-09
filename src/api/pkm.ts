@@ -14,7 +14,17 @@ import {
  */
 export const getPKMs = async (params?: JenisPKMListParams): Promise<JenisPKMListResponse> => {
   try {
-    const response = await apiClient.get<JenisPKMListResponse>('/pkm', { params });
+    const response = await apiClient.get<any>('/pkm', { params });
+
+    // Handle API response format without success field
+    if (response.data && response.data.data) {
+      return {
+        success: true,
+        data: response.data.data,
+        meta: response.data.meta,
+      };
+    }
+
     return response.data;
   } catch (error: any) {
     return {

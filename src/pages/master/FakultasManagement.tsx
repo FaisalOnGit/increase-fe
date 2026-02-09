@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { getFaculties, deleteFaculty } from "@/api/faculty";
 import { Faculty } from "@/types/api.types";
+import { FacultyFormModal } from "@/components/faculty/FacultyFormModal";
 
 export const FakultasManagement: React.FC = () => {
   const [faculties, setFaculties] = useState<Faculty[]>([]);
@@ -22,6 +23,11 @@ export const FakultasManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedFaculty, setSelectedFaculty] = useState<Faculty | null>(null);
 
   useEffect(() => {
     fetchFaculties();
@@ -67,6 +73,27 @@ export const FakultasManagement: React.FC = () => {
     }
   };
 
+  const handleOpenCreateModal = () => {
+    setModalMode("create");
+    setSelectedFaculty(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (faculty: Faculty) => {
+    setModalMode("edit");
+    setSelectedFaculty(faculty);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedFaculty(null);
+  };
+
+  const handleModalSuccess = () => {
+    fetchFaculties();
+  };
+
   const getProdiList = (faculty: Faculty) => {
     if (!faculty.prodis || faculty.prodis.length === 0) {
       return <span className="text-xs text-muted-foreground">Belum ada prodi</span>;
@@ -109,7 +136,7 @@ export const FakultasManagement: React.FC = () => {
             Kelola data fakultas
           </p>
         </div>
-        <Button>
+        <Button onClick={handleOpenCreateModal}>
           <Icon name="Building" size={16} className="mr-2" />
           Tambah Fakultas
         </Button>
@@ -232,7 +259,12 @@ export const FakultasManagement: React.FC = () => {
                           <Button variant="ghost" size="icon" title="Lihat Detail">
                             <Icon name="Eye" size={16} />
                           </Button>
-                          <Button variant="ghost" size="icon" title="Edit">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Edit"
+                            onClick={() => handleOpenEditModal(faculty)}
+                          >
                             <Icon name="Settings" size={16} />
                           </Button>
                           <Button
@@ -254,6 +286,15 @@ export const FakultasManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Faculty Form Modal */}
+      <FacultyFormModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSuccess={handleModalSuccess}
+        faculty={selectedFaculty}
+        mode={modalMode}
+      />
     </div>
   );
 };

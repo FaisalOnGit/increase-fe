@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/table";
 import { getProdis, deleteProdi } from "@/api/prodi";
 import { Prodi } from "@/types/api.types";
+import { ProdiFormModal } from "@/components/prodi/ProdiFormModal";
+import { getStrataBadge } from "@/utils/badge-utils";
 
 export const ProdiManagement: React.FC = () => {
   const [prodis, setProdis] = useState<Prodi[]>([]);
@@ -22,6 +24,11 @@ export const ProdiManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedProdi, setSelectedProdi] = useState<Prodi | null>(null);
 
   useEffect(() => {
     fetchProdis();
@@ -49,7 +56,9 @@ export const ProdiManagement: React.FC = () => {
   };
 
   const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus program studi "${name}"?`)) {
+    if (
+      !confirm(`Apakah Anda yakin ingin menghapus program studi "${name}"?`)
+    ) {
       return;
     }
 
@@ -67,21 +76,25 @@ export const ProdiManagement: React.FC = () => {
     }
   };
 
-  const getStrataBadge = (strata: string) => {
-    switch (strata) {
-      case "S3":
-        return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">S3</Badge>;
-      case "S2":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">S2</Badge>;
-      case "S1":
-        return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">S1</Badge>;
-      case "D3":
-        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">D3</Badge>;
-      case "D2":
-        return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200">D2</Badge>;
-      default:
-        return <Badge variant="secondary">{strata}</Badge>;
-    }
+  const handleOpenCreateModal = () => {
+    setModalMode("create");
+    setSelectedProdi(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (prodi: Prodi) => {
+    setModalMode("edit");
+    setSelectedProdi(prodi);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProdi(null);
+  };
+
+  const handleModalSuccess = () => {
+    fetchProdis();
   };
 
   return (
@@ -105,7 +118,7 @@ export const ProdiManagement: React.FC = () => {
             Kelola data program studi
           </p>
         </div>
-        <Button>
+        <Button onClick={handleOpenCreateModal}>
           <Icon name="BookOpen" size={16} className="mr-2" />
           Tambah Prodi
         </Button>
@@ -130,10 +143,16 @@ export const ProdiManagement: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-100 rounded-lg">
-                <Icon name="CheckCircle" size={20} className="text-emerald-600" />
+                <Icon
+                  name="CheckCircle"
+                  size={20}
+                  className="text-emerald-600"
+                />
               </div>
               <div>
-                <p className="text-2xl font-bold">{prodis.filter((p) => p.strata === "S1").length}</p>
+                <p className="text-2xl font-bold">
+                  {prodis.filter((p) => p.strata === "S1").length}
+                </p>
                 <p className="text-xs text-muted-foreground">Program S1</p>
               </div>
             </div>
@@ -147,9 +166,14 @@ export const ProdiManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {prodis.filter((p) => p.strata === "S2" || p.strata === "S3").length}
+                  {
+                    prodis.filter((p) => p.strata === "S2" || p.strata === "S3")
+                      .length
+                  }
                 </p>
-                <p className="text-xs text-muted-foreground">Program Pascasarjana</p>
+                <p className="text-xs text-muted-foreground">
+                  Program Pascasarjana
+                </p>
               </div>
             </div>
           </CardContent>
@@ -186,7 +210,9 @@ export const ProdiManagement: React.FC = () => {
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-8 text-center text-muted-foreground">Memuat data...</div>
+            <div className="p-8 text-center text-muted-foreground">
+              Memuat data...
+            </div>
           ) : prodis.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
               Tidak ada data program studi
@@ -209,19 +235,29 @@ export const ProdiManagement: React.FC = () => {
                     <TableRow key={prodiItem.id}>
                       <TableCell>
                         <div>
-                          <p className="text-sm font-medium">{prodiItem.name}</p>
+                          <p className="text-sm font-medium">
+                            {prodiItem.name}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {prodiItem.kaprodi ? `Kaprodi: ${prodiItem.kaprodi.name}` : "Belum ada kaprodi"}
+                            {prodiItem.kaprodi
+                              ? `Kaprodi: ${prodiItem.kaprodi.name}`
+                              : "Belum ada kaprodi"}
                           </p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm font-mono font-medium">{prodiItem.code}</span>
+                        <span className="text-sm font-mono font-medium">
+                          {prodiItem.code}
+                        </span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm">{prodiItem.fakultas?.name || "-"}</span>
+                        <span className="text-sm">
+                          {prodiItem.fakultas?.name || "-"}
+                        </span>
                       </TableCell>
-                      <TableCell className="text-center">{getStrataBadge(prodiItem.strata)}</TableCell>
+                      <TableCell className="text-center">
+                        {getStrataBadge(prodiItem.strata)}
+                      </TableCell>
                       <TableCell className="text-center">
                         {prodiItem.kaprodi ? (
                           <Badge variant="outline" className="text-xs">
@@ -237,10 +273,19 @@ export const ProdiManagement: React.FC = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" title="Lihat Detail">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Lihat Detail"
+                          >
                             <Icon name="Eye" size={16} />
                           </Button>
-                          <Button variant="ghost" size="icon" title="Edit">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Edit"
+                            onClick={() => handleOpenEditModal(prodiItem)}
+                          >
                             <Icon name="Settings" size={16} />
                           </Button>
                           <Button
@@ -248,7 +293,9 @@ export const ProdiManagement: React.FC = () => {
                             size="icon"
                             className="text-destructive"
                             title="Hapus"
-                            onClick={() => handleDelete(prodiItem.id, prodiItem.name)}
+                            onClick={() =>
+                              handleDelete(prodiItem.id, prodiItem.name)
+                            }
                           >
                             <Icon name="Trash2" size={16} />
                           </Button>
@@ -262,6 +309,15 @@ export const ProdiManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Prodi Form Modal */}
+      <ProdiFormModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSuccess={handleModalSuccess}
+        prodi={selectedProdi}
+        mode={modalMode}
+      />
     </div>
   );
 };

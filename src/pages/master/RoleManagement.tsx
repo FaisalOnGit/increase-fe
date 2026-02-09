@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { getRoles, getRoleByName } from "@/api/roles";
 import { Role } from "@/types/api.types";
+import { getRoleBadge } from "@/utils/badge-utils";
 
 export const RoleManagement: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -66,83 +67,6 @@ export const RoleManagement: React.FC = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedRoles = filteredRoles.slice(startIndex, startIndex + itemsPerPage);
 
-  const getRoleBadge = (name: string) => {
-    const normalized = name.toLowerCase();
-    switch (normalized) {
-      case "admin":
-        return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Admin</Badge>;
-      case "dosen":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Dosen</Badge>;
-      case "mahasiswa":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Mahasiswa</Badge>;
-      case "reviewer":
-        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">Reviewer</Badge>;
-      case "kajur":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Kajur</Badge>;
-      default:
-        return <Badge variant="secondary">{name}</Badge>;
-    }
-  };
-
-  const getRoleIcon = (name: string) => {
-    const normalized = name.toLowerCase();
-    switch (normalized) {
-      case "admin":
-        return "Shield";
-      case "dosen":
-        return "GraduationCap";
-      case "mahasiswa":
-        return "Users";
-      case "reviewer":
-        return "Eye";
-      case "kajur":
-        return "Award";
-      default:
-        return "HelpCircle";
-    }
-  };
-
-  const getRoleColor = (name: string) => {
-    const normalized = name.toLowerCase();
-    switch (normalized) {
-      case "admin":
-        return {
-          bg: "bg-purple-100",
-          text: "text-purple-600",
-          iconBg: "bg-purple-50",
-        };
-      case "dosen":
-        return {
-          bg: "bg-blue-100",
-          text: "text-blue-600",
-          iconBg: "bg-blue-50",
-        };
-      case "mahasiswa":
-        return {
-          bg: "bg-green-100",
-          text: "text-green-600",
-          iconBg: "bg-green-50",
-        };
-      case "reviewer":
-        return {
-          bg: "bg-amber-100",
-          text: "text-amber-600",
-          iconBg: "bg-amber-50",
-        };
-      case "kajur":
-        return {
-          bg: "bg-red-100",
-          text: "text-red-600",
-          iconBg: "bg-red-50",
-        };
-      default:
-        return {
-          bg: "bg-gray-100",
-          text: "text-gray-600",
-          iconBg: "bg-gray-50",
-        };
-    }
-  };
 
   return (
     <div className="p-6 space-y-6">
@@ -252,25 +176,17 @@ export const RoleManagement: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedRoles.map((role) => {
-                    const colors = getRoleColor(role.name);
-                    return (
-                      <TableRow key={role.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${colors.iconBg}`}>
-                              <Icon
-                                name={getRoleIcon(role.name) as any}
-                                size={18}
-                                className={colors.text}
-                              />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium">{role.display_name}</p>
-                              <p className="text-xs text-muted-foreground">{role.name}</p>
-                            </div>
+                  {paginatedRoles.map((role) => (
+                    <TableRow key={role.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {getRoleBadge(role.name)}
+                          <div>
+                            <p className="text-sm font-medium">{role.display_name}</p>
+                            <p className="text-xs text-muted-foreground">{role.name}</p>
                           </div>
-                        </TableCell>
+                        </div>
+                      </TableCell>
                         <TableCell>
                           <Badge variant="outline">{role.guard_name}</Badge>
                         </TableCell>
@@ -288,8 +204,7 @@ export const RoleManagement: React.FC = () => {
                           </div>
                         </TableCell>
                       </TableRow>
-                    );
-                  })}
+                    ))}
                 </TableBody>
               </Table>
 

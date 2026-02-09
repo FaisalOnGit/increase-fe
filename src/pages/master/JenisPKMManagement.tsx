@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { getPKMs, deletePKM, togglePKMStatus } from "@/api/pkm";
 import { JenisPKM } from "@/types/api.types";
+import { JenisPKMFormModal } from "@/components/pkm/JenisPKMFormModal";
 
 export const JenisPKMManagement: React.FC = () => {
   const [pkms, setPkms] = useState<JenisPKM[]>([]);
@@ -22,6 +23,11 @@ export const JenisPKMManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedPKM, setSelectedPKM] = useState<JenisPKM | null>(null);
 
   useEffect(() => {
     fetchPKMs();
@@ -87,6 +93,27 @@ export const JenisPKMManagement: React.FC = () => {
     }
   };
 
+  const handleOpenCreateModal = () => {
+    setModalMode("create");
+    setSelectedPKM(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (pkm: JenisPKM) => {
+    setModalMode("edit");
+    setSelectedPKM(pkm);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPKM(null);
+  };
+
+  const handleModalSuccess = () => {
+    fetchPKMs();
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Breadcrumb */}
@@ -108,7 +135,7 @@ export const JenisPKMManagement: React.FC = () => {
             Kelola jenis-jenis Program Kreativitas Mahasiswa
           </p>
         </div>
-        <Button>
+        <Button onClick={handleOpenCreateModal}>
           <Icon name="Award" size={16} className="mr-2" />
           Tambah Jenis PKM
         </Button>
@@ -252,7 +279,12 @@ export const JenisPKMManagement: React.FC = () => {
                           <Button variant="ghost" size="icon" title="Lihat Detail">
                             <Icon name="Eye" size={16} />
                           </Button>
-                          <Button variant="ghost" size="icon" title="Edit">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Edit"
+                            onClick={() => handleOpenEditModal(pkm)}
+                          >
                             <Icon name="Settings" size={16} />
                           </Button>
                           <Button
@@ -274,6 +306,15 @@ export const JenisPKMManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Jenis PKM Form Modal */}
+      <JenisPKMFormModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSuccess={handleModalSuccess}
+        pkm={selectedPKM}
+        mode={modalMode}
+      />
     </div>
   );
 };

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -18,6 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getUsers, deleteUser } from "@/api/users";
 import { User } from "@/types/api.types";
 import { UserFormModal } from "@/components/user/UserFormModal";
+import { getRoleBadge } from "@/utils/badge-utils";
 
 export const UserManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -105,20 +105,6 @@ export const UserManagement: React.FC = () => {
     fetchUsers();
   };
 
-  const getRoleBadge = (role: string) => {
-    const normalizedRole = role.toLowerCase();
-    switch (normalizedRole) {
-      case 'admin':
-        return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Admin</Badge>;
-      case 'dosen':
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Dosen</Badge>;
-      case 'mahasiswa':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Mahasiswa</Badge>;
-      default:
-        return <Badge variant="secondary">{role}</Badge>;
-    }
-  };
-
   return (
     <div className="p-6 space-y-6">
       {/* Breadcrumb */}
@@ -154,7 +140,11 @@ export const UserManagement: React.FC = () => {
       <Card>
         <CardContent className="p-4">
           <div className="relative">
-            <Icon name="Search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Icon
+              name="Search"
+              size={20}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
             <Input
               type="text"
               placeholder="Cari nama atau email..."
@@ -213,19 +203,28 @@ export const UserManagement: React.FC = () => {
                       <TableCell>
                         <p className="text-sm">{user.email}</p>
                       </TableCell>
-                      <TableCell>{getRoleBadge(user.role)}</TableCell>
+                      <TableCell>
+                        {getRoleBadge(user.roles?.[0]?.display_name)}
+                      </TableCell>
                       <TableCell>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(user.created_at).toLocaleDateString('id-ID', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
+                          {new Date(user.created_at).toLocaleDateString(
+                            "id-ID",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
                         </p>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" title="Lihat Detail">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Lihat Detail"
+                          >
                             <Icon name="Eye" size={16} />
                           </Button>
                           <Button
@@ -262,7 +261,9 @@ export const UserManagement: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       <Icon name="ChevronLeft" size={16} />
@@ -273,7 +274,9 @@ export const UserManagement: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages || totalPages === 0}
                     >
                       <Icon name="ChevronRight" size={16} />

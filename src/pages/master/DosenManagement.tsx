@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { getStatusBadge } from "@/utils/badge-utils";
 
 export const DosenManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,19 +36,6 @@ export const DosenManagement: React.FC = () => {
     startIndex,
     startIndex + itemsPerPage,
   );
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return (
-          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
-            Aktif
-          </Badge>
-        );
-      default:
-        return <Badge variant="secondary">Nonaktif</Badge>;
-    }
-  };
 
   return (
     <div className="p-6 space-y-6">

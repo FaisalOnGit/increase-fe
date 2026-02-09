@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getDeletedUsers, restoreUser, forceDeleteUser } from "@/api/users";
 import { User } from "@/types/api.types";
+import { getRoleBadge } from "@/utils/badge-utils";
 
 export const UserRestore: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -91,20 +92,6 @@ export const UserRestore: React.FC = () => {
     } catch (error) {
       console.error("Error force deleting user:", error);
       alert("Terjadi kesalahan saat menghapus permanen");
-    }
-  };
-
-  const getRoleBadge = (role: string) => {
-    const normalizedRole = role.toLowerCase();
-    switch (normalizedRole) {
-      case 'admin':
-        return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Admin</Badge>;
-      case 'dosen':
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Dosen</Badge>;
-      case 'mahasiswa':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Mahasiswa</Badge>;
-      default:
-        return <Badge variant="secondary">{role}</Badge>;
     }
   };
 

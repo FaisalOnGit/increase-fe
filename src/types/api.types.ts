@@ -12,6 +12,10 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  roles: Array<{
+    name: string;
+    display_name: string;
+  }>;
   email_verified_at?: string;
   deleted_at?: string;
   created_at: string;
@@ -49,7 +53,7 @@ export interface UserListParams {
   search?: string;
   role?: string;
   sort_by?: string;
-  sort_order?: 'asc' | 'desc';
+  sort_order?: "asc" | "desc";
 }
 
 export interface UserListResponse extends ApiResponse<User[]> {
@@ -321,3 +325,57 @@ export interface KriteriaPKMListResponse extends ApiResponse<KriteriaPKM[]> {
 }
 
 export interface SingleKriteriaPKMResponse extends ApiResponse<KriteriaPKM> {}
+
+// PKM Kalender Types
+export interface PKMKalender {
+  id: number;
+  tahun: number;
+  tanggal_mulai_pengajuan: string;
+  tanggal_selesai_pengajuan: string;
+  tanggal_mulai_penilaian: string;
+  tanggal_selesai_penilaian: string;
+  tanggal_pengumuman: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreatePKMKalender {
+  tahun: number;
+  pkm_ids: number[];
+  tanggal_mulai_pengajuan: string;
+  tanggal_selesai_pengajuan: string;
+  tanggal_mulai_penilaian: string;
+  tanggal_selesai_penilaian: string;
+  tanggal_pengumuman: string;
+  is_active?: boolean;
+}
+
+export interface UpdatePKMKalender {
+  tahun?: number;
+  pkm_ids?: number[];
+  tanggal_mulai_pengajuan?: string;
+  tanggal_selesai_pengajuan?: string;
+  tanggal_mulai_penilaian?: string;
+  tanggal_selesai_penilaian?: string;
+  tanggal_pengumuman?: string;
+  is_active?: boolean;
+}
+
+export interface PKMKalenderListParams {
+  tahun?: number;
+  is_active?: boolean;
+  per_page?: number;
+  page?: number;
+}
+
+export interface PKMKalenderListResponse extends ApiResponse<PKMKalender[]> {
+  meta?: {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+  };
+}
+
+export interface SinglePKMKalenderResponse extends ApiResponse<PKMKalender> {}
