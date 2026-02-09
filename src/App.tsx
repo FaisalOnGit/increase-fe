@@ -16,6 +16,10 @@ import { JenisPKMManagement } from "./pages/master/JenisPKMManagement";
 import { KriteriaPKMManagement } from "./pages/master/KriteriaPKMManagement";
 import { PeriodeManagement } from "./pages/master/PeriodeManagement";
 import { PembimbingManagement } from "./pages/manajemen/PembimbingManagement";
+import { ReviewerManagement } from "./pages/manajemen/ReviewerManagement";
+import { ProposalManagement } from "./pages/pembimbing/ProposalManagement";
+import { RekapProposal } from "./pages/laporan/RekapProposal";
+import { ProposalSubmission } from "./pages/mahasiswa/ProposalSubmission";
 import PrivateRoute from "./utils/PrivateRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -42,6 +46,10 @@ function App() {
               <Route path="master/kriteria-pkm" element={<KriteriaPKMManagement />} />
               <Route path="master/periode" element={<PeriodeManagement />} />
               <Route path="manajemen/pembimbing" element={<PembimbingManagement />} />
+              <Route path="manajemen/review" element={<ReviewerManagement />} />
+              <Route path="manajemen/proposal" element={<ProposalManagement />} />
+              <Route path="mahasiswa/pengajuan-proposal" element={<ProposalSubmission />} />
+              <Route path="rekap/proposal" element={<RekapProposal />} />
               <Route path="not-found" element={<NotFound />} />
             </Route>
           </Route>

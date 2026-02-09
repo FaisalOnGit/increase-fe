@@ -34,8 +34,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Verify token by fetching user data from API
           const response = await getUser();
           if (response.success && response.data) {
-            setUser(response.data);
-            sessionStorage.setItem("user", JSON.stringify(response.data));
+            setUser(response.data.user);
+            sessionStorage.setItem("user", JSON.stringify(response.data.user));
           } else {
             // Token is invalid, clear storage
             sessionStorage.removeItem("token");
@@ -61,8 +61,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await apiLogin({ email, password });
 
       if (response.success && response.data) {
-        const { token, ...userWithoutToken } = response.data;
-        setUser(userWithoutToken);
+        const { user } = response.data;
+        setUser(user);
         return { success: true, message: response.message };
       } else {
         return { success: false, message: response.message };
@@ -90,8 +90,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await getUser();
       if (response.success && response.data) {
-        setUser(response.data);
-        sessionStorage.setItem("user", JSON.stringify(response.data));
+        setUser(response.data.user);
+        sessionStorage.setItem("user", JSON.stringify(response.data.user));
       }
     } catch (error) {
       console.error("Failed to refresh user data:", error);

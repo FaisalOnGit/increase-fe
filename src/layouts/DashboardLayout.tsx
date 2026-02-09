@@ -7,6 +7,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/Button";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Helper function to capitalize first letter
+const capitalizeFirstLetter = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
 const findPageTitle = (pathname: string): string => {
   // Check direct path matches
@@ -47,8 +53,20 @@ export const DashboardLayout: React.FC = () => {
   });
 
   const location = useLocation();
-  const firstName = sessionStorage.getItem("firstName") || "User";
+  const { user } = useAuth();
   const pageTitle = findPageTitle(location.pathname);
+
+  // Get user display name - fallback to "User" if not available
+  const displayName = user?.name || "User";
+
+  // Get user role display name from roles array or role string
+  // Fallback to capitalized name if role is not available
+  const roleDisplay =
+    user?.roles && user.roles.length > 0
+      ? user.roles[0].display_name
+      : user?.role
+        ? capitalizeFirstLetter(user.role)
+        : capitalizeFirstLetter(displayName);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -103,9 +121,9 @@ export const DashboardLayout: React.FC = () => {
                 </Avatar>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium text-primary">
-                    {firstName}
+                    {displayName}
                   </p>
-                  <p className="text-xs text-muted-foreground">Administrator</p>
+                  <p className="text-xs text-muted-foreground">{roleDisplay}</p>
                 </div>
               </div>
             </div>

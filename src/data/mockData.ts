@@ -183,9 +183,9 @@ export const navItems: NavItem[] = [
         path: "/dashboard/manajemen/proposal",
       },
       {
-        id: "review-proposal",
-        label: "Review Proposal",
-        icon: "Eye",
+        id: "manajemen-reviewer",
+        label: "Manajemen Reviewer",
+        icon: "Users",
         path: "/dashboard/manajemen/review",
       },
     ],

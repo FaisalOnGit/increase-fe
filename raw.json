@@ -1,28 +1,43 @@
-PKM Kalender
-API endpoints for managing PKM calendar/schedule
+Reviewer Management
+API endpoints for admin to manage proposal reviewers
 
 
 
 GET
-/pkm-kalender
-Get list of PKM kalender
+/reviewer-management
+Get proposals list for reviewer management
 
 
-Returns paginated list of PKM kalender (Admin only)
+Returns list of proposals with reviewer information for admin management (Admin only)
 
 Parameters
 Try it out
 Name	Description
+search
+string
+(query)
+Search by proposal title or ketua name
+
+search
+status
+string
+(query)
+Filter by proposal status
+
+Available values : pending, ditolak, disetujui, revisi
+
+
+--
 tahun
 integer
 (query)
-Filter by year
+Filter by year (from pkm_kalender)
 
-tahun
-is_active
+2026
+has_reviewer
 boolean
 (query)
-Filter by active status
+Filter by reviewer status (true/false)
 
 
 --
@@ -50,59 +65,155 @@ Schema
   "data": [
     {
       "id": 1,
+      "judul": "Aplikasi Mobile untuk UMKM",
       "tahun": 2026,
-      "tanggal_mulai_pengajuan": "2026-03-01",
-      "tanggal_selesai_pengajuan": "2026-04-30",
-      "tanggal_mulai_penilaian": "2026-05-01",
-      "tanggal_selesai_penilaian": "2026-06-15",
-      "tanggal_pengumuman": "2026-06-30",
-      "is_active": true,
-      "created_at": "2026-02-07T10:30:00+00:00",
-      "updated_at": "2026-02-07T10:30:00+00:00"
+      "ketua": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com"
+      },
+      "anggota": [
+        {
+          "id": 2,
+          "name": "Alice Brown",
+          "email": "alice@example.com"
+        }
+      ],
+      "pembimbing": {
+        "id": 5,
+        "name": "Dr. Jane Smith",
+        "email": "jane@example.com"
+      },
+      "status": "menunggu pembimbing",
+      "status_pembimbing": "pending",
+      "status_reviewer": "belum_menilai",
+      "status_admin": "pending",
+      "catatan_admin": "Proposal sudah memenuhi syarat",
+      "reviewers": [
+        {
+          "id": 10,
+          "name": "Dr. Reviewer Name",
+          "email": "reviewer@example.com"
+        }
+      ],
+      "total_reviewer": 2,
+      "batas_max_reviewer": 3
     }
   ],
-  "meta": {}
+  "meta": {
+    "current_page": 1,
+    "per_page": 15,
+    "total": 100
+  }
 }
 No links
 401	
 Unauthenticated
+
+No links
+403	
+Forbidden
+
+No links
+
+GET
+/reviewer-management/available-reviewers
+Get available reviewers
+
+
+Returns list of available reviewers (users with reviewer role) that can be assigned. If proposal_id is provided, excludes reviewers already assigned to that proposal (Admin only)
+
+Parameters
+Try it out
+Name	Description
+proposal_id
+integer
+(query)
+Proposal ID to exclude already assigned reviewers
+
+1
+search
+string
+(query)
+Search by reviewer name or email
+
+search
+per_page
+integer
+(query)
+Items per page
+
+Default value : 50
+
+50
+Responses
+Code	Description	Links
+200	
+Success
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "data": [
+    {
+      "id": 10,
+      "name": "Dr. Reviewer Name",
+      "email": "reviewer@example.com"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 50,
+    "total": 25
+  }
+}
+No links
+401	
+Unauthenticated
+
+No links
+403	
+Forbidden
 
 No links
 
 POST
-/pkm-kalender
-Create new PKM kalender
+/reviewer-management/{proposal}/set-reviewers
+Set reviewers for proposal
 
 
-Create a new PKM kalender (validates only 1 active calendar) (Admin only)
+Assign reviewers to a proposal. This will create penilaian entries for all kriteria for each reviewer (Admin only)
 
 Parameters
 Try it out
-No parameters
+Name	Description
+proposal *
+integer
+(path)
+Proposal ID
 
+proposal
 Request body
 
 application/json
 Example Value
 Schema
 {
-  "tahun": 2026,
-  "pkm_ids": [
-    1,
-    2,
-    3
-  ],
-  "tanggal_mulai_pengajuan": "2026-03-01",
-  "tanggal_selesai_pengajuan": "2026-04-30",
-  "tanggal_mulai_penilaian": "2026-05-01",
-  "tanggal_selesai_penilaian": "2026-06-15",
-  "tanggal_pengumuman": "2026-06-30",
-  "is_active": false
+  "reviewer_ids": [
+    10,
+    11,
+    12
+  ]
 }
 Responses
 Code	Description	Links
-201	
-Kalender created successfully
+200	
+Reviewers assigned successfully
 
 Media type
 
@@ -112,23 +223,20 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "Kalender created successfully",
-  "data": {
-    "id": 1,
-    "tahun": 2026,
-    "tanggal_mulai_pengajuan": "2026-03-01",
-    "tanggal_selesai_pengajuan": "2026-04-30",
-    "tanggal_mulai_penilaian": "2026-05-01",
-    "tanggal_selesai_penilaian": "2026-06-15",
-    "tanggal_pengumuman": "2026-06-30",
-    "is_active": true,
-    "created_at": "2026-02-07T10:30:00+00:00",
-    "updated_at": "2026-02-07T10:30:00+00:00"
-  }
+  "message": "Reviewers assigned successfully",
+  "data": {}
 }
 No links
 401	
 Unauthenticated
+
+No links
+403	
+Forbidden
+
+No links
+404	
+Proposal not found
 
 No links
 422	
@@ -136,93 +244,36 @@ Validation error
 
 No links
 
-GET
-/pkm-kalender/{id}
-Get kalender detail
+PATCH
+/reviewer-management/{proposal}/reviewers
+Add reviewers to proposal
 
 
-Get detailed information of a specific kalender (Admin only)
-
-Parameters
-Try it out
-Name	Description
-id *
-integer
-(path)
-id
-Responses
-Code	Description	Links
-200	
-Success
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "tahun": 2026,
-    "tanggal_mulai_pengajuan": "2026-03-01",
-    "tanggal_selesai_pengajuan": "2026-04-30",
-    "tanggal_mulai_penilaian": "2026-05-01",
-    "tanggal_selesai_penilaian": "2026-06-15",
-    "tanggal_pengumuman": "2026-06-30",
-    "is_active": true,
-    "created_at": "2026-02-07T10:30:00+00:00",
-    "updated_at": "2026-02-07T10:30:00+00:00"
-  }
-}
-No links
-401	
-Unauthenticated
-
-No links
-404	
-Kalender not found
-
-No links
-
-PUT
-/pkm-kalender/{id}
-Update kalender
-
-
-Update an existing kalender (Admin only)
+Add additional reviewers to a proposal. This will create penilaian entries for all kriteria for new reviewers (Admin only)
 
 Parameters
 Try it out
 Name	Description
-id *
+proposal *
 integer
 (path)
-id
+Proposal ID
+
+proposal
 Request body
 
 application/json
 Example Value
 Schema
 {
-  "tahun": 2026,
-  "pkm_ids": [
-    1,
-    2,
-    3
-  ],
-  "tanggal_mulai_pengajuan": "2026-03-01",
-  "tanggal_selesai_pengajuan": "2026-04-30",
-  "tanggal_mulai_penilaian": "2026-05-01",
-  "tanggal_selesai_penilaian": "2026-06-15",
-  "tanggal_pengumuman": "2026-06-30",
-  "is_active": false
+  "reviewer_ids": [
+    13
+  ]
 }
 Responses
 Code	Description	Links
 200	
-Kalender updated successfully
+Reviewers added successfully
 
 Media type
 
@@ -232,27 +283,20 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "Kalender updated successfully",
-  "data": {
-    "id": 1,
-    "tahun": 2026,
-    "tanggal_mulai_pengajuan": "2026-03-01",
-    "tanggal_selesai_pengajuan": "2026-04-30",
-    "tanggal_mulai_penilaian": "2026-05-01",
-    "tanggal_selesai_penilaian": "2026-06-15",
-    "tanggal_pengumuman": "2026-06-30",
-    "is_active": true,
-    "created_at": "2026-02-07T10:30:00+00:00",
-    "updated_at": "2026-02-07T10:30:00+00:00"
-  }
+  "message": "Reviewers added successfully",
+  "data": {}
 }
 No links
 401	
 Unauthenticated
 
 No links
+403	
+Forbidden
+
+No links
 404	
-Kalender not found
+Proposal not found
 
 No links
 422	
@@ -260,110 +304,34 @@ Validation error
 
 No links
 
-DELETE
-/pkm-kalender/{id}
-Delete kalender
+POST
+/reviewer-management/{proposal}/approve
+Approve proposal by admin
 
 
-Soft delete a kalender (Admin only)
-
-Parameters
-Try it out
-Name	Description
-id *
-integer
-(path)
-id
-Responses
-Code	Description	Links
-200	
-Kalender deleted successfully
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "success": true,
-  "message": "Kalender deleted successfully"
-}
-No links
-401	
-Unauthenticated
-
-No links
-404	
-Kalender not found
-
-No links
-
-GET
-/pkm-kalender/active/current
-Get active kalender
-
-
-Returns the currently active kalender
-
-Parameters
-Try it out
-No parameters
-
-Responses
-Code	Description	Links
-200	
-Success
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "tahun": 2026,
-    "tanggal_mulai_pengajuan": "2026-03-01",
-    "tanggal_selesai_pengajuan": "2026-04-30",
-    "tanggal_mulai_penilaian": "2026-05-01",
-    "tanggal_selesai_penilaian": "2026-06-15",
-    "tanggal_pengumuman": "2026-06-30",
-    "is_active": true,
-    "created_at": "2026-02-07T10:30:00+00:00",
-    "updated_at": "2026-02-07T10:30:00+00:00"
-  }
-}
-No links
-401	
-Unauthenticated
-
-No links
-404	
-No active kalender found
-
-No links
-
-PATCH
-/pkm-kalender/{id}/activate
-Activate kalender
-
-
-Activate this kalender and deactivate all others (Admin only)
+Admin approves a proposal after reviewers have completed their assessment (Admin only)
 
 Parameters
 Try it out
 Name	Description
-id *
+proposal *
 integer
 (path)
-id
+Proposal ID
+
+proposal
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "catatan": "Proposal sudah memenuhi syarat dan disetujui"
+}
 Responses
 Code	Description	Links
 200	
-Kalender activated successfully
+Proposal approved successfully
 
 Media type
 
@@ -373,48 +341,55 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "Kalender activated successfully",
-  "data": {
-    "id": 1,
-    "tahun": 2026,
-    "tanggal_mulai_pengajuan": "2026-03-01",
-    "tanggal_selesai_pengajuan": "2026-04-30",
-    "tanggal_mulai_penilaian": "2026-05-01",
-    "tanggal_selesai_penilaian": "2026-06-15",
-    "tanggal_pengumuman": "2026-06-30",
-    "is_active": true,
-    "created_at": "2026-02-07T10:30:00+00:00",
-    "updated_at": "2026-02-07T10:30:00+00:00"
-  }
+  "message": "Proposal disetujui oleh admin",
+  "data": {}
 }
 No links
 401	
 Unauthenticated
 
 No links
+403	
+Forbidden
+
+No links
 404	
-Kalender not found
+Proposal not found
+
+No links
+422	
+Validation error
 
 No links
 
-PATCH
-/pkm-kalender/{id}/deactivate
-Deactivate kalender
+POST
+/reviewer-management/{proposal}/reject
+Reject proposal by admin
 
 
-Deactivate this kalender (Admin only)
+Admin rejects a proposal with a note (Admin only)
 
 Parameters
 Try it out
 Name	Description
-id *
+proposal *
 integer
 (path)
-id
+Proposal ID
+
+proposal
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "catatan": "Proposal tidak memenuhi syarat yang ditetapkan"
+}
 Responses
 Code	Description	Links
 200	
-Kalender deactivated successfully
+Proposal rejected successfully
 
 Media type
 
@@ -424,24 +399,21 @@ Example Value
 Schema
 {
   "success": true,
-  "message": "Kalender deactivated successfully",
-  "data": {
-    "id": 1,
-    "tahun": 2026,
-    "tanggal_mulai_pengajuan": "2026-03-01",
-    "tanggal_selesai_pengajuan": "2026-04-30",
-    "tanggal_mulai_penilaian": "2026-05-01",
-    "tanggal_selesai_penilaian": "2026-06-15",
-    "tanggal_pengumuman": "2026-06-30",
-    "is_active": true,
-    "created_at": "2026-02-07T10:30:00+00:00",
-    "updated_at": "2026-02-07T10:30:00+00:00"
-  }
+  "message": "Proposal ditolak oleh admin",
+  "data": {}
 }
 No links
 401	
 Unauthenticated
 
 No links
+403	
+Forbidden
+
+No links
 404	
-Kalender not found
+Proposal not found
+
+No links
+422	
+Validation error

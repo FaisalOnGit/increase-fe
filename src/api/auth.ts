@@ -18,7 +18,7 @@ export const login = async (credentials: LoginCredentials): Promise<LoginRespons
 
     // Store token and user data in sessionStorage
     if (response.data.success && response.data.data) {
-      const { token, ...user } = response.data.data;
+      const { token, user } = response.data.data;
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('user', JSON.stringify(user));
     }
@@ -43,7 +43,7 @@ export const register = async (data: RegisterData): Promise<RegisterResponse> =>
 
     // Store token and user data in sessionStorage
     if (response.data.success && response.data.data) {
-      const { token, ...user } = response.data.data;
+      const { token, user } = response.data.data;
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('user', JSON.stringify(user));
     }

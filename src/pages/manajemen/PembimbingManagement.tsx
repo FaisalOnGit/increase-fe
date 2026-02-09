@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -15,118 +15,94 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-// Dummy data
-const dummyPembimbing = [
-  {
-    id: 1,
-    nama: "Dr. Ahmad Fauzi, M.Kom",
-    nidn: "0412098801",
-    prodi: "Teknik Informatika",
-    fakultas: "Fakultas Teknik",
-    kuota: 5,
-    terpakai: 3,
-    status: "available",
-    email: "ahmad.fauzi@unsil.ac.id",
-  },
-  {
-    id: 2,
-    nama: "Prof. Dr. Sri Wahyuni, M.Si",
-    nidn: "0415056502",
-    prodi: "Matematika",
-    fakultas: "Fakultas MIPA",
-    kuota: 5,
-    terpakai: 5,
-    status: "full",
-    email: "sri.wahyuni@unsil.ac.id",
-  },
-  {
-    id: 3,
-    nama: "Dr. Bambang Sutrisno, M.T.",
-    nidn: "0410067303",
-    prodi: "Teknik Sipil",
-    fakultas: "Fakultas Teknik",
-    kuota: 5,
-    terpakai: 2,
-    status: "available",
-    email: "bambang.sutrisno@unsil.ac.id",
-  },
-  {
-    id: 4,
-    nama: "Dra. Hj. Ratna Sari, M.Pd",
-    nidn: "0422118404",
-    prodi: "Pendidikan Bahasa Inggris",
-    fakultas: "Fakultas Keguruan",
-    kuota: 5,
-    terpakai: 0,
-    status: "available",
-    email: "ratna.sari@unsil.ac.id",
-  },
-  {
-    id: 5,
-    nama: "Ir. Joko Susilo, M.Eng",
-    nidn: "0410038205",
-    prodi: "Teknik Elektro",
-    fakultas: "Fakultas Teknik",
-    kuota: 5,
-    terpakai: 4,
-    status: "available",
-    email: "joko.susilo@unsil.ac.id",
-  },
-  {
-    id: 6,
-    nama: "Dr. Dewi Lestari, M.Si",
-    nidn: "0418048606",
-    prodi: "Biologi",
-    fakultas: "Fakultas MIPA",
-    kuota: 5,
-    terpakai: 5,
-    status: "full",
-    email: "dewi.lestari@unsil.ac.id",
-  },
-  {
-    id: 7,
-    nama: "Prof. Dr. Hendra Gunawan, M.Kom",
-    nidn: "0409127507",
-    prodi: "Teknik Informatika",
-    fakultas: "Fakultas Teknik",
-    kuota: 8,
-    terpakai: 6,
-    status: "available",
-    email: "hendra.gunawan@unsil.ac.id",
-  },
-  {
-    id: 8,
-    nama: "Dr. Anita Permata, M.Pd",
-    nidn: "0415039008",
-    prodi: "Pendidikan Ekonomi",
-    fakultas: "Fakultas Ekonomi",
-    kuota: 5,
-    terpakai: 1,
-    status: "available",
-    email: "anita.permata@unsil.ac.id",
-  },
-];
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useDosen } from "@/hooks/useDosen";
+import { Dosen } from "@/types/api.types";
 
 export const PembimbingManagement: React.FC = () => {
+  const {
+    dosenList,
+    loading,
+    fetchDosen,
+    updateQuota,
+    resetQuota,
+    removeDosen,
+  } = useDosen();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const filteredPembimbing = dummyPembimbing.filter(
-    (p) =>
-      p.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.nidn.includes(searchTerm) ||
-      p.prodi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.fakultas.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Modal states
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedDosen, setSelectedDosen] = useState<Dosen | null>(null);
+  const [newKuota, setNewKuota] = useState<number>(5);
+  const [submitting, setSubmitting] = useState(false);
 
-  const totalPages = Math.ceil(filteredPembimbing.length / itemsPerPage);
+  useEffect(() => {
+    fetchDosen({ page: currentPage, per_page: itemsPerPage });
+  }, [currentPage]);
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchDosen({ search: searchTerm, page: 1, per_page: itemsPerPage });
+  };
+
+  const openEditModal = (dosen: Dosen) => {
+    setSelectedDosen(dosen);
+    setNewKuota(dosen.kuota);
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateQuota = async () => {
+    if (!selectedDosen) return;
+
+    setSubmitting(true);
+    const result = await updateQuota(selectedDosen.id, { kuota: newKuota });
+
+    if (result.success) {
+      alert("Kuota berhasil diupdate");
+      setEditModalOpen(false);
+    } else {
+      alert(result.message || "Gagal mengupdate kuota");
+    }
+    setSubmitting(false);
+  };
+
+  const handleResetQuota = async (dosen: Dosen) => {
+    if (!confirm(`Reset kuota untuk ${dosen.nama}?`)) return;
+
+    const result = await resetQuota(dosen.id);
+    if (result.success) {
+      alert("Kuota berhasil direset");
+    } else {
+      alert(result.message || "Gagal mereset kuota");
+    }
+  };
+
+  const handleDelete = async (dosen: Dosen) => {
+    if (!confirm(`Hapus ${dosen.nama}?`)) return;
+
+    const result = await removeDosen(dosen.id);
+    if (result.success) {
+      alert("Dosen berhasil dihapus");
+    } else {
+      alert(result.message || "Gagal menghapus dosen");
+    }
+  };
+
+  const totalPages =
+    dosenList.length > 0 ? Math.ceil(dosenList.length / itemsPerPage) : 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedPembimbing = filteredPembimbing.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedDosen = dosenList.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="p-6 space-y-6">
@@ -136,7 +112,10 @@ export const PembimbingManagement: React.FC = () => {
           pages={[
             { name: "Dashboard", href: "/dashboard" },
             { name: "Manajemen", href: "/dashboard/manajemen" },
-            { name: "Manajemen Pembimbing", href: "/dashboard/manajemen/pembimbing" },
+            {
+              name: "Manajemen Pembimbing",
+              href: "/dashboard/manajemen/pembimbing",
+            },
           ]}
         />
       </div>
@@ -164,8 +143,10 @@ export const PembimbingManagement: React.FC = () => {
                 <Icon name="Users" size={20} className="text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{dummyPembimbing.length}</p>
-                <p className="text-xs text-muted-foreground">Total Pembimbing</p>
+                <p className="text-2xl font-bold">{dosenList.length}</p>
+                <p className="text-xs text-muted-foreground">
+                  Total Pembimbing
+                </p>
               </div>
             </div>
           </CardContent>
@@ -174,11 +155,15 @@ export const PembimbingManagement: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-100 rounded-lg">
-                <Icon name="CheckCircle" size={20} className="text-emerald-600" />
+                <Icon
+                  name="CheckCircle"
+                  size={20}
+                  className="text-emerald-600"
+                />
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {dummyPembimbing.filter((p) => p.terpakai < p.kuota).length}
+                  {dosenList.filter((p) => p.terpakai < p.kuota).length}
                 </p>
                 <p className="text-xs text-muted-foreground">Tersedia</p>
               </div>
@@ -193,7 +178,7 @@ export const PembimbingManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {dummyPembimbing.filter((p) => p.terpakai >= p.kuota).length}
+                  {dosenList.filter((p) => p.terpakai >= p.kuota).length}
                 </p>
                 <p className="text-xs text-muted-foreground">Kuota Penuh</p>
               </div>
@@ -208,7 +193,10 @@ export const PembimbingManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {dummyPembimbing.reduce((acc, p) => acc + (p.kuota - p.terpakai), 0)}
+                  {dosenList.reduce(
+                    (acc, p) => acc + (p.kuota - p.terpakai),
+                    0,
+                  )}
                 </p>
                 <p className="text-xs text-muted-foreground">Sisa Kuota</p>
               </div>
@@ -230,10 +218,8 @@ export const PembimbingManagement: React.FC = () => {
               type="text"
               placeholder="Cari nama, NIDN, prodi, atau fakultas..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               className="pl-10"
             />
           </div>
@@ -246,7 +232,11 @@ export const PembimbingManagement: React.FC = () => {
           <CardTitle>Daftar Pembimbing PKM</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {paginatedPembimbing.length === 0 ? (
+          {loading ? (
+            <div className="p-8 text-center text-muted-foreground">
+              Memuat data...
+            </div>
+          ) : paginatedDosen.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
               Tidak ada data pembimbing
             </div>
@@ -258,13 +248,15 @@ export const PembimbingManagement: React.FC = () => {
                     <TableHead>Pembimbing</TableHead>
                     <TableHead>NIDN</TableHead>
                     <TableHead>Prodi / Fakultas</TableHead>
-                    <TableHead className="text-center">Kuota Pembimbingan</TableHead>
+                    <TableHead className="text-center">
+                      Kuota Pembimbingan
+                    </TableHead>
                     <TableHead className="text-center">Status</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedPembimbing.map((pembimbing) => (
+                  {paginatedDosen.map((pembimbing) => (
                     <TableRow key={pembimbing.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -279,18 +271,28 @@ export const PembimbingManagement: React.FC = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium">{pembimbing.nama}</p>
-                            <p className="text-xs text-muted-foreground">{pembimbing.email}</p>
+                            <p className="text-sm font-medium">
+                              {pembimbing.nama}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {pembimbing.email}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm font-mono">{pembimbing.nidn}</span>
+                        <span className="text-sm font-mono">
+                          {pembimbing.nidn}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="text-sm font-medium">{pembimbing.prodi}</p>
-                          <p className="text-xs text-muted-foreground">{pembimbing.fakultas}</p>
+                          <p className="text-sm font-medium">
+                            {pembimbing.prodi}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {pembimbing.fakultas}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
@@ -299,7 +301,10 @@ export const PembimbingManagement: React.FC = () => {
                             <span>{pembimbing.terpakai}</span>
                             <span>{pembimbing.kuota}</span>
                           </div>
-                          {getQuotaProgress(pembimbing.kuota, pembimbing.terpakai)}
+                          {getQuotaProgress(
+                            pembimbing.kuota,
+                            pembimbing.terpakai,
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
@@ -307,13 +312,27 @@ export const PembimbingManagement: React.FC = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" title="Lihat Detail">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Lihat Detail"
+                          >
                             <Icon name="Eye" size={16} />
                           </Button>
-                          <Button variant="ghost" size="icon" title="Edit Kuota">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Edit Kuota"
+                            onClick={() => openEditModal(pembimbing)}
+                          >
                             <Icon name="Settings" size={16} />
                           </Button>
-                          <Button variant="ghost" size="icon" title="Reset Kuota">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Reset Kuota"
+                            onClick={() => handleResetQuota(pembimbing)}
+                          >
                             <Icon name="RotateCcw" size={16} />
                           </Button>
                           <Button
@@ -321,6 +340,7 @@ export const PembimbingManagement: React.FC = () => {
                             size="icon"
                             className="text-destructive"
                             title="Hapus"
+                            onClick={() => handleDelete(pembimbing)}
                           >
                             <Icon name="Trash2" size={16} />
                           </Button>
@@ -336,14 +356,16 @@ export const PembimbingManagement: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
                     Menampilkan {startIndex + 1} hingga{" "}
-                    {Math.min(startIndex + itemsPerPage, filteredPembimbing.length)} dari{" "}
-                    {filteredPembimbing.length} pembimbing
+                    {Math.min(startIndex + itemsPerPage, dosenList.length)} dari{" "}
+                    {dosenList.length} pembimbing
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       <Icon name="ChevronLeft" size={16} />
@@ -354,7 +376,9 @@ export const PembimbingManagement: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages || totalPages === 0}
                     >
                       <Icon name="ChevronRight" size={16} />
@@ -366,6 +390,45 @@ export const PembimbingManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Quota Modal */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Kuota Pembimbing</DialogTitle>
+            <DialogDescription>{selectedDosen?.nama}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="kuota">Kuota Pembimbingan</Label>
+              <Input
+                id="kuota"
+                type="number"
+                min={1}
+                max={20}
+                value={newKuota}
+                onChange={(e) => setNewKuota(parseInt(e.target.value) || 5)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Kuota saat ini: {selectedDosen?.terpakai} /{" "}
+                {selectedDosen?.kuota}
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setEditModalOpen(false)}
+              disabled={submitting}
+            >
+              Batal
+            </Button>
+            <Button onClick={handleUpdateQuota} disabled={submitting}>
+              {submitting ? "Menyimpan..." : "Simpan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
