@@ -38,6 +38,7 @@ import {
   GraduationCap,
   Plus,
   AlertTriangle,
+  Info,
 } from "lucide-react";
 
 const icons = {
@@ -80,6 +81,7 @@ const icons = {
   GraduationCap,
   Plus,
   AlertTriangle,
+  Info,
 };
 
 interface IconProps {

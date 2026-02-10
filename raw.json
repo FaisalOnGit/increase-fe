@@ -1,54 +1,35 @@
-Reviewer Management
-API endpoints for admin to manage proposal reviewers
+Notifications
+API endpoints for managing user notifications
 
 
 
 GET
-/reviewer-management
-Get proposals list for reviewer management
+/notifications
+Get user notifications
 
 
-Returns list of proposals with reviewer information for admin management (Admin only)
+Returns paginated list of notifications for the authenticated user
 
 Parameters
 Try it out
 Name	Description
-search
-string
-(query)
-Search by proposal title or ketua name
-
-search
-status
-string
-(query)
-Filter by proposal status
-
-Available values : pending, ditolak, disetujui, revisi
-
-
---
-tahun
-integer
-(query)
-Filter by year (from pkm_kalender)
-
-2026
-has_reviewer
-boolean
-(query)
-Filter by reviewer status (true/false)
-
-
---
 per_page
 integer
 (query)
-Items per page
+Number of items per page
 
 Default value : 15
 
 15
+unread_only
+boolean
+(query)
+Filter only unread notifications
+
+Default value : false
+
+
+false
 Responses
 Code	Description	Links
 200	
@@ -63,48 +44,46 @@ Schema
 {
   "success": true,
   "data": [
-    {
-      "id": 1,
-      "judul": "Aplikasi Mobile untuk UMKM",
-      "tahun": 2026,
-      "ketua": {
-        "id": 1,
-        "name": "John Doe",
-        "email": "john@example.com"
-      },
-      "anggota": [
-        {
-          "id": 2,
-          "name": "Alice Brown",
-          "email": "alice@example.com"
-        }
-      ],
-      "pembimbing": {
-        "id": 5,
-        "name": "Dr. Jane Smith",
-        "email": "jane@example.com"
-      },
-      "status": "menunggu pembimbing",
-      "status_pembimbing": "pending",
-      "status_reviewer": "belum_menilai",
-      "status_admin": "pending",
-      "catatan_admin": "Proposal sudah memenuhi syarat",
-      "reviewers": [
-        {
-          "id": 10,
-          "name": "Dr. Reviewer Name",
-          "email": "reviewer@example.com"
-        }
-      ],
-      "total_reviewer": 2,
-      "batas_max_reviewer": 3
-    }
+    {}
   ],
-  "meta": {
-    "current_page": 1,
-    "per_page": 15,
-    "total": 100
-  }
+  "meta": {}
+}
+No links
+401	
+Unauthenticated
+
+No links
+
+POST
+/notifications/{notification}/read
+Mark notification as read
+
+
+Mark a specific notification as read
+
+Parameters
+Try it out
+Name	Description
+notification *
+string
+(path)
+Notification ID
+
+notification
+Responses
+Code	Description	Links
+200	
+Success
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "message": "Notification marked as read"
 }
 No links
 401	
@@ -112,40 +91,60 @@ Unauthenticated
 
 No links
 403	
-Forbidden
+Forbidden - Notification does not belong to user
+
+No links
+404	
+Notification not found
+
+No links
+
+POST
+/notifications/read-all
+Mark all notifications as read
+
+
+Mark all unread notifications as read for the authenticated user
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Success
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "success": true,
+  "message": "All notifications marked as read",
+  "data": {
+    "marked_count": 5
+  }
+}
+No links
+401	
+Unauthenticated
 
 No links
 
 GET
-/reviewer-management/available-reviewers
-Get available reviewers
+/notifications/unread-count
+Get unread notifications count
 
 
-Returns list of available reviewers (users with reviewer role) that can be assigned. If proposal_id is provided, excludes reviewers already assigned to that proposal (Admin only)
+Returns the count of unread notifications for the authenticated user
 
 Parameters
 Try it out
-Name	Description
-proposal_id
-integer
-(query)
-Proposal ID to exclude already assigned reviewers
+No parameters
 
-1
-search
-string
-(query)
-Search by reviewer name or email
-
-search
-per_page
-integer
-(query)
-Items per page
-
-Default value : 50
-
-50
 Responses
 Code	Description	Links
 200	
@@ -159,261 +158,10 @@ Example Value
 Schema
 {
   "success": true,
-  "data": [
-    {
-      "id": 10,
-      "name": "Dr. Reviewer Name",
-      "email": "reviewer@example.com"
-    }
-  ],
-  "meta": {
-    "current_page": 1,
-    "per_page": 50,
-    "total": 25
+  "data": {
+    "unread_count": 5
   }
 }
 No links
 401	
 Unauthenticated
-
-No links
-403	
-Forbidden
-
-No links
-
-POST
-/reviewer-management/{proposal}/set-reviewers
-Set reviewers for proposal
-
-
-Assign reviewers to a proposal. This will create penilaian entries for all kriteria for each reviewer (Admin only)
-
-Parameters
-Try it out
-Name	Description
-proposal *
-integer
-(path)
-Proposal ID
-
-proposal
-Request body
-
-application/json
-Example Value
-Schema
-{
-  "reviewer_ids": [
-    10,
-    11,
-    12
-  ]
-}
-Responses
-Code	Description	Links
-200	
-Reviewers assigned successfully
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "success": true,
-  "message": "Reviewers assigned successfully",
-  "data": {}
-}
-No links
-401	
-Unauthenticated
-
-No links
-403	
-Forbidden
-
-No links
-404	
-Proposal not found
-
-No links
-422	
-Validation error
-
-No links
-
-PATCH
-/reviewer-management/{proposal}/reviewers
-Add reviewers to proposal
-
-
-Add additional reviewers to a proposal. This will create penilaian entries for all kriteria for new reviewers (Admin only)
-
-Parameters
-Try it out
-Name	Description
-proposal *
-integer
-(path)
-Proposal ID
-
-proposal
-Request body
-
-application/json
-Example Value
-Schema
-{
-  "reviewer_ids": [
-    13
-  ]
-}
-Responses
-Code	Description	Links
-200	
-Reviewers added successfully
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "success": true,
-  "message": "Reviewers added successfully",
-  "data": {}
-}
-No links
-401	
-Unauthenticated
-
-No links
-403	
-Forbidden
-
-No links
-404	
-Proposal not found
-
-No links
-422	
-Validation error
-
-No links
-
-POST
-/reviewer-management/{proposal}/approve
-Approve proposal by admin
-
-
-Admin approves a proposal after reviewers have completed their assessment (Admin only)
-
-Parameters
-Try it out
-Name	Description
-proposal *
-integer
-(path)
-Proposal ID
-
-proposal
-Request body
-
-application/json
-Example Value
-Schema
-{
-  "catatan": "Proposal sudah memenuhi syarat dan disetujui"
-}
-Responses
-Code	Description	Links
-200	
-Proposal approved successfully
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "success": true,
-  "message": "Proposal disetujui oleh admin",
-  "data": {}
-}
-No links
-401	
-Unauthenticated
-
-No links
-403	
-Forbidden
-
-No links
-404	
-Proposal not found
-
-No links
-422	
-Validation error
-
-No links
-
-POST
-/reviewer-management/{proposal}/reject
-Reject proposal by admin
-
-
-Admin rejects a proposal with a note (Admin only)
-
-Parameters
-Try it out
-Name	Description
-proposal *
-integer
-(path)
-Proposal ID
-
-proposal
-Request body
-
-application/json
-Example Value
-Schema
-{
-  "catatan": "Proposal tidak memenuhi syarat yang ditetapkan"
-}
-Responses
-Code	Description	Links
-200	
-Proposal rejected successfully
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "success": true,
-  "message": "Proposal ditolak oleh admin",
-  "data": {}
-}
-No links
-401	
-Unauthenticated
-
-No links
-403	
-Forbidden
-
-No links
-404	
-Proposal not found
-
-No links
-422	
-Validation error

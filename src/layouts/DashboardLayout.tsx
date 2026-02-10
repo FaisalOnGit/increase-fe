@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Icon } from "@/components/ui/Icon";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -8,6 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/Button";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useNotifications } from "@/hooks/useNotifications";
+import { Notification } from "@/types/api.types";
 
 // Helper function to capitalize first letter
 const capitalizeFirstLetter = (str: string): string => {
@@ -47,10 +57,55 @@ const findPageTitle = (pathname: string): string => {
   return "Dashboard";
 };
 
+// Format notification time
+const formatNotificationTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return "Baru saja";
+  if (diffMins < 60) return `${diffMins} menit yang lalu`;
+  if (diffHours < 24) return `${diffHours} jam yang lalu`;
+  if (diffDays < 7) return `${diffDays} hari yang lalu`;
+  return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+};
+
+// Get notification icon based on type
+const getNotificationIcon = (type: string) => {
+  switch (type) {
+    case "success":
+      return "CheckCircle";
+    case "warning":
+      return "AlertTriangle";
+    case "error":
+      return "XCircle";
+    default:
+      return "Info";
+  }
+};
+
+// Get notification icon color based on type
+const getNotificationIconColor = (type: string) => {
+  switch (type) {
+    case "success":
+      return "text-green-500";
+    case "warning":
+      return "text-yellow-500";
+    case "error":
+      return "text-red-500";
+    default:
+      return "text-blue-500";
+  }
+};
+
 export const DashboardLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     return window.innerWidth < 1024;
   });
+  const [notifOpen, setNotifOpen] = useState(false);
 
   const location = useLocation();
   const { user } = useAuth();
@@ -68,8 +123,42 @@ export const DashboardLayout: React.FC = () => {
         ? capitalizeFirstLetter(user.role)
         : capitalizeFirstLetter(displayName);
 
+  // Notifications hook - only fetch unread for count, all for dropdown
+  const {
+    notifications,
+    unreadCount,
+    markNotificationAsRead,
+    markAllNotificationsAsRead,
+    fetchUnreadCount,
+  } = useNotifications({ per_page: 10, unread_only: false });
+
+  // Store fetchUnreadCount in ref to avoid re-creating interval
+  const fetchUnreadCountRef = useRef(fetchUnreadCount);
+  useEffect(() => {
+    fetchUnreadCountRef.current = fetchUnreadCount;
+  }, [fetchUnreadCount]);
+
+  // Refresh unread count periodically (only when dropdown is closed)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!notifOpen) {
+        fetchUnreadCountRef.current();
+      }
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [notifOpen]); // Only depend on notifOpen
+
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    await markNotificationAsRead(id);
+  };
+
+  const handleMarkAllAsRead = async () => {
+    await markAllNotificationsAsRead();
   };
 
   return (
@@ -104,12 +193,105 @@ export const DashboardLayout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="relative">
-                <Icon name="Bell" size={20} />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 rounded-full">
-                  3
-                </Badge>
-              </Button>
+              {/* Notifications Dropdown */}
+              <DropdownMenu open={notifOpen} onOpenChange={setNotifOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Icon name="Bell" size={20} />
+                    {unreadCount > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 rounded-full bg-destructive text-white">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-80 max-h-[400px] flex flex-col"
+                >
+                  <DropdownMenuLabel className="flex items-center justify-between">
+                    <span>Notifikasi</span>
+                    {unreadCount > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto p-0 text-xs text-primary hover:underline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMarkAllAsRead();
+                        }}
+                      >
+                        Tandai semua dibaca
+                      </Button>
+                    )}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+
+                  {/* Notifications List */}
+                  <div className="overflow-y-auto max-h-[320px]">
+                    {notifications.length === 0 ? (
+                      <div className="py-8 px-4 text-center text-muted-foreground text-sm">
+                        <Icon name="Bell" size={32} className="mx-auto mb-2 opacity-50" />
+                        <p>Tidak ada notifikasi</p>
+                      </div>
+                    ) : (
+                      notifications.map((notif: Notification) => (
+                        <DropdownMenuItem
+                          key={notif.id}
+                          className={`flex items-start gap-3 p-3 cursor-pointer ${
+                            !notif.read_at ? "bg-accent/50" : ""
+                          }`}
+                          onClick={() => handleMarkAsRead(notif.id)}
+                        >
+                          <div
+                            className={`mt-0.5 ${getNotificationIconColor(
+                              notif.type
+                            )}`}
+                          >
+                            <Icon name={getNotificationIcon(notif.type)} size={18} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">
+                              {notif.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                              {notif.message}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {formatNotificationTime(notif.created_at)}
+                            </p>
+                          </div>
+                          {!notif.read_at && (
+                            <div className="mt-1">
+                              <div className="h-2 w-2 rounded-full bg-primary" />
+                            </div>
+                          )}
+                        </DropdownMenuItem>
+                      ))
+                    )}
+                  </div>
+
+                  {notifications.length > 0 && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <div className="p-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            setNotifOpen(false);
+                            // Navigate to notifications page if exists
+                            // navigate("/notifications");
+                          }}
+                        >
+                          Lihat Semua
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               <Separator orientation="vertical" className="h-8" />
 

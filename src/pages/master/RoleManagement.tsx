@@ -19,7 +19,9 @@ import { getRoleBadge } from "@/utils/badge-utils";
 
 export const RoleManagement: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
-  const [rolesWithDetails, setRolesWithDetails] = useState<(Role & { users_count?: number })[]>([]);
+  const [rolesWithDetails, setRolesWithDetails] = useState<
+    (Role & { users_count?: number })[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,7 +46,7 @@ export const RoleManagement: React.FC = () => {
               ...role,
               users_count: detailResponse.data?.users_count,
             };
-          })
+          }),
         );
         setRolesWithDetails(rolesDetails);
       } else {
@@ -60,13 +62,15 @@ export const RoleManagement: React.FC = () => {
   const filteredRoles = rolesWithDetails.filter(
     (role) =>
       role.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.name.toLowerCase().includes(searchTerm.toLowerCase())
+      role.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const totalPages = Math.ceil(filteredRoles.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedRoles = filteredRoles.slice(startIndex, startIndex + itemsPerPage);
-
+  const paginatedRoles = filteredRoles.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
 
   return (
     <div className="p-6 space-y-6">
@@ -118,7 +122,10 @@ export const RoleManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {rolesWithDetails.reduce((sum, role) => sum + (role.users_count || 0), 0)}
+                  {rolesWithDetails.reduce(
+                    (sum, role) => sum + (role.users_count || 0),
+                    0,
+                  )}
                 </p>
                 <p className="text-xs text-muted-foreground">Total Pengguna</p>
               </div>
@@ -129,7 +136,11 @@ export const RoleManagement: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-100 rounded-lg">
-                <Icon name="CheckCircle" size={20} className="text-emerald-600" />
+                <Icon
+                  name="CheckCircle"
+                  size={20}
+                  className="text-emerald-600"
+                />
               </div>
               <div>
                 <p className="text-2xl font-bold">{roles.length}</p>
@@ -144,7 +155,11 @@ export const RoleManagement: React.FC = () => {
       <Card>
         <CardContent className="p-4">
           <div className="relative">
-            <Icon name="Search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Icon
+              name="Search"
+              size={20}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
             <Input
               type="text"
               placeholder="Cari nama role..."
@@ -163,7 +178,9 @@ export const RoleManagement: React.FC = () => {
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-8 text-center text-muted-foreground">Memuat data...</div>
+            <div className="p-8 text-center text-muted-foreground">
+              Memuat data...
+            </div>
           ) : (
             <>
               <Table>
@@ -182,29 +199,43 @@ export const RoleManagement: React.FC = () => {
                         <div className="flex items-center gap-3">
                           {getRoleBadge(role.name)}
                           <div>
-                            <p className="text-sm font-medium">{role.display_name}</p>
-                            <p className="text-xs text-muted-foreground">{role.name}</p>
+                            <p className="text-sm font-medium">
+                              {role.display_name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {role.name}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{role.guard_name}</Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="text-sm font-medium">{role.users_count || 0}</span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button variant="ghost" size="icon" title="Lihat Detail">
-                              <Icon name="Eye" size={16} />
-                            </Button>
-                            <Button variant="ghost" size="icon" title="Edit Permissions">
-                              <Icon name="Settings" size={16} />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                      <TableCell>
+                        <Badge variant="outline">{role.guard_name}</Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className="text-sm font-medium">
+                          {role.users_count || 0}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Lihat Detail"
+                          >
+                            <Icon name="Eye" size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Edit Permissions"
+                          >
+                            <Icon name="Settings" size={16} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
 
@@ -214,14 +245,19 @@ export const RoleManagement: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
                       Menampilkan {startIndex + 1} hingga{" "}
-                      {Math.min(startIndex + itemsPerPage, filteredRoles.length)} dari{" "}
-                      {filteredRoles.length} role
+                      {Math.min(
+                        startIndex + itemsPerPage,
+                        filteredRoles.length,
+                      )}{" "}
+                      dari {filteredRoles.length} role
                     </p>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
                         disabled={currentPage === 1}
                       >
                         <Icon name="ChevronLeft" size={16} />
@@ -232,8 +268,14 @@ export const RoleManagement: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages || totalPages === 0}
+                        onClick={() =>
+                          setCurrentPage((prev) =>
+                            Math.min(prev + 1, totalPages),
+                          )
+                        }
+                        disabled={
+                          currentPage === totalPages || totalPages === 0
+                        }
                       >
                         <Icon name="ChevronRight" size={16} />
                       </Button>
@@ -258,35 +300,49 @@ export const RoleManagement: React.FC = () => {
                 <Icon name="Shield" size={16} className="text-purple-600" />
                 <p className="text-sm font-medium">Admin</p>
               </div>
-              <p className="text-xs text-muted-foreground">Akses penuh ke seluruh fitur sistem</p>
+              <p className="text-xs text-muted-foreground">
+                Akses penuh ke seluruh fitur sistem
+              </p>
             </div>
             <div className="p-4 border rounded-xl">
               <div className="flex items-center gap-2 mb-2">
-                <Icon name="GraduationCap" size={16} className="text-blue-600" />
+                <Icon
+                  name="GraduationCap"
+                  size={16}
+                  className="text-blue-600"
+                />
                 <p className="text-sm font-medium">Dosen</p>
               </div>
-              <p className="text-xs text-muted-foreground">Akses untuk mengelola proposal dan penilaian</p>
+              <p className="text-xs text-muted-foreground">
+                Akses untuk mengelola proposal dan penilaian
+              </p>
             </div>
             <div className="p-4 border rounded-xl">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="Users" size={16} className="text-green-600" />
                 <p className="text-sm font-medium">Mahasiswa</p>
               </div>
-              <p className="text-xs text-muted-foreground">Akses untuk submit dan melihat proposal PKM</p>
+              <p className="text-xs text-muted-foreground">
+                Akses untuk submit dan melihat proposal PKM
+              </p>
             </div>
             <div className="p-4 border rounded-xl">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="Eye" size={16} className="text-amber-600" />
                 <p className="text-sm font-medium">Reviewer</p>
               </div>
-              <p className="text-xs text-muted-foreground">Akses khusus untuk mereview proposal</p>
+              <p className="text-xs text-muted-foreground">
+                Akses khusus untuk mereview proposal
+              </p>
             </div>
             <div className="p-4 border rounded-xl">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="Award" size={16} className="text-red-600" />
                 <p className="text-sm font-medium">Kajur</p>
               </div>
-              <p className="text-xs text-muted-foreground">Akses manajemen tingkat jurusan</p>
+              <p className="text-xs text-muted-foreground">
+                Akses manajemen tingkat jurusan
+              </p>
             </div>
           </div>
         </CardContent>

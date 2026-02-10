@@ -766,3 +766,41 @@ export interface AvailablePembimbing {
 }
 
 export interface AvailablePembimbingResponse extends ApiResponse<AvailablePembimbing[]> {}
+
+// Notification Types
+export interface Notification {
+  id: number;
+  user_id: number;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'success' | 'error';
+  read_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationListParams {
+  per_page?: number;
+  unread_only?: boolean;
+}
+
+export interface NotificationListResponse extends ApiResponse<Notification[]> {
+  meta?: {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+  };
+}
+
+export interface MarkAsReadResponse extends ApiResponse {
+  data?: {};
+}
+
+export interface ReadAllResponse extends ApiResponse<{
+  marked_count: number;
+}> {}
+
+export interface UnreadCountResponse extends ApiResponse<{
+  unread_count: number;
+}> {}
