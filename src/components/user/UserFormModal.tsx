@@ -14,6 +14,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Badge } from "@/components/ui/badge";
 import { User, CreateUser, UpdateUser } from "@/types/api.types";
 import { createUser, updateUser } from "@/api/users";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 interface UserFormModalProps {
   isOpen: boolean;
@@ -118,7 +119,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
       if (response.success) {
         onSuccess();
         onClose();
-        alert(
+        toastSuccess(
           mode === "create"
             ? "Pengguna berhasil ditambahkan"
             : "Pengguna berhasil diperbarui",
@@ -126,12 +127,12 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
       } else {
         setErrors(response.errors || {});
         if (!response.errors || Object.keys(response.errors).length === 0) {
-          alert(response.message || "Terjadi kesalahan");
+          toastError(response.message || "Terjadi kesalahan");
         }
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Terjadi kesalahan saat menyimpan data");
+      toastError("Terjadi kesalahan saat menyimpan data");
     } finally {
       setIsSubmitting(false);
     }

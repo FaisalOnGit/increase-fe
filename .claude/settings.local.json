@@ -4,7 +4,8 @@
       "Bash(if not exist \"D:\\\\UNSIL\\\\SIMANIS\\\\vite-revamp\\\\src\\\\hooks\" mkdir \"D:\\\\UNSIL\\\\SIMANIS\\\\vite-revamp\\\\src\\\\hooks\")",
       "Bash(del:*)",
       "Bash(ls:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

@@ -18,6 +18,7 @@ import { getUsers, deleteUser } from "@/api/users";
 import { User } from "@/types/api.types";
 import { UserFormModal } from "@/components/user/UserFormModal";
 import { getRoleBadge } from "@/utils/badge-utils";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 export const UserManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -74,13 +75,13 @@ export const UserManagement: React.FC = () => {
       if (response.success) {
         // Refresh the user list
         fetchUsers();
-        alert("Pengguna berhasil dihapus");
+        toastSuccess("Pengguna berhasil dihapus");
       } else {
-        alert(`Gagal menghapus pengguna: ${response.message}`);
+        toastError(`Gagal menghapus pengguna: ${response.message}`);
       }
     } catch (error) {
       console.error("Error deleting user:", error);
-      alert("Terjadi kesalahan saat menghapus pengguna");
+      toastError("Terjadi kesalahan saat menghapus pengguna");
     }
   };
 

@@ -21,6 +21,7 @@ import {
   useAvailablePembimbing,
 } from "../../hooks/useProposal";
 import { CreateProposalData, MahasiswaProposal } from "../../types/api.types";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 export const ProposalSubmission = () => {
   const {
@@ -92,7 +93,7 @@ export const ProposalSubmission = () => {
       !formData.pembimbing_id ||
       !formData.file_proposal
     ) {
-      alert("Please fill in all required fields");
+      toastError("Please fill in all required fields");
       return;
     }
 
@@ -106,11 +107,11 @@ export const ProposalSubmission = () => {
 
     const result = await submitProposal(data);
     if (result.success) {
-      alert("Proposal submitted successfully!");
+      toastSuccess("Proposal submitted successfully!");
       resetForm();
       setShowForm(false);
     } else {
-      alert(result.message || "Failed to submit proposal");
+      toastError(result.message || "Failed to submit proposal");
     }
   };
 
@@ -125,12 +126,12 @@ export const ProposalSubmission = () => {
     });
 
     if (result.success) {
-      alert("Proposal updated successfully!");
+      toastSuccess("Proposal updated successfully!");
       resetForm();
       setEditingProposal(null);
       setShowForm(false);
     } else {
-      alert(result.message || "Failed to update proposal");
+      toastError(result.message || "Failed to update proposal");
     }
   };
 
@@ -139,9 +140,9 @@ export const ProposalSubmission = () => {
 
     const result = await removeProposal(id);
     if (result.success) {
-      alert("Proposal deleted successfully!");
+      toastSuccess("Proposal deleted successfully!");
     } else {
-      alert(result.message || "Failed to delete proposal");
+      toastError(result.message || "Failed to delete proposal");
     }
   };
 

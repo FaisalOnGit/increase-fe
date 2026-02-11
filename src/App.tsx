@@ -22,6 +22,7 @@ import { RekapProposal } from "./pages/laporan/RekapProposal";
 import { ProposalSubmission } from "./pages/mahasiswa/ProposalSubmission";
 import PrivateRoute from "./utils/PrivateRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
+      <Toaster />
     </AuthProvider>
   );
 }
