@@ -1,0 +1,1207 @@
+{
+  "api_info": {
+    "title": "SIMANIS API - Complete Documentation",
+    "base_url": "http://103.150.91.248:9001/api",
+    "authentication": "Sanctum Bearer Token",
+    "content_type": "application/json",
+    "version": "1.0.0"
+  },
+  "authentication_method": {
+    "type": "Sanctum Tokens",
+    "description": "Tokens are generated via /auth/login and must be included in Authorization header",
+    "header_format": "Authorization: Bearer <token>",
+    "token_endpoint": "/auth/login",
+    "token_type": "Stateless",
+    "revocation": "Tokens are revoked on logout"
+  },
+  "endpoints": {
+    "authentication": [
+      {
+        "name": "Register User",
+        "method": "POST",
+        "url": "/auth/register",
+        "description": "Register a new user with email and password",
+        "authentication": false,
+        "request_body": {
+          "name": { "type": "string", "required": true, "description": "User's full name" },
+          "email": { "type": "string", "required": true, "description": "User's email address" },
+          "password": { "type": "string", "required": true, "min_length": 8, "description": "User's password (min 8 characters)" },
+          "password_confirmation": { "type": "string", "required": true, "description": "Password confirmation (must match password)" }
+        },
+        "request_example": { "name": "John Doe", "email": "john.doe@example.com", "password": "password123", "password_confirmation": "password123" },
+        "responses": [
+          { "status": 201, "description": "Created - User registered successfully" },
+          { "status": 422, "description": "Unprocessable Entity - Validation failed" }
+        ]
+      },
+      {
+        "name": "Login User",
+        "method": "POST",
+        "url": "/auth/login",
+        "description": "Authenticate a user and return an access token",
+        "authentication": false,
+        "request_body": {
+          "email": { "type": "string", "required": true, "description": "User's email address" },
+          "password": { "type": "string", "required": true, "description": "User's password" }
+        },
+        "request_example": { "email": "john.doe@example.com", "password": "password123" },
+        "responses": [
+          { "status": 200, "description": "OK - Login successful" },
+          { "status": 422, "description": "Unprocessable Entity - Invalid credentials" }
+        ]
+      },
+      {
+        "name": "Logout User",
+        "method": "POST",
+        "url": "/auth/logout",
+        "description": "Revoke the user's current access token",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Logout successful" },
+          { "status": 401, "description": "Unauthorized - Unauthenticated" }
+        ]
+      },
+      {
+        "name": "Get Authenticated User",
+        "method": "GET",
+        "url": "/auth/user",
+        "description": "Fetch the currently authenticated user",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - User data retrieved successfully" },
+          { "status": 401, "description": "Unauthorized - Unauthenticated" }
+        ]
+      }
+    ],
+    "users": [
+      {
+        "name": "List All Users",
+        "method": "GET",
+        "url": "/users",
+        "description": "Get paginated list of users with search and filter capabilities",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "page": { "type": "integer", "required": false, "default": 1, "description": "Page number" },
+          "per_page": { "type": "integer", "required": false, "default": 15, "description": "Items per page" },
+          "search": { "type": "string", "required": false, "description": "Search by name or email" },
+          "role": { "type": "string", "required": false, "description": "Filter by role" },
+          "sort_by": { "type": "string", "required": false, "default": "created_at", "description": "Sort field" },
+          "sort_order": { "type": "string", "required": false, "default": "desc", "description": "Sort direction" }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Users retrieved successfully" },
+          { "status": 401, "description": "Unauthorized" },
+          { "status": 403, "description": "Forbidden" }
+        ]
+      },
+      {
+        "name": "Create User",
+        "method": "POST",
+        "url": "/users",
+        "description": "Create a new user",
+        "authentication": true,
+        "access_level": "Admin only",
+        "request_body": {
+          "name": { "type": "string", "required": true },
+          "email": { "type": "string", "required": true },
+          "password": { "type": "string", "required": true, "min_length": 8 },
+          "password_confirmation": { "type": "string", "required": true },
+          "role": { "type": "string", "required": false, "default": "mahasiswa" }
+        },
+        "responses": [
+          { "status": 201, "description": "Created - User created successfully" },
+          { "status": 422, "description": "Validation failed" }
+        ]
+      },
+      {
+        "name": "Get User by ID",
+        "method": "GET",
+        "url": "/users/{id}",
+        "description": "Get a specific user by ID",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - User retrieved successfully" },
+          { "status": 404, "description": "User not found" }
+        ]
+      },
+      {
+        "name": "Update User",
+        "method": "PUT",
+        "url": "/users/{id}",
+        "description": "Update an existing user",
+        "authentication": true,
+        "request_body": {
+          "name": { "type": "string", "required": false },
+          "email": { "type": "string", "required": false },
+          "password": { "type": "string", "required": false, "min_length": 8 },
+          "password_confirmation": { "type": "string", "required": false },
+          "role": { "type": "string", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - User updated successfully" },
+          { "status": 422, "description": "Validation failed" }
+        ]
+      },
+      {
+        "name": "Delete User",
+        "method": "DELETE",
+        "url": "/users/{id}",
+        "description": "Soft delete a user",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - User deleted successfully" },
+          { "status": 404, "description": "User not found" }
+        ]
+      },
+      {
+        "name": "Get Deleted Users",
+        "method": "GET",
+        "url": "/users/trash",
+        "description": "Get list of soft deleted users",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Deleted users retrieved successfully" }
+        ]
+      },
+      {
+        "name": "Restore Deleted User",
+        "method": "PUT",
+        "url": "/users/{id}/restore",
+        "description": "Restore a soft deleted user",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - User restored successfully" },
+          { "status": 404, "description": "User not found in trash" }
+        ]
+      },
+      {
+        "name": "Permanently Delete User",
+        "method": "DELETE",
+        "url": "/users/{id}/force-delete",
+        "description": "Permanently delete a user (cannot be undone)",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - User permanently deleted" },
+          { "status": 404, "description": "User not found in trash" }
+        ]
+      }
+    ],
+    "roles": [
+      {
+        "name": "Get All Roles",
+        "method": "GET",
+        "url": "/roles",
+        "description": "Get list of all available roles for dropdown/selection",
+        "authentication": true,
+        "access_level": "Admin only",
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 401, "description": "Unauthorized" },
+          { "status": 403, "description": "Forbidden" }
+        ]
+      },
+      {
+        "name": "Get Role Details",
+        "method": "GET",
+        "url": "/roles/{name}",
+        "description": "Returns detailed information about a specific role",
+        "authentication": true,
+        "access_level": "Admin only",
+        "path_params": {
+          "name": { "type": "string", "required": true, "available_values": ["admin", "reviewer", "mahasiswa", "dosen", "kajur"] }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 404, "description": "Role not found" }
+        ]
+      }
+    ],
+    "notifications": [
+      {
+        "name": "Get User Notifications",
+        "method": "GET",
+        "url": "/notifications",
+        "description": "Returns paginated list of notifications for the authenticated user",
+        "authentication": true,
+        "query_params": {
+          "per_page": { "type": "integer", "required": false, "default": 15 },
+          "unread_only": { "type": "boolean", "required": false, "default": false }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 401, "description": "Unauthorized" }
+        ]
+      },
+      {
+        "name": "Mark Notification as Read",
+        "method": "POST",
+        "url": "/notifications/{notification}/read",
+        "description": "Mark a specific notification as read",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 403, "description": "Forbidden - Notification does not belong to user" },
+          { "status": 404, "description": "Notification not found" }
+        ]
+      },
+      {
+        "name": "Mark All Notifications as Read",
+        "method": "POST",
+        "url": "/notifications/read-all",
+        "description": "Mark all unread notifications as read",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      },
+      {
+        "name": "Get Unread Notifications Count",
+        "method": "GET",
+        "url": "/notifications/unread-count",
+        "description": "Returns the count of unread notifications",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      }
+    ],
+    "faculty": [
+      {
+        "name": "List Faculties",
+        "method": "GET",
+        "url": "/fakultas",
+        "description": "Returns paginated list of faculties with their prodis",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "search": { "type": "string", "required": false, "description": "Search by faculty name" },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 401, "description": "Unauthorized" },
+          { "status": 403, "description": "Forbidden" }
+        ]
+      },
+      {
+        "name": "Create Faculty",
+        "method": "POST",
+        "url": "/fakultas",
+        "description": "Create a new faculty",
+        "authentication": true,
+        "access_level": "Admin only",
+        "request_body": {
+          "name": { "type": "string", "required": true, "description": "Faculty name" }
+        },
+        "responses": [
+          { "status": 201, "description": "Created - Faculty created successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Get All Faculties",
+        "method": "GET",
+        "url": "/fakultas/all",
+        "description": "Returns all faculties without pagination (for dropdowns)",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      },
+      {
+        "name": "Get Faculty Details",
+        "method": "GET",
+        "url": "/fakultas/{id}",
+        "description": "Returns detailed information about a specific faculty with its prodis",
+        "authentication": true,
+        "access_level": "Admin only",
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 404, "description": "Faculty not found" }
+        ]
+      },
+      {
+        "name": "Update Faculty",
+        "method": "PUT",
+        "url": "/fakultas/{id}",
+        "description": "Update faculty information including bulk prodi assignment",
+        "authentication": true,
+        "access_level": "Admin only",
+        "request_body": {
+          "name": { "type": "string", "required": false },
+          "prodi_ids": { "type": "array", "required": false, "items": { "type": "integer" }, "description": "Array of prodi IDs" }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Faculty updated successfully" },
+          { "status": 404, "description": "Faculty not found" }
+        ]
+      },
+      {
+        "name": "Delete Faculty",
+        "method": "DELETE",
+        "url": "/fakultas/{id}",
+        "description": "Soft delete a faculty",
+        "authentication": true,
+        "access_level": "Admin only",
+        "responses": [
+          { "status": 200, "description": "OK - Faculty deleted successfully" },
+          { "status": 404, "description": "Faculty not found" }
+        ]
+      }
+    ],
+    "prodi": [
+      {
+        "name": "List Study Programs",
+        "method": "GET",
+        "url": "/prodi",
+        "description": "Returns paginated list of study programs with filters",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "search": { "type": "string", "required": false, "description": "Search by prodi name" },
+          "fakultas_id": { "type": "integer", "required": false, "description": "Filter by faculty ID" },
+          "strata": { "type": "string", "required": false, "available_values": ["D2", "D3", "S1", "S2", "S3"] },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 403, "description": "Forbidden" }
+        ]
+      },
+      {
+        "name": "Create Study Program",
+        "method": "POST",
+        "url": "/prodi",
+        "description": "Create a new study program (code auto-generated if not provided)",
+        "authentication": true,
+        "access_level": "Admin only",
+        "request_body": {
+          "name": { "type": "string", "required": true },
+          "code": { "type": "string", "required": false, "description": "Auto-generated if not provided" },
+          "strata": { "type": "string", "required": true, "available_values": ["D2", "D3", "S1", "S2", "S3"] },
+          "fakultas_id": { "type": "integer", "required": true },
+          "kaprodi_id": { "type": "integer", "required": false }
+        },
+        "responses": [
+          { "status": 201, "description": "Created - Prodi created successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Get Prodi Details",
+        "method": "GET",
+        "url": "/prodi/{id}",
+        "description": "Returns detailed information about a specific study program",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 404, "description": "Prodi not found" }
+        ]
+      },
+      {
+        "name": "Update Study Program",
+        "method": "PUT",
+        "url": "/prodi/{id}",
+        "description": "Update study program information including kaprodi assignment",
+        "authentication": true,
+        "request_body": {
+          "name": { "type": "string", "required": false },
+          "code": { "type": "string", "required": false },
+          "strata": { "type": "string", "required": false },
+          "fakultas_id": { "type": "integer", "required": false },
+          "kaprodi_id": { "type": "integer", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Prodi updated successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Delete Study Program",
+        "method": "DELETE",
+        "url": "/prodi/{id}",
+        "description": "Delete a study program",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Prodi deleted successfully" }
+        ]
+      },
+      {
+        "name": "Get All Prodis",
+        "method": "GET",
+        "url": "/prodi/all",
+        "description": "Returns all prodis without pagination (for dropdowns)",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      },
+      {
+        "name": "Get Unassigned Prodis",
+        "method": "GET",
+        "url": "/prodi/unassigned",
+        "description": "Returns prodis that have not been assigned to any faculty",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      },
+      {
+        "name": "Get Prodis by Faculty",
+        "method": "GET",
+        "url": "/prodi/by-fakultas/{fakultasId}",
+        "description": "Returns all prodis for a specific faculty",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      },
+      {
+        "name": "Assign Kaprodi",
+        "method": "POST",
+        "url": "/prodi/{id}/assign-kaprodi",
+        "description": "Assign a user as kaprodi to a study program",
+        "authentication": true,
+        "request_body": {
+          "kaprodi_id": { "type": "integer", "required": true }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Kaprodi assigned successfully" },
+          { "status": 404, "description": "Prodi not found" }
+        ]
+      }
+    ],
+    "pkm": [
+      {
+        "name": "List PKM",
+        "method": "GET",
+        "url": "/pkm",
+        "description": "Returns paginated list of PKM with optional filters",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "search": { "type": "string", "required": false, "description": "Search by singkatan or nama" },
+          "is_active": { "type": "boolean", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      },
+      {
+        "name": "Create PKM",
+        "method": "POST",
+        "url": "/pkm",
+        "description": "Create a new PKM",
+        "authentication": true,
+        "access_level": "Admin only",
+        "request_body": {
+          "singkatan": { "type": "string", "required": true },
+          "nama": { "type": "string", "required": true },
+          "batas_min_anggota": { "type": "integer", "required": true },
+          "batas_max_anggota": { "type": "integer", "required": true },
+          "batas_max_reviewer": { "type": "integer", "required": true },
+          "is_active": { "type": "boolean", "required": false, "default": true }
+        },
+        "responses": [
+          { "status": 201, "description": "Created - PKM created successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Get PKM Detail",
+        "method": "GET",
+        "url": "/pkm/{id}",
+        "description": "Get detailed information of a specific PKM",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 404, "description": "PKM not found" }
+        ]
+      },
+      {
+        "name": "Update PKM",
+        "method": "PUT",
+        "url": "/pkm/{id}",
+        "description": "Update an existing PKM",
+        "authentication": true,
+        "request_body": {
+          "singkatan": { "type": "string", "required": false },
+          "nama": { "type": "string", "required": false },
+          "batas_min_anggota": { "type": "integer", "required": false },
+          "batas_max_anggota": { "type": "integer", "required": false },
+          "batas_max_reviewer": { "type": "integer", "required": false },
+          "is_active": { "type": "boolean", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - PKM updated successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Delete PKM",
+        "method": "DELETE",
+        "url": "/pkm/{id}",
+        "description": "Soft delete a PKM",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - PKM deleted successfully" }
+        ]
+      },
+      {
+        "name": "Get All Active PKM",
+        "method": "GET",
+        "url": "/pkm/active/all",
+        "description": "Returns list of all active PKM without pagination",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" }
+        ]
+      },
+      {
+        "name": "Toggle PKM Active Status",
+        "method": "PATCH",
+        "url": "/pkm/{id}/toggle-active",
+        "description": "Toggle the is_active status of a PKM",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Status toggled successfully" }
+        ]
+      }
+    ],
+    "pkm_kalender": [
+      {
+        "name": "List PKM Kalender",
+        "method": "GET",
+        "url": "/pkm-kalender",
+        "description": "Returns paginated list of PKM kalender",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "tahun": { "type": "integer", "required": false },
+          "is_active": { "type": "boolean", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      },
+      {
+        "name": "Create PKM Kalender",
+        "method": "POST",
+        "url": "/pkm-kalender",
+        "description": "Create a new PKM kalender (validates only 1 active calendar)",
+        "authentication": true,
+        "access_level": "Admin only",
+        "request_body": {
+          "tahun": { "type": "integer", "required": true },
+          "pkm_ids": { "type": "array", "required": true, "items": { "type": "integer" } },
+          "tanggal_mulai_pengajuan": { "type": "string", "format": "date", "required": true },
+          "tanggal_selesai_pengajuan": { "type": "string", "format": "date", "required": true },
+          "tanggal_mulai_penilaian": { "type": "string", "format": "date", "required": true },
+          "tanggal_selesai_penilaian": { "type": "string", "format": "date", "required": true },
+          "tanggal_pengumuman": { "type": "string", "format": "date", "required": true },
+          "is_active": { "type": "boolean", "required": false, "default": false }
+        },
+        "responses": [
+          { "status": 201, "description": "Kalender created successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Get PKM Kalender Detail",
+        "method": "GET",
+        "url": "/pkm-kalender/{id}",
+        "description": "Get detailed information of a specific kalender",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Success" },
+          { "status": 404, "description": "Kalender not found" }
+        ]
+      },
+      {
+        "name": "Update PKM Kalender",
+        "method": "PUT",
+        "url": "/pkm-kalender/{id}",
+        "description": "Update an existing kalender",
+        "authentication": true,
+        "request_body": {
+          "tahun": { "type": "integer", "required": false },
+          "pkm_ids": { "type": "array", "required": false, "items": { "type": "integer" } },
+          "tanggal_mulai_pengajuan": { "type": "string", "format": "date", "required": false },
+          "tanggal_selesai_pengajuan": { "type": "string", "format": "date", "required": false },
+          "tanggal_mulai_penilaian": { "type": "string", "format": "date", "required": false },
+          "tanggal_selesai_penilaian": { "type": "string", "format": "date", "required": false },
+          "tanggal_pengumuman": { "type": "string", "format": "date", "required": false },
+          "is_active": { "type": "boolean", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "Kalender updated successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Delete PKM Kalender",
+        "method": "DELETE",
+        "url": "/pkm-kalender/{id}",
+        "description": "Soft delete a kalender",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Kalender deleted successfully" }
+        ]
+      },
+      {
+        "name": "Get Active Kalender",
+        "method": "GET",
+        "url": "/pkm-kalender/active/current",
+        "description": "Returns the currently active kalender",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Success" },
+          { "status": 404, "description": "No active kalender found" }
+        ]
+      },
+      {
+        "name": "Activate Kalender",
+        "method": "PATCH",
+        "url": "/pkm-kalender/{id}/activate",
+        "description": "Activate this kalender and deactivate all others",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Kalender activated successfully" }
+        ]
+      },
+      {
+        "name": "Deactivate Kalender",
+        "method": "PATCH",
+        "url": "/pkm-kalender/{id}/deactivate",
+        "description": "Deactivate this kalender",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Kalender deactivated successfully" }
+        ]
+      }
+    ],
+    "pkm_kriteria": [
+      {
+        "name": "List Kriteria by PKM",
+        "method": "GET",
+        "url": "/pkm/{pkmId}/kriteria",
+        "description": "Returns all kriteria for a PKM with total bobot summary",
+        "authentication": true,
+        "access_level": "Admin only",
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 404, "description": "PKM not found" }
+        ]
+      },
+      {
+        "name": "Create Kriteria",
+        "method": "POST",
+        "url": "/pkm/{pkmId}/kriteria",
+        "description": "Create a new kriteria (validates total bobot <= 100%)",
+        "authentication": true,
+        "access_level": "Admin only",
+        "request_body": {
+          "pkm_id": { "type": "integer", "required": true },
+          "urutan": { "type": "integer", "required": true },
+          "judul": { "type": "string", "required": true },
+          "kriteria": { "type": "string", "required": true },
+          "bobot": { "type": "integer", "required": true }
+        },
+        "responses": [
+          { "status": 201, "description": "Created - Kriteria created successfully" },
+          { "status": 422, "description": "Validation error (total bobot > 100%)" }
+        ]
+      },
+      {
+        "name": "Get Kriteria Detail",
+        "method": "GET",
+        "url": "/pkm-kriteria/{id}",
+        "description": "Get detailed information of a specific kriteria",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Success" },
+          { "status": 404, "description": "Kriteria not found" }
+        ]
+      },
+      {
+        "name": "Update Kriteria",
+        "method": "PUT",
+        "url": "/pkm-kriteria/{id}",
+        "description": "Update an existing kriteria (validates total bobot <= 100%)",
+        "authentication": true,
+        "request_body": {
+          "urutan": { "type": "integer", "required": false },
+          "judul": { "type": "string", "required": false },
+          "kriteria": { "type": "string", "required": false },
+          "bobot": { "type": "integer", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Kriteria updated successfully" },
+          { "status": 422, "description": "Validation error (total bobot > 100%)" }
+        ]
+      },
+      {
+        "name": "Delete Kriteria",
+        "method": "DELETE",
+        "url": "/pkm-kriteria/{id}",
+        "description": "Soft delete a kriteria",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "OK - Kriteria deleted successfully" }
+        ]
+      },
+      {
+        "name": "Duplicate Kriteria to Another PKM",
+        "method": "POST",
+        "url": "/pkm/{sourcePkmId}/kriteria/duplicate",
+        "description": "Copy all kriteria from source PKM to target PKM",
+        "authentication": true,
+        "request_body": {
+          "target_pkm_id": { "type": "integer", "required": true },
+          "overwrite": { "type": "boolean", "required": false, "default": false }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Kriteria duplicated successfully" },
+          { "status": 400, "description": "Cannot duplicate to same PKM" }
+        ]
+      },
+      {
+        "name": "Reorder Kriteria",
+        "method": "POST",
+        "url": "/pkm/{pkmId}/kriteria/reorder",
+        "description": "Update urutan of multiple kriteria at once (for drag & drop)",
+        "authentication": true,
+        "request_body": {
+          "orders": { "type": "array", "required": true, "items": { "id": "integer", "urutan": "integer" } }
+        },
+        "responses": [
+          { "status": 200, "description": "OK - Kriteria reordered successfully" }
+        ]
+      }
+    ],
+    "proposals": [
+      {
+        "name": "Get My Proposals",
+        "method": "GET",
+        "url": "/proposals",
+        "description": "Returns list of proposals where user is ketua or anggota",
+        "authentication": true,
+        "access_level": "Mahasiswa",
+        "query_params": {
+          "status": { "type": "string", "required": false, "values": ["pending", "ditolak", "disetujui", "revisi"] },
+          "role": { "type": "string", "required": false, "values": ["ketua", "anggota"] },
+          "tahun": { "type": "integer", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      },
+      {
+        "name": "Submit New Proposal",
+        "method": "POST",
+        "url": "/proposals",
+        "description": "Submit a new PKM proposal",
+        "authentication": true,
+        "access_level": "Mahasiswa",
+        "request_body": {
+          "contentType": "multipart/form-data",
+          "fields": [
+            { "name": "judul", "type": "string", "required": true },
+            { "name": "pkm_id", "type": "integer", "required": true },
+            { "name": "anggota_ids", "type": "array<integer>", "required": true },
+            { "name": "pembimbing_id", "type": "integer", "required": true },
+            { "name": "file_proposal", "type": "string($binary)", "required": true }
+          ]
+        },
+        "responses": [
+          { "status": 201, "description": "Proposal submitted successfully" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Get Proposal Detail",
+        "method": "GET",
+        "url": "/proposals/{id}",
+        "description": "Get detailed information of a proposal",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Success" },
+          { "status": 403, "description": "Forbidden" },
+          { "status": 404, "description": "Proposal not found" }
+        ]
+      },
+      {
+        "name": "Update Proposal",
+        "method": "POST",
+        "url": "/proposals/{id}",
+        "description": "Update proposal (only judul and file, only if status pending/revisi)",
+        "authentication": true,
+        "request_body": {
+          "contentType": "multipart/form-data",
+          "fields": [
+            { "name": "_method", "type": "string" },
+            { "name": "judul", "type": "string", "required": true },
+            { "name": "file_proposal", "type": "string($binary)" }
+          ]
+        },
+        "responses": [
+          { "status": 200, "description": "Proposal updated successfully" },
+          { "status": 403, "description": "Forbidden or invalid status" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Delete Proposal",
+        "method": "DELETE",
+        "url": "/proposals/{id}",
+        "description": "Delete proposal (only if status pending)",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Proposal deleted successfully" },
+          { "status": 403, "description": "Forbidden or invalid status" }
+        ]
+      },
+      {
+        "name": "Check Eligibility",
+        "method": "GET",
+        "url": "/proposals/check-eligibility",
+        "description": "Check if current user can submit a proposal",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      },
+      {
+        "name": "Get Available PKM Types",
+        "method": "GET",
+        "url": "/proposals/available-pkm",
+        "description": "Get list of PKM types that are open in active kalender",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Success" },
+          { "status": 404, "description": "No active kalender" }
+        ]
+      },
+      {
+        "name": "Get Available Anggota",
+        "method": "GET",
+        "url": "/proposals/available-anggota",
+        "description": "Get list of mahasiswa that can join as anggota",
+        "authentication": true,
+        "query_params": {
+          "search": { "type": "string", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 50 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      },
+      {
+        "name": "Get Available Pembimbing",
+        "method": "GET",
+        "url": "/proposals/available-pembimbing",
+        "description": "Get list of dosen that can be pembimbing",
+        "authentication": true,
+        "query_params": {
+          "search": { "type": "string", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 50 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      }
+    ],
+    "pembimbing": [
+      {
+        "name": "Get Pembimbing Proposals",
+        "method": "GET",
+        "url": "/pembimbing/proposals",
+        "description": "Returns list of proposals where the authenticated dosen is assigned as pembimbing",
+        "authentication": true,
+        "access_level": "Dosen",
+        "query_params": {
+          "status_pembimbing": { "type": "string", "required": false, "values": ["pending", "ditolak", "disetujui"] },
+          "status": { "type": "string", "required": false, "values": ["pending", "ditolak", "disetujui", "revisi"] },
+          "tahun": { "type": "integer", "required": false },
+          "search": { "type": "string", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" },
+          { "status": 403, "description": "Forbidden - Not a dosen" }
+        ]
+      },
+      {
+        "name": "Get Pembimbing Proposal Detail",
+        "method": "GET",
+        "url": "/pembimbing/proposals/{id}",
+        "description": "Get detailed information of a proposal assigned to the pembimbing",
+        "authentication": true,
+        "responses": [
+          { "status": 200, "description": "Success" },
+          { "status": 403, "description": "Forbidden - Not assigned as pembimbing" }
+        ]
+      },
+      {
+        "name": "Approve Proposal",
+        "method": "POST",
+        "url": "/pembimbing/proposals/{id}/approve",
+        "description": "Approve a proposal assigned to the pembimbing",
+        "authentication": true,
+        "request_body": {
+          "catatan": { "type": "string", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "Proposal approved successfully" },
+          { "status": 400, "description": "Bad request - Already approved/rejected" }
+        ]
+      },
+      {
+        "name": "Reject Proposal",
+        "method": "POST",
+        "url": "/pembimbing/proposals/{id}/reject",
+        "description": "Reject a proposal assigned to the pembimbing",
+        "authentication": true,
+        "request_body": {
+          "catatan": { "type": "string", "required": true }
+        },
+        "responses": [
+          { "status": 200, "description": "Proposal rejected successfully" },
+          { "status": 400, "description": "Bad request" }
+        ]
+      }
+    ],
+    "reviewer_management": [
+      {
+        "name": "Get Proposals for Reviewer Management",
+        "method": "GET",
+        "url": "/reviewer-management",
+        "description": "Returns list of proposals with reviewer information for admin management",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "search": { "type": "string", "required": false },
+          "status": { "type": "string", "required": false, "values": ["pending", "ditolak", "disetujui", "revisi"] },
+          "tahun": { "type": "integer", "required": false },
+          "has_reviewer": { "type": "boolean", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      },
+      {
+        "name": "Get Available Reviewers",
+        "method": "GET",
+        "url": "/reviewer-management/available-reviewers",
+        "description": "Returns list of available reviewers that can be assigned",
+        "authentication": true,
+        "query_params": {
+          "proposal_id": { "type": "integer", "required": false },
+          "search": { "type": "string", "required": false },
+          "per_page": { "type": "integer", "required": false, "default": 50 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      },
+      {
+        "name": "Set Reviewers for Proposal",
+        "method": "POST",
+        "url": "/reviewer-management/{proposal}/set-reviewers",
+        "description": "Assign reviewers to a proposal. Creates penilaian entries for all kriteria.",
+        "authentication": true,
+        "request_body": {
+          "reviewer_ids": { "type": "array", "required": true, "items": { "type": "integer" } }
+        },
+        "responses": [
+          { "status": 200, "description": "Reviewers assigned successfully" },
+          { "status": 404, "description": "Proposal not found" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      },
+      {
+        "name": "Add Reviewers to Proposal",
+        "method": "PATCH",
+        "url": "/reviewer-management/{proposal}/reviewers",
+        "description": "Add additional reviewers to a proposal",
+        "authentication": true,
+        "request_body": {
+          "reviewer_ids": { "type": "array", "required": true, "items": { "type": "integer" } }
+        },
+        "responses": [
+          { "status": 200, "description": "Reviewers added successfully" }
+        ]
+      },
+      {
+        "name": "Approve Proposal by Admin",
+        "method": "POST",
+        "url": "/reviewer-management/{proposal}/approve",
+        "description": "Admin approves a proposal after reviewers have completed their assessment",
+        "authentication": true,
+        "request_body": {
+          "catatan": { "type": "string", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "Proposal approved successfully" }
+        ]
+      },
+      {
+        "name": "Reject Proposal by Admin",
+        "method": "POST",
+        "url": "/reviewer-management/{proposal}/reject",
+        "description": "Admin rejects a proposal with a note",
+        "authentication": true,
+        "request_body": {
+          "catatan": { "type": "string", "required": true }
+        },
+        "responses": [
+          { "status": 200, "description": "Proposal rejected successfully" }
+        ]
+      }
+    ],
+    "rekap_proposal": [
+      {
+        "name": "Get Proposal Recap",
+        "method": "GET",
+        "url": "/rekap-proposal",
+        "description": "Returns recap of proposals grouped by fakultas and prodi with filters",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "tahun": { "type": "integer", "required": false },
+          "fakultas_id": { "type": "integer", "required": false },
+          "prodi_id": { "type": "integer", "required": false }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" }
+        ]
+      },
+      {
+        "name": "Get Proposal Detail by Fakultas/Prodi",
+        "method": "GET",
+        "url": "/rekap-proposal/detail",
+        "description": "Returns list of proposals filtered by fakultas or prodi",
+        "authentication": true,
+        "access_level": "Admin only",
+        "query_params": {
+          "tahun": { "type": "integer", "required": false },
+          "fakultas_id": { "type": "integer", "required": false },
+          "prodi_id": { "type": "integer", "required": false },
+          "status": { "type": "string", "required": false, "values": ["pending", "ditolak", "disetujui", "revisi"] },
+          "per_page": { "type": "integer", "required": false, "default": 15 }
+        },
+        "responses": [
+          { "status": 200, "description": "Success" },
+          { "status": 422, "description": "Validation error" }
+        ]
+      }
+    ]
+  },
+  "models": {
+    "User": {
+      "id": "integer - Unique identifier",
+      "name": "string - User's full name",
+      "email": "string - User's email address (unique)",
+      "role": "string - User role (admin, dosen, mahasiswa, reviewer, kajur)",
+      "email_verified_at": "datetime|null - Email verification timestamp",
+      "deleted_at": "datetime|null - Soft delete timestamp",
+      "created_at": "datetime - Creation timestamp",
+      "updated_at": "datetime - Last update timestamp"
+    },
+    "Role": {
+      "id": "integer - Unique identifier",
+      "name": "string - Role machine name",
+      "display_name": "string - Human readable role name",
+      "guard_name": "string - Guard name (web)",
+      "users_count": "integer - Number of users with this role"
+    },
+    "Notification": {
+      "id": "integer - Unique identifier",
+      "user_id": "integer - ID of the user who owns the notification",
+      "title": "string - Notification title",
+      "message": "string - Notification message content",
+      "type": "string - Notification type (info, warning, success, error)",
+      "read_at": "datetime|null - Timestamp when marked as read",
+      "created_at": "datetime - Creation timestamp",
+      "updated_at": "datetime - Last update timestamp"
+    },
+    "Faculty": {
+      "id": "integer - Unique identifier",
+      "name": "string - Faculty name",
+      "prodis_count": "integer - Number of study programs",
+      "prodis": "array - Array of prodi objects",
+      "created_at": "datetime - Creation timestamp",
+      "updated_at": "datetime - Last update timestamp"
+    },
+    "Prodi": {
+      "id": "integer - Unique identifier",
+      "name": "string - Study program name",
+      "code": "string - Study program code",
+      "strata": "string - Education level (D2, D3, S1, S2, S3)",
+      "fakultas_id": "integer|null - Faculty ID",
+      "kaprodi_id": "integer|null - Kaprodi user ID",
+      "fakultas": "object - Faculty details",
+      "kaprodi": "object - Kaprodi user details"
+    },
+    "PKM": {
+      "id": "integer - Unique identifier",
+      "singkatan": "string - PKM abbreviation (e.g., PKM-K, PKM-PE)",
+      "nama": "string - Full PKM name",
+      "batas_min_anggota": "integer - Minimum team members",
+      "batas_max_anggota": "integer - Maximum team members",
+      "batas_max_reviewer": "integer - Maximum reviewers",
+      "is_active": "boolean - Active status"
+    },
+    "PKMKalender": {
+      "id": "integer - Unique identifier",
+      "tahun": "integer - Year",
+      "tanggal_mulai_pengajuan": "date - Submission start date",
+      "tanggal_selesai_pengajuan": "date - Submission end date",
+      "tanggal_mulai_penilaian": "date - Assessment start date",
+      "tanggal_selesai_penilaian": "date - Assessment end date",
+      "tanggal_pengumuman": "date - Announcement date",
+      "is_active": "boolean - Active status (only one can be active)"
+    },
+    "KriteriaPKM": {
+      "id": "integer - Unique identifier",
+      "pkm_id": "integer - Foreign key to PKM",
+      "urutan": "integer - Order/sequence number",
+      "judul": "string - Short criteria title",
+      "kriteria": "string - Detailed criteria description",
+      "bobot": "integer - Weight percentage (0-100)"
+    },
+    "Proposal": {
+      "id": "integer - Unique identifier",
+      "judul": "string - Proposal title",
+      "ketua": "object - Ketua user details",
+      "pkm": "object - PKM details",
+      "pembimbing": "object - Pembimbing user details",
+      "anggota": "array - Array of anggota users",
+      "kalender": "object - Kalender details",
+      "status_pembimbing": "string - Pembimbing approval status",
+      "status": "string - Overall proposal status",
+      "nilai_akhir": "number - Final score",
+      "file_proposal_url": "string - Proposal file URL"
+    }
+  },
+  "general_notes": {
+    "base_url": "http://103.150.91.248:9001/api",
+    "content_type": "application/json",
+    "authentication": "Sanctum Bearer Token required for most endpoints",
+    "soft_deletes": "Users, faculties, prodis, PKM are soft deleted by default",
+    "pagination": "List endpoints support pagination with page and per_page parameters",
+    "error_handling": {
+      "response_format": {
+        "success": "boolean",
+        "message": "human-readable message",
+        "data": "response data (if applicable)",
+        "errors": "validation details (if applicable)"
+      }
+    }
+  }
+}

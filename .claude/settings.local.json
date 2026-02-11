@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(if not exist \"D:\\\\UNSIL\\\\SIMANIS\\\\vite-revamp\\\\src\\\\hooks\" mkdir \"D:\\\\UNSIL\\\\SIMANIS\\\\vite-revamp\\\\src\\\\hooks\")"
+      "Bash(if not exist \"D:\\\\UNSIL\\\\SIMANIS\\\\vite-revamp\\\\src\\\\hooks\" mkdir \"D:\\\\UNSIL\\\\SIMANIS\\\\vite-revamp\\\\src\\\\hooks\")",
+      "Bash(del:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)"
     ]
   }
 }
