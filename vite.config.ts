@@ -17,7 +17,15 @@ export default defineConfig({
   },
   build: {
     commonjsOptions: {
-      include: [/node_modules\/react/, /node_modules\/react-dom/],
+      include: [/node_modules\/react/, /node_modules\/react-dom/, /node_modules\//],
+      transformMixedEsModules: true,
+    },
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Ignore specific warnings
+        if (warning.code === 'MODULE_BARE_IMPORT') return;
+        warn(warning);
+      },
     },
   },
 });
