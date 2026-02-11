@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Icon } from "@/components/ui/Icon";
 import { Faculty } from "@/types/api.types";
 import { createFaculty, updateFaculty } from "@/api/faculty";
@@ -93,9 +94,9 @@ export const FacultyFormModal: React.FC<FacultyFormModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
+            <Label htmlFor="name">
               Nama Fakultas <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <Input
               id="name"
               value={name}

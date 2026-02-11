@@ -7,7 +7,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Icon } from "@/components/ui/Icon";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Prodi } from "@/types/api.types";
 import { createProdi, updateProdi } from "@/api/prodi";
 import { getAllFaculties } from "@/api/faculty";
@@ -153,9 +161,9 @@ export const ProdiFormModal: React.FC<ProdiFormModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
+            <Label htmlFor="name">
               Nama Program Studi <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <Input
               id="name"
               value={name}
@@ -167,9 +175,9 @@ export const ProdiFormModal: React.FC<ProdiFormModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="code" className="text-sm font-medium">
+            <Label htmlFor="code">
               Kode <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <Input
               id="code"
               value={code}
@@ -181,9 +189,9 @@ export const ProdiFormModal: React.FC<ProdiFormModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="strata" className="text-sm font-medium">
+            <Label htmlFor="strata">
               Strata <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <div className="flex flex-wrap gap-2">
               {STRATA_OPTIONS.map((option) => (
                 <button
@@ -204,37 +212,47 @@ export const ProdiFormModal: React.FC<ProdiFormModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="fakultas" className="text-sm font-medium">
+            <Label htmlFor="fakultas">
               Fakultas <span className="text-destructive">*</span>
-            </label>
+            </Label>
             {isLoadingFaculties ? (
               <div className="text-sm text-muted-foreground">
                 Memuat data fakultas...
               </div>
             ) : (
-              <select
-                id="fakultas"
-                value={fakultasId}
-                onChange={(e) =>
-                  setFakultasId(e.target.value ? Number(e.target.value) : "")
+              <Select
+                value={
+                  typeof fakultasId === "string"
+                    ? fakultasId
+                    : fakultasId.toString()
+                }
+                onValueChange={(value) =>
+                  setFakultasId(value === "" ? "" : Number(value))
                 }
                 disabled={isLoading}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="">Pilih Fakultas</option>
-                {faculties.map((fakultas) => (
-                  <option key={fakultas.id} value={fakultas.id}>
-                    {fakultas.name}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih Fakultas" />
+                </SelectTrigger>
+                <SelectContent>
+                  {faculties.map((fakultas) => (
+                    <SelectItem
+                      key={fakultas.id}
+                      value={fakultas.id.toString()}
+                    >
+                      {fakultas.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="kaprodi" className="text-sm font-medium">
-              Kaprodi ID <span className="text-muted-foreground">(Opsional)</span>
-            </label>
+            <Label htmlFor="kaprodi">
+              Kaprodi ID{" "}
+              <span className="text-muted-foreground">(Opsional)</span>
+            </Label>
             <Input
               id="kaprodi"
               type="number"
@@ -261,7 +279,11 @@ export const ProdiFormModal: React.FC<ProdiFormModalProps> = ({
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                  <Icon
+                    name="Loader2"
+                    size={16}
+                    className="mr-2 animate-spin"
+                  />
                   Menyimpan...
                 </>
               ) : mode === "create" ? (

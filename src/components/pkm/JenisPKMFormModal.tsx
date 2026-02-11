@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Icon } from "@/components/ui/Icon";
 import { JenisPKM } from "@/types/api.types";
 import { createPKM, updatePKM } from "@/api/pkm";
@@ -137,9 +138,9 @@ export const JenisPKMFormModal: React.FC<JenisPKMFormModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <label htmlFor="singkatan" className="text-sm font-medium">
+            <Label htmlFor="singkatan">
               Singkatan <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <Input
               id="singkatan"
               value={singkatan}
@@ -155,9 +156,9 @@ export const JenisPKMFormModal: React.FC<JenisPKMFormModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="nama" className="text-sm font-medium">
+            <Label htmlFor="nama">
               Nama Lengkap <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <Input
               id="nama"
               value={nama}
@@ -169,9 +170,9 @@ export const JenisPKMFormModal: React.FC<JenisPKMFormModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="min_anggota" className="text-sm font-medium">
+              <Label htmlFor="min_anggota">
                 Min. Anggota <span className="text-destructive">*</span>
-              </label>
+              </Label>
               <Input
                 id="min_anggota"
                 type="number"
@@ -184,9 +185,9 @@ export const JenisPKMFormModal: React.FC<JenisPKMFormModalProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="max_anggota" className="text-sm font-medium">
+              <Label htmlFor="max_anggota">
                 Max. Anggota <span className="text-destructive">*</span>
-              </label>
+              </Label>
               <Input
                 id="max_anggota"
                 type="number"
@@ -200,9 +201,9 @@ export const JenisPKMFormModal: React.FC<JenisPKMFormModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="max_reviewer" className="text-sm font-medium">
+            <Label htmlFor="max_reviewer">
               Max. Reviewer <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <Input
               id="max_reviewer"
               type="number"

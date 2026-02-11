@@ -317,7 +317,7 @@ export const ProposalSubmission = () => {
 
       {/* Proposal Form Modal */}
       <ProposalFormModal
-        show={showForm}
+        isOpen={showForm}
         editingProposal={editingProposal}
         onClose={() => {
           setShowForm(false);

@@ -39,6 +39,8 @@ import {
   Plus,
   AlertTriangle,
   Info,
+  Loader2,
+  FileEdit,
 } from "lucide-react";
 
 const icons = {
@@ -82,6 +84,8 @@ const icons = {
   Plus,
   AlertTriangle,
   Info,
+  Loader2,
+  Edit: FileEdit,
 };
 
 interface IconProps {

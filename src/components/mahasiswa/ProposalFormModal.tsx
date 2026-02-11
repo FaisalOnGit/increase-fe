@@ -1,22 +1,44 @@
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/Card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Input } from "@/components/ui/input";
-import { useAvailablePKM, useAvailableAnggota, useAvailablePembimbing } from "@/hooks/useProposal";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  useAvailablePKM,
+  useAvailableAnggota,
+  useAvailablePembimbing,
+} from "@/hooks/useProposal";
 import { MahasiswaProposal, CreateProposalData } from "@/types/api.types";
 
 interface ProposalFormModalProps {
-  show: boolean;
+  isOpen: boolean;
   editingProposal: MahasiswaProposal | null;
   onClose: () => void;
-  onSubmit: (data: CreateProposalData) => Promise<{ success: boolean; message?: string }>;
-  onEdit: (id: number, data: Partial<CreateProposalData>) => Promise<{ success: boolean; message?: string }>;
+  onSubmit: (
+    data: CreateProposalData,
+  ) => Promise<{ success: boolean; message?: string }>;
+  onEdit: (
+    id: number,
+    data: Partial<CreateProposalData>,
+  ) => Promise<{ success: boolean; message?: string }>;
   loading?: boolean;
 }
 
 export const ProposalFormModal = ({
-  show,
+  isOpen,
   editingProposal,
   onClose,
   onSubmit,
@@ -69,8 +91,10 @@ export const ProposalFormModal = ({
   };
 
   const handleClose = () => {
-    resetForm();
-    onClose();
+    if (!loading) {
+      resetForm();
+      onClose();
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,222 +132,250 @@ export const ProposalFormModal = ({
 
   const toggleAnggota = (id: number) => {
     setSelectedAnggotaIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   };
 
   const filteredPkms = pkms.filter(
     (pkm) =>
       pkm.nama.toLowerCase().includes(searchPkm.toLowerCase()) ||
-      pkm.singkatan.toLowerCase().includes(searchPkm.toLowerCase())
+      pkm.singkatan.toLowerCase().includes(searchPkm.toLowerCase()),
   );
 
-  if (!show) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <CardHeader className="border-b">
-          <div className="flex justify-between items-center">
-            <CardTitle>
-              {editingProposal ? "Edit Proposal" : "Ajukan Proposal Baru"}
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleClose}
-            >
-              <Icon name="X" size={20} />
-            </Button>
-          </div>
-        </CardHeader>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Icon
+              name={editingProposal ? "Edit" : "Plus"}
+              size={20}
+              className="text-primary"
+            />
+            {editingProposal ? "Edit Proposal" : "Ajukan Proposal Baru"}
+          </DialogTitle>
+        </DialogHeader>
 
         <form
           onSubmit={editingProposal ? handleEdit : handleSubmit}
-          className="space-y-6"
+          className="space-y-4 mt-4"
         >
-          <CardContent className="space-y-4">
-            {/* Judul */}
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Judul Proposal <span className="text-red-500">*</span>
-              </label>
-              <Input
-                type="text"
-                value={formData.judul}
-                onChange={(e) =>
-                  setFormData({ ...formData, judul: e.target.value })
-                }
-                placeholder="Masukkan judul proposal"
-                required
-              />
-            </div>
+          {/* Judul */}
+          <div className="space-y-2">
+            <Label htmlFor="judul">
+              Judul Proposal <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="judul"
+              type="text"
+              value={formData.judul}
+              onChange={(e) =>
+                setFormData({ ...formData, judul: e.target.value })
+              }
+              placeholder="Masukkan judul proposal"
+              disabled={loading}
+              required
+              autoFocus
+            />
+          </div>
 
-            {/* PKM */}
-            {!editingProposal && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Jenis PKM <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    type="text"
-                    value={searchPkm}
-                    onChange={(e) => setSearchPkm(e.target.value)}
-                    placeholder="Cari jenis PKM..."
-                    className="mb-2"
-                  />
-                  <select
-                    value={formData.pkm_id}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        pkm_id: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-full border border-input rounded-md px-3 py-2 focus:ring-2 focus:ring-ring focus:border-ring"
-                    required
-                  >
-                    <option value={0}>Pilih Jenis PKM</option>
+          {/* PKM */}
+          {!editingProposal && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="pkm">
+                  Jenis PKM <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="pkm"
+                  type="text"
+                  value={searchPkm}
+                  onChange={(e) => setSearchPkm(e.target.value)}
+                  placeholder="Cari jenis PKM..."
+                  disabled={loading || pkmsLoading}
+                />
+                <Select
+                  value={
+                    formData.pkm_id === 0 ? "" : formData.pkm_id.toString()
+                  }
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      pkm_id: parseInt(value),
+                    })
+                  }
+                  disabled={loading || pkmsLoading}
+                  required
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih Jenis PKM" />
+                  </SelectTrigger>
+                  <SelectContent>
                     {pkmsLoading ? (
-                      <option disabled>Loading...</option>
+                      <div className="p-2 text-center text-sm text-muted-foreground">
+                        Loading...
+                      </div>
                     ) : (
                       filteredPkms.map((pkm) => (
-                        <option key={pkm.id} value={pkm.id}>
+                        <SelectItem key={pkm.id} value={pkm.id.toString()}>
                           {pkm.singkatan} - {pkm.nama}
-                        </option>
+                        </SelectItem>
                       ))
                     )}
-                  </select>
-                </div>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {/* Pembimbing */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Dosen Pembimbing <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    type="text"
-                    value={searchPembimbing}
-                    onChange={(e) => setSearchPembimbing(e.target.value)}
-                    placeholder="Cari dosen pembimbing..."
-                    className="mb-2"
-                  />
-                  <select
-                    value={formData.pembimbing_id}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        pembimbing_id: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-full border border-input rounded-md px-3 py-2 focus:ring-2 focus:ring-ring focus:border-ring"
-                    required
-                  >
-                    <option value={0}>Pilih Dosen Pembimbing</option>
+              {/* Pembimbing */}
+              <div className="space-y-2">
+                <Label htmlFor="pembimbing">
+                  Dosen Pembimbing <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="pembimbing"
+                  type="text"
+                  value={searchPembimbing}
+                  onChange={(e) => setSearchPembimbing(e.target.value)}
+                  placeholder="Cari dosen pembimbing..."
+                  disabled={loading}
+                />
+                <Select
+                  value={formData.pembimbing_id.toString()}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      pembimbing_id: value === "" ? 0 : parseInt(value),
+                    })
+                  }
+                  disabled={loading}
+                  required
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih Dosen Pembimbing" />
+                  </SelectTrigger>
+                  <SelectContent>
                     {pembimbing.map((p) => (
-                      <option key={p.id} value={p.id}>
+                      <SelectItem key={p.id} value={p.id.toString()}>
                         {p.name} - {p.email}
                         {p.prodi ? ` (${p.prodi.name})` : ""}
-                      </option>
+                      </SelectItem>
                     ))}
-                  </select>
-                </div>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {/* Anggota */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Anggota Tim
-                  </label>
-                  <Input
-                    type="text"
-                    value={searchAnggota}
-                    onChange={(e) => setSearchAnggota(e.target.value)}
-                    placeholder="Cari mahasiswa..."
-                    className="mb-2"
-                  />
-                  <div className="border border-input rounded-md p-3 max-h-40 overflow-y-auto">
-                    {anggota.map((a) => (
-                      <div
-                        key={a.id}
-                        className="flex items-center p-2 hover:bg-accent rounded"
+              {/* Anggota */}
+              <div className="space-y-2">
+                <Label htmlFor="anggota">Anggota Tim</Label>
+                <Input
+                  id="anggota"
+                  type="text"
+                  value={searchAnggota}
+                  onChange={(e) => setSearchAnggota(e.target.value)}
+                  placeholder="Cari mahasiswa..."
+                  disabled={loading}
+                />
+                <div className="border border-input rounded-lg p-3 max-h-40 overflow-y-auto">
+                  {anggota.map((a) => (
+                    <div
+                      key={a.id}
+                      className="flex items-center p-2 hover:bg-accent rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        id={`anggota-${a.id}`}
+                        checked={selectedAnggotaIds.includes(a.id)}
+                        onChange={() => toggleAnggota(a.id)}
+                        disabled={loading}
+                        className="mr-3"
+                      />
+                      <label
+                        htmlFor={`anggota-${a.id}`}
+                        className="flex-1 cursor-pointer"
                       >
-                        <input
-                          type="checkbox"
-                          id={`anggota-${a.id}`}
-                          checked={selectedAnggotaIds.includes(a.id)}
-                          onChange={() => toggleAnggota(a.id)}
-                          className="mr-3"
-                        />
-                        <label
-                          htmlFor={`anggota-${a.id}`}
-                          className="flex-1 cursor-pointer"
-                        >
-                          <div className="font-medium">{a.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {a.email}
+                        <div className="font-medium">{a.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {a.email}
+                        </div>
+                        {a.prodi && (
+                          <div className="text-xs text-muted-foreground">
+                            {a.prodi.name}
                           </div>
-                          {a.prodi && (
-                            <div className="text-xs text-muted-foreground">
-                              {a.prodi.name}
-                            </div>
-                          )}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Terpilih: {selectedAnggotaIds.length} anggota
-                  </p>
+                        )}
+                      </label>
+                    </div>
+                  ))}
                 </div>
-              </>
-            )}
-
-            {/* File Proposal */}
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                File Proposal {editingProposal && "(Opsional untuk update)"}
-                {!editingProposal && (
-                  <span className="text-red-500">*</span>
-                )}
-              </label>
-              <Input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    file_proposal: e.target.files?.[0] || null,
-                  })
-                }
-                {...(!editingProposal && { required: true })}
-              />
-              {editingProposal && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  Biarkan kosong jika tidak ingin mengubah file
+                <p className="text-sm text-muted-foreground">
+                  Terpilih: {selectedAnggotaIds.length} anggota
                 </p>
-              )}
-            </div>
-          </CardContent>
+              </div>
+            </>
+          )}
 
-          <div className="px-6 pb-6 flex justify-end gap-3">
+          {/* File Proposal */}
+          <div className="space-y-2">
+            <Label htmlFor="file">
+              File Proposal{" "}
+              {editingProposal && (
+                <span className="text-muted-foreground">(Opsional)</span>
+              )}
+              {!editingProposal && <span className="text-destructive">*</span>}
+            </Label>
+            <Input
+              id="file"
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  file_proposal: e.target.files?.[0] || null,
+                })
+              }
+              disabled={loading}
+              {...(!editingProposal && { required: true })}
+            />
+            {editingProposal && (
+              <p className="text-sm text-muted-foreground">
+                Biarkan kosong jika tidak ingin mengubah file
+              </p>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
+              disabled={loading}
             >
               Batal
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading
-                ? "Memproses..."
-                : editingProposal
-                  ? "Update"
-                  : "Ajukan"}
+              {loading ? (
+                <>
+                  <Icon
+                    name="Loader2"
+                    size={16}
+                    className="mr-2 animate-spin"
+                  />
+                  Memproses...
+                </>
+              ) : editingProposal ? (
+                <>
+                  <Icon name="Check" size={16} className="mr-2" />
+                  Update
+                </>
+              ) : (
+                <>
+                  <Icon name="Plus" size={16} className="mr-2" />
+                  Ajukan
+                </>
+              )}
             </Button>
           </div>
         </form>
-      </Card>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

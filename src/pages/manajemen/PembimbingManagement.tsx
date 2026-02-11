@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { getQuotaBadge, getQuotaProgress } from "@/utils/badge-utils";
 import {
   Table,

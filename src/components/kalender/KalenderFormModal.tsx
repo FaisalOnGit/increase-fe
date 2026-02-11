@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Icon } from "@/components/ui/Icon";
 import { PKMKalender } from "@/types/api.types";
 import { createKalender, updateKalender } from "@/api/kalender";
@@ -207,9 +208,9 @@ export const KalenderFormModal: React.FC<KalenderFormModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="tahun" className="text-sm font-medium">
+              <Label htmlFor="tahun">
                 Tahun <span className="text-destructive">*</span>
-              </label>
+              </Label>
               <Input
                 id="tahun"
                 type="number"
@@ -251,9 +252,9 @@ export const KalenderFormModal: React.FC<KalenderFormModalProps> = ({
             <h3 className="text-sm font-medium">Periode Pengajuan</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label htmlFor="mulai_pengajuan" className="text-sm font-medium">
+                <Label htmlFor="mulai_pengajuan">
                   Tanggal Mulai <span className="text-destructive">*</span>
-                </label>
+                </Label>
                 <Input
                   id="mulai_pengajuan"
                   type="date"
@@ -263,9 +264,9 @@ export const KalenderFormModal: React.FC<KalenderFormModalProps> = ({
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="selesai_pengajuan" className="text-sm font-medium">
+                <Label htmlFor="selesai_pengajuan">
                   Tanggal Selesai <span className="text-destructive">*</span>
-                </label>
+                </Label>
                 <Input
                   id="selesai_pengajuan"
                   type="date"
@@ -281,9 +282,9 @@ export const KalenderFormModal: React.FC<KalenderFormModalProps> = ({
             <h3 className="text-sm font-medium">Periode Penilaian</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label htmlFor="mulai_penilaian" className="text-sm font-medium">
+                <Label htmlFor="mulai_penilaian">
                   Tanggal Mulai <span className="text-destructive">*</span>
-                </label>
+                </Label>
                 <Input
                   id="mulai_penilaian"
                   type="date"
@@ -293,9 +294,9 @@ export const KalenderFormModal: React.FC<KalenderFormModalProps> = ({
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="selesai_penilaian" className="text-sm font-medium">
+                <Label htmlFor="selesai_penilaian">
                   Tanggal Selesai <span className="text-destructive">*</span>
-                </label>
+                </Label>
                 <Input
                   id="selesai_penilaian"
                   type="date"
@@ -308,9 +309,9 @@ export const KalenderFormModal: React.FC<KalenderFormModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="pengumuman" className="text-sm font-medium">
+            <Label htmlFor="pengumuman">
               Tanggal Pengumuman <span className="text-destructive">*</span>
-            </label>
+            </Label>
             <Input
               id="pengumuman"
               type="date"
@@ -321,9 +322,9 @@ export const KalenderFormModal: React.FC<KalenderFormModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
+            <Label>
               Jenis PKM <span className="text-destructive">*</span>
-            </label>
+            </Label>
             {isLoadingPKMs ? (
               <div className="text-sm text-muted-foreground">
                 Memuat daftar PKM...
