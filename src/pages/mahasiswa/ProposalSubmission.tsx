@@ -13,15 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  useProposal,
-  useEligibility,
-  useAvailablePKM,
-  useAvailableAnggota,
-  useAvailablePembimbing,
-} from "../../hooks/useProposal";
+import { useProposal, useEligibility } from "../../hooks/useProposal";
 import { CreateProposalData, MahasiswaProposal } from "../../types/api.types";
 import { toastSuccess, toastError } from "@/lib/toast";
+import { ProposalFormModal } from "@/components/mahasiswa/ProposalFormModal";
 
 export const ProposalSubmission = () => {
   const {
@@ -33,26 +28,16 @@ export const ProposalSubmission = () => {
     removeProposal,
   } = useProposal();
 
-  const { eligibility, loading: eligibilityLoading } = useEligibility();
-  const { pkms, loading: pkmsLoading } = useAvailablePKM();
-  const { anggota, fetchAnggota } = useAvailableAnggota();
-  const { pembimbing, fetchPembimbing } = useAvailablePembimbing();
+  const {
+    eligibility,
+    eligible,
+    eligibleMessage,
+    loading: eligibilityLoading,
+  } = useEligibility();
 
   const [showForm, setShowForm] = useState(false);
   const [editingProposal, setEditingProposal] =
     useState<MahasiswaProposal | null>(null);
-  const [selectedAnggotaIds, setSelectedAnggotaIds] = useState<number[]>([]);
-  const [searchAnggota, setSearchAnggota] = useState("");
-  const [searchPembimbing, setSearchPembimbing] = useState("");
-  const [searchPkm, setSearchPkm] = useState("");
-
-  // Form state
-  const [formData, setFormData] = useState({
-    judul: "",
-    pkm_id: 0,
-    pembimbing_id: 0,
-    file_proposal: null as File | null,
-  });
 
   const [filters, setFilters] = useState({
     status: "",
@@ -64,75 +49,33 @@ export const ProposalSubmission = () => {
     fetchProposals();
   }, []);
 
-  useEffect(() => {
-    if (searchAnggota) {
-      fetchAnggota(searchAnggota);
-    } else {
-      fetchAnggota();
-    }
-  }, [searchAnggota]);
-
-  useEffect(() => {
-    if (searchPembimbing) {
-      fetchPembimbing(searchPembimbing);
-    } else {
-      fetchPembimbing();
-    }
-  }, [searchPembimbing]);
-
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     fetchProposals({ ...filters, [key]: value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (
-      !formData.pkm_id ||
-      !formData.pembimbing_id ||
-      !formData.file_proposal
-    ) {
-      toastError("Please fill in all required fields");
-      return;
-    }
-
-    const data: CreateProposalData = {
-      judul: formData.judul,
-      pkm_id: formData.pkm_id,
-      anggota_ids: selectedAnggotaIds,
-      pembimbing_id: formData.pembimbing_id,
-      file_proposal: formData.file_proposal,
-    };
-
+  const handleSubmit = async (data: CreateProposalData) => {
     const result = await submitProposal(data);
     if (result.success) {
       toastSuccess("Proposal submitted successfully!");
-      resetForm();
       setShowForm(false);
+      setEditingProposal(null);
     } else {
       toastError(result.message || "Failed to submit proposal");
     }
+    return result;
   };
 
-  const handleEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!editingProposal) return;
-
-    const result = await editProposal(editingProposal.id, {
-      judul: formData.judul,
-      file_proposal: formData.file_proposal || undefined,
-    });
-
+  const handleEdit = async (id: number, data: Partial<CreateProposalData>) => {
+    const result = await editProposal(id, data);
     if (result.success) {
       toastSuccess("Proposal updated successfully!");
-      resetForm();
-      setEditingProposal(null);
       setShowForm(false);
+      setEditingProposal(null);
     } else {
       toastError(result.message || "Failed to update proposal");
     }
+    return result;
   };
 
   const handleDelete = async (id: number) => {
@@ -146,52 +89,37 @@ export const ProposalSubmission = () => {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      judul: "",
-      pkm_id: 0,
-      pembimbing_id: 0,
-      file_proposal: null,
-    });
-    setSelectedAnggotaIds([]);
-    setSearchAnggota("");
-    setSearchPembimbing("");
-  };
-
   const openEditForm = (proposal: MahasiswaProposal) => {
     setEditingProposal(proposal);
-    setFormData({
-      judul: proposal.judul,
-      pkm_id: proposal.pkm.id,
-      pembimbing_id: proposal.pembimbing.id,
-      file_proposal: null,
-    });
-    setSelectedAnggotaIds(proposal.anggota.map((a) => a.id));
     setShowForm(true);
-  };
-
-  const filteredPkms = pkms.filter(
-    (pkm) =>
-      pkm.nama.toLowerCase().includes(searchPkm.toLowerCase()) ||
-      pkm.singkatan.toLowerCase().includes(searchPkm.toLowerCase()),
-  );
-
-  const toggleAnggota = (id: number) => {
-    setSelectedAnggotaIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pending</Badge>;
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+            Pending
+          </Badge>
+        );
       case "disetujui":
-        return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Disetujui</Badge>;
+        return (
+          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+            Disetujui
+          </Badge>
+        );
       case "ditolak":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Ditolak</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+            Ditolak
+          </Badge>
+        );
       case "revisi":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Revisi</Badge>;
+        return (
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+            Revisi
+          </Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
@@ -213,7 +141,10 @@ export const ProposalSubmission = () => {
           pages={[
             { name: "Dashboard", href: "/dashboard" },
             { name: "Mahasiswa", href: "/dashboard/mahasiswa" },
-            { name: "Pengajuan Proposal", href: "/dashboard/mahasiswa/pengajuan-proposal" },
+            {
+              name: "Pengajuan Proposal",
+              href: "/dashboard/mahasiswa/pengajuan-proposal",
+            },
           ]}
         />
       </div>
@@ -226,12 +157,13 @@ export const ProposalSubmission = () => {
             Kelola pengajuan proposal PKM Anda
           </p>
         </div>
-        {eligibility?.eligible && (
-          <Button onClick={() => {
-            resetForm();
-            setEditingProposal(null);
-            setShowForm(true);
-          }}>
+        {eligible && (
+          <Button
+            onClick={() => {
+              setEditingProposal(null);
+              setShowForm(true);
+            }}
+          >
             <Icon name="Plus" size={16} className="mr-2" />
             Ajukan Proposal
           </Button>
@@ -272,7 +204,11 @@ export const ProposalSubmission = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-100 rounded-lg">
-                <Icon name="CheckCircle" size={20} className="text-emerald-600" />
+                <Icon
+                  name="CheckCircle"
+                  size={20}
+                  className="text-emerald-600"
+                />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -301,14 +237,19 @@ export const ProposalSubmission = () => {
       </div>
 
       {/* Eligibility Alert */}
-      {!eligibility?.eligible && eligibility && (
+      {!eligible && eligibility && (
         <Card className="border-yellow-200 bg-yellow-50">
           <CardContent className="p-4">
             <div className="flex">
-              <Icon name="AlertTriangle" className="text-yellow-600 mr-3" size={20} />
+              <Icon
+                name="AlertTriangle"
+                className="text-yellow-600 mr-3"
+                size={20}
+              />
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-yellow-800">
-                  {eligibility.message || "Anda belum memenuhi syarat untuk mengajukan proposal"}
+                  {eligibleMessage ||
+                    "Anda belum memenuhi syarat untuk mengajukan proposal"}
                 </h3>
                 <div className="mt-2 text-sm text-yellow-700">
                   <ul className="list-disc list-inside space-y-1">
@@ -375,184 +316,17 @@ export const ProposalSubmission = () => {
       </Card>
 
       {/* Proposal Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <CardHeader className="border-b">
-              <div className="flex justify-between items-center">
-                <CardTitle>
-                  {editingProposal ? "Edit Proposal" : "Ajukan Proposal Baru"}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingProposal(null);
-                    resetForm();
-                  }}
-                >
-                  <Icon name="X" size={20} />
-                </Button>
-              </div>
-            </CardHeader>
-
-            <form onSubmit={editingProposal ? handleEdit : handleSubmit} className="space-y-6">
-              <CardContent className="space-y-4">
-                {/* Judul */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Judul Proposal <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    type="text"
-                    value={formData.judul}
-                    onChange={(e) => setFormData({ ...formData, judul: e.target.value })}
-                    placeholder="Masukkan judul proposal"
-                    required
-                  />
-                </div>
-
-                {/* PKM */}
-                {!editingProposal && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Jenis PKM <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        type="text"
-                        value={searchPkm}
-                        onChange={(e) => setSearchPkm(e.target.value)}
-                        placeholder="Cari jenis PKM..."
-                        className="mb-2"
-                      />
-                      <select
-                        value={formData.pkm_id}
-                        onChange={(e) => setFormData({ ...formData, pkm_id: parseInt(e.target.value) })}
-                        className="w-full border border-input rounded-md px-3 py-2 focus:ring-2 focus:ring-ring focus:border-ring"
-                        required
-                      >
-                        <option value={0}>Pilih Jenis PKM</option>
-                        {pkmsLoading ? (
-                          <option disabled>Loading...</option>
-                        ) : (
-                          filteredPkms.map((pkm) => (
-                            <option key={pkm.id} value={pkm.id}>
-                              {pkm.singkatan} - {pkm.nama}
-                            </option>
-                          ))
-                        )}
-                      </select>
-                    </div>
-
-                    {/* Pembimbing */}
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Dosen Pembimbing <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        type="text"
-                        value={searchPembimbing}
-                        onChange={(e) => setSearchPembimbing(e.target.value)}
-                        placeholder="Cari dosen pembimbing..."
-                        className="mb-2"
-                      />
-                      <select
-                        value={formData.pembimbing_id}
-                        onChange={(e) => setFormData({ ...formData, pembimbing_id: parseInt(e.target.value) })}
-                        className="w-full border border-input rounded-md px-3 py-2 focus:ring-2 focus:ring-ring focus:border-ring"
-                        required
-                      >
-                        <option value={0}>Pilih Dosen Pembimbing</option>
-                        {pembimbing.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name} - {p.email}
-                            {p.prodi ? ` (${p.prodi.name})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Anggota */}
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Anggota Tim
-                      </label>
-                      <Input
-                        type="text"
-                        value={searchAnggota}
-                        onChange={(e) => setSearchAnggota(e.target.value)}
-                        placeholder="Cari mahasiswa..."
-                        className="mb-2"
-                      />
-                      <div className="border border-input rounded-md p-3 max-h-40 overflow-y-auto">
-                        {anggota.map((a) => (
-                          <div key={a.id} className="flex items-center p-2 hover:bg-accent rounded">
-                            <input
-                              type="checkbox"
-                              id={`anggota-${a.id}`}
-                              checked={selectedAnggotaIds.includes(a.id)}
-                              onChange={() => toggleAnggota(a.id)}
-                              className="mr-3"
-                            />
-                            <label htmlFor={`anggota-${a.id}`} className="flex-1 cursor-pointer">
-                              <div className="font-medium">{a.name}</div>
-                              <div className="text-sm text-muted-foreground">{a.email}</div>
-                              {a.prodi && (
-                                <div className="text-xs text-muted-foreground">{a.prodi.name}</div>
-                              )}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Terpilih: {selectedAnggotaIds.length} anggota
-                      </p>
-                    </div>
-                  </>
-                )}
-
-                {/* File Proposal */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    File Proposal {editingProposal && "(Opsional untuk update)"}
-                    {!editingProposal && <span className="text-red-500">*</span>}
-                  </label>
-                  <Input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={(e) => setFormData({ ...formData, file_proposal: e.target.files?.[0] || null })}
-                    {...(!editingProposal && { required: true })}
-                  />
-                  {editingProposal && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Biarkan kosong jika tidak ingin mengubah file
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-
-              <div className="px-6 pb-6 flex justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingProposal(null);
-                    resetForm();
-                  }}
-                >
-                  Batal
-                </Button>
-                <Button type="submit" disabled={proposalsLoading}>
-                  {proposalsLoading ? "Memproses..." : editingProposal ? "Update" : "Ajukan"}
-                </Button>
-              </div>
-            </form>
-          </Card>
-        </div>
-      )}
+      <ProposalFormModal
+        show={showForm}
+        editingProposal={editingProposal}
+        onClose={() => {
+          setShowForm(false);
+          setEditingProposal(null);
+        }}
+        onSubmit={handleSubmit}
+        onEdit={handleEdit}
+        loading={proposalsLoading}
+      />
 
       {/* Proposals List */}
       <Card>
@@ -589,7 +363,9 @@ export const ProposalSubmission = () => {
                       <TableRow key={proposal.id}>
                         <TableCell>
                           <div>
-                            <p className="text-sm font-medium">{proposal.judul}</p>
+                            <p className="text-sm font-medium">
+                              {proposal.judul}
+                            </p>
                             <p className="text-xs text-muted-foreground">
                               {proposal.ketua.name} (Ketua)
                             </p>
@@ -597,33 +373,51 @@ export const ProposalSubmission = () => {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="text-sm font-medium">{proposal.pkm.singkatan}</p>
-                            <p className="text-xs text-muted-foreground">{proposal.pembimbing.name}</p>
+                            <p className="text-sm font-medium">
+                              {proposal.pkm.singkatan}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {proposal.pembimbing.name}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
                             {proposal.anggota.length > 0 ? (
                               <>
-                                <p className="text-sm">{proposal.anggota.length} anggota</p>
+                                <p className="text-sm">
+                                  {proposal.anggota.length} anggota
+                                </p>
                                 <p className="text-xs text-muted-foreground">
-                                  {proposal.anggota.map((a) => a.name).join(", ")}
+                                  {proposal.anggota
+                                    .map((a) => a.name)
+                                    .join(", ")}
                                 </p>
                               </>
                             ) : (
-                              <span className="text-sm text-muted-foreground">-</span>
+                              <span className="text-sm text-muted-foreground">
+                                -
+                              </span>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>{getStatusBadge(proposal.status)}</TableCell>
                         <TableCell>
-                          <span className="text-sm text-muted-foreground">{proposal.kalender.tahun}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {proposal.kalender.tahun}
+                          </span>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
-                            {(proposal.status === "pending" || proposal.status === "revisi") && (
+                            {(proposal.status === "pending" ||
+                              proposal.status === "revisi") && (
                               <>
-                                <Button variant="ghost" size="icon" onClick={() => openEditForm(proposal)} title="Edit">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => openEditForm(proposal)}
+                                  title="Edit"
+                                >
                                   <Icon name="Settings" size={16} />
                                 </Button>
                                 <Button
@@ -638,7 +432,12 @@ export const ProposalSubmission = () => {
                               </>
                             )}
                             <Button variant="ghost" size="icon" asChild>
-                              <a href={proposal.file_proposal_url} target="_blank" rel="noopener noreferrer" title="Lihat File">
+                              <a
+                                href={proposal.file_proposal_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Lihat File"
+                              >
                                 <Icon name="Eye" size={16} />
                               </a>
                             </Button>

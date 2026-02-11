@@ -136,6 +136,8 @@ export const useProposal = () => {
 
 export const useEligibility = () => {
   const [eligibility, setEligibility] = useState<EligibilityCheck | null>(null);
+  const [eligible, setEligible] = useState<boolean>(false);
+  const [eligibleMessage, setEligibleMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -146,6 +148,8 @@ export const useEligibility = () => {
       const response = await checkEligibility();
       if (response.success) {
         setEligibility(response.data || null);
+        setEligible(response.eligible ?? false);
+        setEligibleMessage(response.message ?? "");
         return response;
       } else {
         setError(response.message || "Failed to check eligibility");
@@ -165,6 +169,8 @@ export const useEligibility = () => {
 
   return {
     eligibility,
+    eligible,
+    eligibleMessage,
     loading,
     error,
     fetchEligibility,
