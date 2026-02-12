@@ -19,89 +19,47 @@ import {
 } from "@/components/ui/dialog";
 import { Proposal } from "@/types/api.types";
 
-export interface ProposalTableProps {
+export interface PembimbingProposalTableProps {
   proposals: Proposal[];
   loading?: boolean;
-  onEdit?: (proposal: Proposal) => void;
-  onDelete?: (id: number) => void;
-  onView?: (proposal: Proposal) => void;
-  emptyMessage?: string;
+  onApprove?: (proposal: Proposal) => void;
+  onReject?: (proposal: Proposal) => void;
+  currentPage: number;
+  totalPages: number;
+  total: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
 }
 
-export const ProposalTable: React.FC<ProposalTableProps> = ({
+export const PembimbingProposalTable: React.FC<
+  PembimbingProposalTableProps
+> = ({
   proposals,
   loading = false,
-  onEdit,
-  onDelete,
-  onView,
-  emptyMessage = "Belum ada proposal",
+  onApprove,
+  onReject,
+  currentPage,
+  totalPages,
+  total,
+  itemsPerPage,
+  onPageChange,
 }) => {
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
   const [membersModalOpen, setMembersModalOpen] = useState(false);
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-            Pending
-          </Badge>
-        );
-      case "disetujui":
-        return (
-          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
-            Disetujui
-          </Badge>
-        );
-      case "ditolak":
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
-            Ditolak
-          </Badge>
-        );
-      case "revisi":
-        return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-            Revisi
-          </Badge>
-        );
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
-
-  const getPembimbingStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return (
-          <Badge variant="outline" className="text-xs">
-            Pending
-          </Badge>
-        );
-      case "disetujui":
-        return (
-          <Badge
-            variant="outline"
-            className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200"
-          >
-            Disetujui
-          </Badge>
-        );
-      case "ditolak":
-        return (
-          <Badge
-            variant="outline"
-            className="text-xs bg-red-50 text-red-700 border-red-200"
-          >
-            Ditolak
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline" className="text-xs">
-            {status}
-          </Badge>
-        );
-    }
+  const getStatusPembimbingBadge = (status: string) => {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
+      pending: "secondary",
+      disetujui: "default",
+      ditolak: "destructive",
+    };
+    return (
+      <Badge variant={variants[status] || "default"}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </Badge>
+    );
   };
 
   const openMembersModal = (proposal: Proposal) => {
@@ -109,11 +67,27 @@ export const ProposalTable: React.FC<ProposalTableProps> = ({
     setMembersModalOpen(true);
   };
 
+  const getStatusBadge = (status: string) => {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
+      pending: "secondary",
+      disetujui: "default",
+      ditolak: "destructive",
+      revisi: "outline",
+    };
+    return (
+      <Badge variant={variants[status] || "default"}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </Badge>
+    );
+  };
+
   if (loading) {
     return (
-      <div className="p-8 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-        <p className="mt-4 text-muted-foreground">Memuat data...</p>
+      <div className="p-8 text-center text-muted-foreground">
+        Memuat data...
       </div>
     );
   }
@@ -121,23 +95,23 @@ export const ProposalTable: React.FC<ProposalTableProps> = ({
   if (proposals.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground">
-        <Icon name="FileText" className="mx-auto mb-4 opacity-20" size={48} />
-        <p>{emptyMessage}</p>
+        Tidak ada proposal
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto">
+    <>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Judul</TableHead>
+            <TableHead>Judul Proposal</TableHead>
+            <TableHead>Ketua Tim</TableHead>
             <TableHead>Jenis PKM</TableHead>
-            <TableHead>Pembimbing</TableHead>
-            <TableHead>Status Pembimbing</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>Tahun</TableHead>
+            <TableHead>Status Pembimbing</TableHead>
+            <TableHead>Status Proposal</TableHead>
+            <TableHead>Nilai</TableHead>
             <TableHead className="text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
@@ -145,8 +119,11 @@ export const ProposalTable: React.FC<ProposalTableProps> = ({
           {proposals.map((proposal) => (
             <TableRow key={proposal.id}>
               <TableCell>
+                <p className="text-sm font-medium">{proposal.judul}</p>
+              </TableCell>
+              <TableCell>
                 <div>
-                  <p className="text-sm font-medium">{proposal.judul}</p>
+                  <p className="text-sm font-medium">{proposal.ketua.name}</p>
                 </div>
               </TableCell>
               <TableCell>
@@ -157,19 +134,15 @@ export const ProposalTable: React.FC<ProposalTableProps> = ({
                 </div>
               </TableCell>
               <TableCell>
-                <div>
-                  <p className="text-sm font-medium">
-                    {proposal.pembimbing.name}
-                  </p>
-                </div>
+                <span className="text-sm">{proposal.kalender.tahun}</span>
               </TableCell>
               <TableCell>
-                {getPembimbingStatusBadge(proposal.status_pembimbing)}
+                {getStatusPembimbingBadge(proposal.status_pembimbing)}
               </TableCell>
               <TableCell>{getStatusBadge(proposal.status)}</TableCell>
               <TableCell>
-                <span className="text-sm text-muted-foreground">
-                  {proposal.kalender.tahun}
+                <span className="text-sm font-medium">
+                  {proposal.nilai_akhir || "-"}
                 </span>
               </TableCell>
               <TableCell className="text-right">
@@ -182,61 +155,81 @@ export const ProposalTable: React.FC<ProposalTableProps> = ({
                   >
                     <Icon name="Users" size={16} />
                   </Button>
-                  {onView && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      title="Lihat Detail"
-                      onClick={() => onView(proposal)}
-                    >
-                      <Icon name="Eye" size={16} />
-                    </Button>
-                  )}
-                  {(proposal.status === "pending" ||
-                    proposal.status === "revisi") &&
-                    onEdit && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Edit"
-                        onClick={() => onEdit(proposal)}
-                      >
-                        <Icon name="Settings" size={16} />
-                      </Button>
-                    )}
-                  {(proposal.status === "pending" ||
-                    proposal.status === "revisi") &&
-                    onDelete && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onDelete(proposal.id)}
-                        className="text-destructive"
-                        title="Hapus"
-                      >
-                        <Icon name="Trash2" size={16} />
-                      </Button>
-                    )}
                   <Button
                     variant="ghost"
                     size="icon"
-                    asChild
-                    title="Lihat File"
+                    title="Lihat Detail"
+                    onClick={() =>
+                      window.open(proposal.file_proposal_url, "_blank")
+                    }
                   >
-                    <a
-                      href={proposal.file_proposal_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Icon name="FileText" size={16} />
-                    </a>
+                    <Icon name="FileText" size={16} />
                   </Button>
+                  {proposal.status_pembimbing === "pending" && (
+                    <>
+                      {onApprove && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-emerald-600"
+                          title="Setujui"
+                          onClick={() => onApprove(proposal)}
+                        >
+                          <Icon name="Check" size={16} />
+                        </Button>
+                      )}
+                      {onReject && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-600"
+                          title="Tolak"
+                          onClick={() => onReject(proposal)}
+                        >
+                          <Icon name="X" size={16} />
+                        </Button>
+                      )}
+                    </>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination */}
+      <div className="px-6 py-4 border-t">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Menampilkan {(currentPage - 1) * itemsPerPage + 1} hingga{" "}
+            {Math.min(currentPage * itemsPerPage, total)} dari {total} proposal
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <Icon name="ChevronLeft" size={16} />
+            </Button>
+            <span className="px-3 py-1 text-sm">
+              Halaman {currentPage} dari {totalPages || 1}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                onPageChange(Math.min(currentPage + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              <Icon name="ChevronRight" size={16} />
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Members Modal */}
       <Dialog open={membersModalOpen} onOpenChange={setMembersModalOpen}>
@@ -301,6 +294,6 @@ export const ProposalTable: React.FC<ProposalTableProps> = ({
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };

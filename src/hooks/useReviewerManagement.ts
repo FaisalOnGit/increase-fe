@@ -23,6 +23,7 @@ export const useReviewerManagement = () => {
     current_page: number;
     per_page: number;
     total: number;
+    last_page: number;
   } | null>(null);
 
   const fetchProposals = async (params?: ReviewerListParams) => {

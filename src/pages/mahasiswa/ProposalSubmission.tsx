@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useProposal, useEligibility } from "../../hooks/useProposal";
-import { CreateProposalData, MahasiswaProposal } from "../../types/api.types";
+import { CreateProposalData, UpdateProposalData, MahasiswaProposal, MahasiswaProposalListParams } from "../../types/api.types";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { ProposalFormModal } from "@/components/mahasiswa/ProposalFormModal";
 import { ProposalTable } from "@/components/proposal/ProposalTable";
@@ -44,7 +43,8 @@ export const ProposalSubmission = () => {
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    fetchProposals({ ...filters, [key]: value });
+    // Type assertion to satisfy MahasiswaProposalListParams
+    fetchProposals({ ...filters, [key]: value } as MahasiswaProposalListParams);
   };
 
   const handleSubmit = async (data: CreateProposalData) => {
@@ -60,7 +60,12 @@ export const ProposalSubmission = () => {
   };
 
   const handleEdit = async (id: number, data: Partial<CreateProposalData>) => {
-    const result = await editProposal(id, data);
+    // Make compatible with UpdateProposalData by adding file_proposal field
+    const updateData: UpdateProposalData = {
+      judul: data.judul || '',
+      file_proposal: data.file_proposal,
+    };
+    const result = await editProposal(id, updateData);
     if (result.success) {
       toastSuccess("Proposal updated successfully!");
       setShowForm(false);

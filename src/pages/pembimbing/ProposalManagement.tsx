@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -12,14 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +27,7 @@ import {
   rejectProposal,
 } from "@/api/pembimbing";
 import { Proposal } from "@/types/api.types";
+import { PembimbingProposalTable } from "@/components/pembimbing/PembimbingProposalTable";
 
 type StatusType = "pending" | "ditolak" | "disetujui" | "revisi" | "all";
 
@@ -75,7 +67,7 @@ export const ProposalManagement: React.FC = () => {
 
       const response = await getPembimbingProposals(params);
 
-      if (response.success && response.data) {
+      if (response.data) {
         setProposals(response.data);
         if (response.meta) {
           setTotalPages(response.meta.last_page);
@@ -96,39 +88,6 @@ export const ProposalManagement: React.FC = () => {
   const handleSearch = () => {
     setCurrentPage(1);
     fetchProposals();
-  };
-
-  const getStatusPembimbingBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      pending: "secondary",
-      disetujui: "default",
-      ditolak: "destructive",
-    };
-    return (
-      <Badge variant={variants[status] || "default"}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      pending: "secondary",
-      disetujui: "default",
-      ditolak: "destructive",
-      revisi: "outline",
-    };
-    return (
-      <Badge variant={variants[status] || "default"}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
   };
 
   const openActionModal = (
@@ -348,151 +307,17 @@ export const ProposalManagement: React.FC = () => {
           <CardTitle>Daftar Proposal</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {loading ? (
-            <div className="p-8 text-center text-muted-foreground">
-              Memuat data...
-            </div>
-          ) : proposals.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              Tidak ada proposal
-            </div>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Judul Proposal</TableHead>
-                    <TableHead>Ketua Tim</TableHead>
-                    <TableHead>Jenis PKM</TableHead>
-                    <TableHead>Tahun</TableHead>
-                    <TableHead>Status Pembimbing</TableHead>
-                    <TableHead>Status Proposal</TableHead>
-                    <TableHead>Nilai</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {proposals.map((proposal) => (
-                    <TableRow key={proposal.id}>
-                      <TableCell>
-                        <p className="text-sm font-medium">{proposal.judul}</p>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="text-sm font-medium">
-                            {proposal.ketua.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {proposal.ketua.email}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="text-sm font-medium">
-                            {proposal.pkm.singkatan}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {proposal.anggota.length + 1} anggota
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm">
-                          {proposal.kalender.tahun}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {getStatusPembimbingBadge(proposal.status_pembimbing)}
-                      </TableCell>
-                      <TableCell>{getStatusBadge(proposal.status)}</TableCell>
-                      <TableCell>
-                        <span className="text-sm font-medium">
-                          {proposal.nilai_akhir || "-"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Lihat Detail"
-                            onClick={() =>
-                              window.open(proposal.file_proposal_url, "_blank")
-                            }
-                          >
-                            <Icon name="FileText" size={16} />
-                          </Button>
-                          {proposal.status_pembimbing === "pending" && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-emerald-600"
-                                title="Setujui"
-                                onClick={() =>
-                                  openActionModal(proposal, "approve")
-                                }
-                              >
-                                <Icon name="Check" size={16} />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-red-600"
-                                title="Tolak"
-                                onClick={() =>
-                                  openActionModal(proposal, "reject")
-                                }
-                              >
-                                <Icon name="X" size={16} />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              {/* Pagination */}
-              <div className="px-6 py-4 border-t">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    Menampilkan {(currentPage - 1) * itemsPerPage + 1} hingga{" "}
-                    {Math.min(currentPage * itemsPerPage, total)} dari {total}{" "}
-                    proposal
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPage === 1}
-                    >
-                      <Icon name="ChevronLeft" size={16} />
-                    </Button>
-                    <span className="px-3 py-1 text-sm">
-                      Halaman {currentPage} dari {totalPages || 1}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                      disabled={currentPage === totalPages || totalPages === 0}
-                    >
-                      <Icon name="ChevronRight" size={16} />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+          <PembimbingProposalTable
+            proposals={proposals}
+            loading={loading}
+            onApprove={(proposal) => openActionModal(proposal, "approve")}
+            onReject={(proposal) => openActionModal(proposal, "reject")}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            total={total}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         </CardContent>
       </Card>
 
