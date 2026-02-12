@@ -123,13 +123,6 @@ export const UserManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold">Manajemen Pengguna</h1>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/dashboard/master/pengguna/sampah")}
-          >
-            <Icon name="Trash2" size={16} className="mr-2" />
-            Sampah
-          </Button>
           <Button onClick={handleOpenCreateModal}>
             <Icon name="User" size={16} className="mr-2" />
             Tambah Pengguna

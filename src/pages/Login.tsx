@@ -9,6 +9,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 import { useAuth } from "@/contexts/AuthContext";
 import { loginSchema, getZodErrors, LoginFormValues } from "@/validations";
+import { toastSuccess, toastError } from "@/lib/toast";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,53 +21,44 @@ export default function LoginForm() {
   const [errors, setErrors] = useState<
     Partial<Record<keyof LoginFormValues, string>>
   >({});
-  const [apiError, setApiError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setApiError(null);
 
-    // Validate with Zod
-    const result = loginSchema.safeParse(formData);
+    const validationResult = loginSchema.safeParse(formData);
 
-    if (!result.success) {
-      // Format and set errors
-      const formattedErrors = getZodErrors<LoginFormValues>(result.error);
+    if (!validationResult.success) {
+      const formattedErrors = getZodErrors<LoginFormValues>(
+        validationResult.error,
+      );
       setErrors(formattedErrors);
+      toastError("Mohon periksa kembali input Anda");
       return;
     }
 
-    // Clear errors if validation passes
     setErrors({});
 
-    // Attempt login
-    const success = await login(formData.email, formData.password);
+    const loginResult = await login(formData.email, formData.password);
 
-    if (success) {
+    if (loginResult.success) {
+      toastSuccess(loginResult.message);
       navigate("/dashboard");
     } else {
-      setApiError(
-        "Email atau password salah. Coba: admin@unsil.ac.id / admin123",
-      );
+      toastError(loginResult.message);
     }
   };
 
   const updateField = (field: keyof LoginFormValues, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
       });
-    }
-    // Clear API error when user types
-    if (apiError) {
-      setApiError(null);
     }
   };
 
@@ -116,7 +108,7 @@ export default function LoginForm() {
               alt="Student working on laptop"
               className="w-full h-[400px] object-cover"
             />
-            {/* Floating Elements */}
+
             <div className="absolute top-8 right-8 bg-white p-4 rounded-2xl shadow-lg">
               <div className="flex items-center gap-3">
                 <div className="text-3xl">☁️</div>
@@ -147,12 +139,6 @@ export default function LoginForm() {
             <div>
               <h2 className="text-3xl font-bold mb-2 text-center">Login</h2>
             </div>
-
-            {apiError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
-                {apiError}
-              </div>
-            )}
 
             <form onSubmit={handleLogin} className="space-y-6">
               {/* Email Field */}
@@ -232,7 +218,6 @@ export default function LoginForm() {
                 Login
               </Button>
             </form>
-
           </Card>
 
           {/* Help Text */}

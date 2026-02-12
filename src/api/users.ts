@@ -77,7 +77,7 @@ export const updateUser = async (id: number, data: UpdateUser): Promise<SingleUs
 };
 
 /**
- * Soft delete a user
+ * Delete a user
  * DELETE /users/{id}
  */
 export const deleteUser = async (id: number): Promise<{ success: boolean; message: string }> => {
@@ -93,56 +93,21 @@ export const deleteUser = async (id: number): Promise<{ success: boolean; messag
 };
 
 /**
- * Get list of soft deleted users
- * GET /users/trash
+ * Get available kajur for kaprodi assignment
+ * GET /users/available-kajur
  */
-export const getDeletedUsers = async (params?: {
-  page?: number;
+export const getAvailableKajur = async (params?: {
+  search?: string;
   per_page?: number;
 }): Promise<UserListResponse> => {
   try {
-    const response = await apiClient.get<UserListResponse>('/users/trash', { params });
+    const response = await apiClient.get<UserListResponse>('/users/available-kajur', { params });
     return response.data;
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || 'Failed to fetch deleted users',
+      message: error.response?.data?.message || 'Failed to fetch available kajur',
       errors: error.response?.data?.errors,
-    };
-  }
-};
-
-/**
- * Restore a soft deleted user
- * PUT /users/{id}/restore
- */
-export const restoreUser = async (id: number): Promise<SingleUserResponse> => {
-  try {
-    const response = await apiClient.put<SingleUserResponse>(`/users/${id}/restore`);
-    return response.data;
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Failed to restore user',
-      errors: error.response?.data?.errors,
-    };
-  }
-};
-
-/**
- * Permanently delete a user (cannot be undone)
- * DELETE /users/{id}/force-delete
- */
-export const forceDeleteUser = async (id: number): Promise<{ success: boolean; message: string }> => {
-  try {
-    const response = await apiClient.delete<{ success: boolean; message: string }>(
-      `/users/${id}/force-delete`
-    );
-    return response.data;
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Failed to permanently delete user',
     };
   }
 };

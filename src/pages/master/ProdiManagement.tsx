@@ -16,6 +16,7 @@ import {
 import { getProdis, deleteProdi } from "@/api/prodi";
 import { Prodi } from "@/types/api.types";
 import { ProdiFormModal } from "@/components/prodi/ProdiFormModal";
+import { AssignKaprodiModal } from "@/components/prodi/AssignKaprodiModal";
 import { getStrataBadge } from "@/utils/badge-utils";
 
 export const ProdiManagement: React.FC = () => {
@@ -29,6 +30,7 @@ export const ProdiManagement: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedProdi, setSelectedProdi] = useState<Prodi | null>(null);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
   useEffect(() => {
     fetchProdis();
@@ -95,6 +97,22 @@ export const ProdiManagement: React.FC = () => {
 
   const handleModalSuccess = () => {
     fetchProdis();
+  };
+
+  const handleOpenAssignModal = (prodi: Prodi) => {
+    setSelectedProdi(prodi);
+    setIsAssignModalOpen(true);
+  };
+
+  const handleCloseAssignModal = () => {
+    setIsAssignModalOpen(false);
+    setSelectedProdi(null);
+  };
+
+  const handleAssignSuccess = () => {
+    fetchProdis();
+    setIsAssignModalOpen(false);
+    setSelectedProdi(null);
   };
 
   return (
@@ -238,11 +256,6 @@ export const ProdiManagement: React.FC = () => {
                           <p className="text-sm font-medium">
                             {prodiItem.name}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            {prodiItem.kaprodi
-                              ? `Kaprodi: ${prodiItem.kaprodi.name}`
-                              : "Belum ada kaprodi"}
-                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -273,6 +286,14 @@ export const ProdiManagement: React.FC = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Tugaskan Kaprodi"
+                            onClick={() => handleOpenAssignModal(prodiItem)}
+                          >
+                            <Icon name="UserCog" size={16} />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -317,6 +338,14 @@ export const ProdiManagement: React.FC = () => {
         onSuccess={handleModalSuccess}
         prodi={selectedProdi}
         mode={modalMode}
+      />
+
+      {/* Assign Kaprodi Modal */}
+      <AssignKaprodiModal
+        isOpen={isAssignModalOpen}
+        onClose={handleCloseAssignModal}
+        onSuccess={handleAssignSuccess}
+        prodi={selectedProdi}
       />
     </div>
   );

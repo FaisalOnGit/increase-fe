@@ -5,18 +5,11 @@ import { Icon } from "@/components/ui/Icon";
 import { Breadcrumb } from "@/components/layout/BreadCrumb";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useProposal, useEligibility } from "../../hooks/useProposal";
 import { CreateProposalData, MahasiswaProposal } from "../../types/api.types";
 import { toastSuccess, toastError } from "@/lib/toast";
 import { ProposalFormModal } from "@/components/mahasiswa/ProposalFormModal";
+import { ProposalTable } from "@/components/proposal/ProposalTable";
 
 export const ProposalSubmission = () => {
   const {
@@ -92,37 +85,6 @@ export const ProposalSubmission = () => {
   const openEditForm = (proposal: MahasiswaProposal) => {
     setEditingProposal(proposal);
     setShowForm(true);
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-            Pending
-          </Badge>
-        );
-      case "disetujui":
-        return (
-          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
-            Disetujui
-          </Badge>
-        );
-      case "ditolak":
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
-            Ditolak
-          </Badge>
-        );
-      case "revisi":
-        return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-            Revisi
-          </Badge>
-        );
-      default:
-        return <Badge>{status}</Badge>;
-    }
   };
 
   if (eligibilityLoading) {
@@ -334,122 +296,13 @@ export const ProposalSubmission = () => {
           <CardTitle>Daftar Proposal PKM</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {proposalsLoading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Loading proposals...</p>
-            </div>
-          ) : proposals.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              <Icon name="FileText" className="mx-auto mb-4" size={48} />
-              <p>Belum ada proposal yang diajukan</p>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Judul</TableHead>
-                      <TableHead>Jenis PKM</TableHead>
-                      <TableHead>Tim</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Tahun</TableHead>
-                      <TableHead className="text-right">Aksi</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {proposals.map((proposal) => (
-                      <TableRow key={proposal.id}>
-                        <TableCell>
-                          <div>
-                            <p className="text-sm font-medium">
-                              {proposal.judul}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {proposal.ketua.name} (Ketua)
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="text-sm font-medium">
-                              {proposal.pkm.singkatan}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {proposal.pembimbing.name}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            {proposal.anggota.length > 0 ? (
-                              <>
-                                <p className="text-sm">
-                                  {proposal.anggota.length} anggota
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {proposal.anggota
-                                    .map((a) => a.name)
-                                    .join(", ")}
-                                </p>
-                              </>
-                            ) : (
-                              <span className="text-sm text-muted-foreground">
-                                -
-                              </span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>{getStatusBadge(proposal.status)}</TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {proposal.kalender.tahun}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            {(proposal.status === "pending" ||
-                              proposal.status === "revisi") && (
-                              <>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => openEditForm(proposal)}
-                                  title="Edit"
-                                >
-                                  <Icon name="Settings" size={16} />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleDelete(proposal.id)}
-                                  className="text-destructive"
-                                  title="Hapus"
-                                >
-                                  <Icon name="Trash2" size={16} />
-                                </Button>
-                              </>
-                            )}
-                            <Button variant="ghost" size="icon" asChild>
-                              <a
-                                href={proposal.file_proposal_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Lihat File"
-                              >
-                                <Icon name="Eye" size={16} />
-                              </a>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </>
-          )}
+          <ProposalTable
+            proposals={proposals}
+            loading={proposalsLoading}
+            onEdit={openEditForm}
+            onDelete={handleDelete}
+            emptyMessage="Belum ada proposal yang diajukan"
+          />
         </CardContent>
       </Card>
     </div>

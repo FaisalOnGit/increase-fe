@@ -31,7 +31,8 @@ export const useProposal = () => {
     setError(null);
     try {
       const response = await getMyProposals(params);
-      if (response.success && response.data) {
+      // response.data sudah berisi { success: true, data: [...] }
+      if (response.data) {
         setProposals(response.data);
       } else {
         setError(response.message || "Failed to fetch proposals");
